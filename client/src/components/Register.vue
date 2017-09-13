@@ -21,6 +21,7 @@
           <br>
           <v-btn
             class="cyan" 
+            dark
             @click="register">
             Register
           </v-btn>
