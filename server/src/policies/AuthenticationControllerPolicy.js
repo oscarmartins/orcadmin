@@ -12,19 +12,20 @@ module.exports = {
     const {error, value} = Joi.validate(req.body, schema)
 
     if (error) {
+      console.log(error.details)
       switch (error.details[0].context.key) {
         case 'email':
-          res.status(400).send({
-            error: 'you must provide a valid email address'
+          return res.status(400).send({
+            error: error.details[0].message
           })
           break
         case 'password':
-          res.status(400).send({
-            error: 'you must provide a valid password'
+          return res.status(400).send({
+            error: error.details[0].message
           })
           break
         default:
-          res.status(400).send({
+          return res.status(400).send({
             error: 'error'
           })
       }
