@@ -32,14 +32,22 @@
                <div class="song-album">
                 {{song.album}}
               </div>
+              <v-btn 
+                class="green accent-3"
+                :to="{
+                  name: 'song', 
+                  params: {songId:song.id}}"                             
+                light
+                medium               
+                middle>     
+                view
+              </v-btn>
             </v-flex>
             <v-flex xs6>
               <img class="album-image responsive-img" :src="song.albumImageUrl" />
             </v-flex>
-          </v-layout>
-                     
-        </div>  
-       
+          </v-layout>                     
+        </div>         
       </panel>
     </v-flex>
   </v-layout>
