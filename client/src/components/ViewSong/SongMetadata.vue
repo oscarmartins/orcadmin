@@ -15,7 +15,7 @@
         <v-btn
         dark
         class="cyan"
-        :to="{name: 'song-edit', params: {songId: song.id}}">
+        :to="{name: 'song-edit', params () { return {songId: song.id}}}">
         edit
         </v-btn>
 
@@ -30,12 +30,8 @@
 </template>
 
 <script>
-import Panel from '@/components/Panel'
 export default {
-  props: ['song'],
-  components: {
-    Panel
-  }
+  props: ['song']
 }
 </script>
 

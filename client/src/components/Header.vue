@@ -1,7 +1,7 @@
 <template>
   <v-toolbar fixed class="cyan" dark>
     <v-toolbar-title class="mr-4" >      
-       <router-link  tag="span" style="cursor: pointer" to="/">          
+       <router-link  tag="span" style="cursor: pointer" :to="{name: 'songs'}">          
            OrcAdmin        
        </router-link>
     </v-toolbar-title>

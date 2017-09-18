@@ -18,7 +18,9 @@
               autocomplete="new-password">
           </v-text-field>        
           <br>
-          <div class="error" v-html="error" />
+          <v-alert error value="true" v-if="this.error" >
+            {{this.error}}
+          </v-alert>  
           <br>
           <v-btn
             class="cyan" 
@@ -33,7 +35,6 @@
 
 <script>
 import AuthenticationService from '@/services/AuthenticationService'
-import Panel from '@/components/Panel'
 export default {
   data () {
     return {
@@ -51,20 +52,16 @@ export default {
         })
         this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUSer', response.data.user)
+        this.$router.push({
+          name: 'songs'
+        })
       } catch (error) {
         this.error = error.response.data.error
       }
     }
-  },
-  components: {
-    Panel
   }
 }
 </script>
 
 <style scoped>
-  .error{
-    color: red;
-  }
-  
 </style>

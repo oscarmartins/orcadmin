@@ -8,12 +8,9 @@ v-model="song.tab">
 </template>
 
 <script>
-import Panel from '@/components/Panel'
+
 export default {
-  props: ['song'],
-  components: {
-    Panel
-  }
+  props: ['song']
 }
 </script>
 
