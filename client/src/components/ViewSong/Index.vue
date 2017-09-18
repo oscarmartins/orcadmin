@@ -1,7 +1,7 @@
 <template>
 <div>
   <v-layout>
-    <v-flex xs6>
+    <v-flex xs6 >
       <song-metadata :song="song" />
     </v-flex>
     <v-flex xs6 class="ml-2">
@@ -21,21 +21,36 @@
 
 <script>
 
-import SongsService from '@/services/SongsService'
 import SongMetadata from '@/components/ViewSong/SongMetadata'
 import Lyrics from '@/components/ViewSong/Lyrics'
 import Tab from '@/components/ViewSong/Tab'
 import YouTube from '@/components/ViewSong/YouTube'
+import SongsService from '@/services/SongsService'
+import SongHistoryService from '@/services/SongHistoryService'
 
+import {mapState} from 'vuex'
 export default {
+  computed: {
+    ...mapState([
+      'isUserLoggedIn',
+      'user',
+      'route'
+    ])
+  },
   data () {
     return {
       song: {}
     }
   },
   async mounted () {
-    const songId = this.$store.state.route.params.songId
+    const songId = this.route.params.songId
     this.song = (await SongsService.show(songId)).data
+
+    if (this.isUserLoggedIn) {
+      SongHistoryService.post({
+        songId: songId
+      })
+    }
   },
   components: {
     SongMetadata,

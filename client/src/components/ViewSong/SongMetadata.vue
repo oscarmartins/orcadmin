@@ -50,7 +50,8 @@ export default {
   props: ['song'],
   computed: {
     ...mapState([
-      'isUserLoggedIn'
+      'isUserLoggedIn',
+      'user'
     ])
   },
   data () {
@@ -64,10 +65,12 @@ export default {
         return
       }
       try {
-        this.bookmark = (await BookmarksService.index({
-          songId: this.song.id,
-          userId: this.$store.state.user.id
+        this.bookmarks = (await BookmarksService.index({
+          songId: this.song.id
         })).data
+        if (this.bookmarks.length) {
+          this.bookmark = this.bookmarks[0]
+        }
       } catch (error) {
         console.log(error)
       }
@@ -77,8 +80,7 @@ export default {
     async setAsBookmark () {
       try {
         this.bookmark = (await BookmarksService.post({
-          songId: this.song.id,
-          userId: this.$store.state.user.id
+          songId: this.song.id
         })).data
       } catch (error) {
         console.log(error)
