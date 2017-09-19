@@ -7,6 +7,8 @@ import CreateSong from '@/components/CreateSong'
 import ViewSong from '@/components/ViewSong/Index'
 import EditSong from '@/components/EditSong'
 
+import OrcApp from '@/components/orcapp/Index'
+
 Vue.use(Router)
 
 export default new Router({
@@ -42,8 +44,17 @@ export default new Router({
       component: EditSong
     },
     {
+      path: '/orcapp',
+      name: 'orcapp',
+      component: OrcApp
+    },
+    {
+      path: '*',
+      redirect: 'orcapp'
+    }
+/* {
       path: '*',
       redirect: 'songs'
-    }
+    } */
   ]
 })

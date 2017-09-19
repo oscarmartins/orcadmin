@@ -1,8 +1,8 @@
-<template>
-  <v-toolbar fixed class="cyan" dark>
+<template>  
+  <v-toolbar fixed class="cyan2" dark>
     <v-toolbar-title class="mr-4" >      
        <router-link  tag="span" style="cursor: pointer" :to="{name: 'songs'}">          
-           OrcAdmin        
+           ORC Admin        
        </router-link>
     </v-toolbar-title>
     <v-toolbar-items>     
@@ -45,6 +45,7 @@
 </template>
 
 <script>
+
 export default {
   methods: {
     logout () {
