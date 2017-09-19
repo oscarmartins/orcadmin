@@ -1,5 +1,5 @@
 <template>
-  <v-layout column>
+  <v-layout column >
     <v-flex xs6 offset-xs3>
       <panel title="Login">
         <v-text-field

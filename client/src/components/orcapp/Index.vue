@@ -1,14 +1,9 @@
 <template>
-    <nav-drawer />
+
 </template>
 
 <script>
-import NavDrawer from './NavDrawer'
-export default {
-  components: {
-    NavDrawer
-  }
-}
+export default {}
 </script>
 
 <style>

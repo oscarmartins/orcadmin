@@ -1,13 +1,12 @@
 <template>
 <div>
-    <v-navigation-drawer
-      persistent
+   <v-navigation-drawer
+      temporary
       v-model="drawer"
       :mini-variant="mini"
       overflow
-      light
-      enable-resize-watcher
       absolute
+      right
     >
       <v-list class="pa-1">
         <v-list-tile v-if="mini" @click.stop="mini = !mini">
@@ -45,7 +44,7 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar class="indigo" dark flat>
+    <v-toolbar fixed class="cyan2" dark>
     <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
     <v-toolbar-title class="mr-4" >      
        <router-link  tag="span" style="cursor: pointer" :to="{name: 'orcapp'}">          
@@ -53,13 +52,13 @@
        </router-link>
     </v-toolbar-title>
     <v-toolbar-items>     
-      <!-- <v-btn 
+      <v-btn 
         class="cyan" 
         flat 
         dark
         to="/" >
         Start
-      </v-btn> -->
+      </v-btn>
     </v-toolbar-items>
     <v-spacer></v-spacer>
     <v-toolbar-items>     
@@ -88,7 +87,7 @@
         Logout
       </v-btn>      
     </v-toolbar-items>
-  </v-toolbar>      
+  </v-toolbar>   
 </div>    
 
 </template>
@@ -101,12 +100,10 @@ export default {
       drawer: null,
       items: [
         { title: 'Start', icon: 'dashboard', route: {name: 'orcapp', params: {}} },
-        { title: 'Sign In', icon: 'input', route: {name: 'login', params: {}} },
-        { title: 'Sign Up', icon: 'group_add', route: {name: 'register', params: {}} },
-        { title: 'About', icon: 'question_answer', route: {name: 'about', params: {}} }
+        { title: 'About', icon: 'question_answer', route: {name: 'login', params: {}} }
       ],
       mini: true,
-      right: null
+      right: true
     }
   },
   methods: {
