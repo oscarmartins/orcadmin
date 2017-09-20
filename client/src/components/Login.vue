@@ -1,7 +1,7 @@
 <template>
-  <v-layout column >
-    <v-flex xs6 offset-xs3>
-      <panel title="Login">
+  <v-layout row wrap>
+    <v-flex xs12 sm8 offset-sm2 md6 offset-md3 lg4 offset-lg4 >
+      <panel title="Sign In">
         <v-text-field
           label="Email"              
           v-model="email">
