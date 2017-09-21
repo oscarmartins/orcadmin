@@ -7,7 +7,8 @@ import CreateSong from '@/components/CreateSong'
 import ViewSong from '@/components/ViewSong/Index'
 import EditSong from '@/components/EditSong'
 
-import OrcApp from '@/components/orcapp/Index'
+import OrcApp from '@/components/orcapp/Start'
+import Dashboard from '@/components/orcapp/Dashboard'
 
 Vue.use(Router)
 
@@ -47,6 +48,11 @@ export default new Router({
       path: '/orcapp',
       name: 'orcapp',
       component: OrcApp
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: Dashboard
     },
     {
       path: '*',

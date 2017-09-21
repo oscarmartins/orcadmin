@@ -1,74 +1,45 @@
 <template>
-<div>
-  <v-carousel >
-    <v-carousel-item
-      v-for="(item,i) in items"
-      v-bind:key="i"
-      v-bind:src="item.src"
-      transition="fade"
-      reverseTransition="fade"
-    ></v-carousel-item>
-  </v-carousel>     
-      <main>
-        <section>
-  <div class="layout my-5 column wrap align-center">
-    <div class="flex my-3 xs12 sm4">
-      <div class="text-xs-center">
-        <h2 class="headline">Super Admin</h2> 
-        <span class="subheading"></span></div>
-    </div>
-    <div class="flex xs12">
-      <div class="container grid-list-xl">
-        <div class="layout row wrap align-center">
-          <div class="flex xs12 md4">
-            <div class="card elevation-0 transparent" style="height: auto;">
-              <div class="card__text text-xs-center"><i class="material-icons icon blue--text text--lighten-2 icon--x-large">color_lens</i></div>
-              <div class="card__title layout justify-center card__title--primary">
-                <div class="headline text-xs-center">Missão</div>
-              </div>
-              <div class="card__text">
-                Temos como Missão Agilizar e Potênciar o seu Negócio para alem do seu escritório, sempre com acompanhamento técnico permanente e com uma a mentalidade competitiva para obter resultados efectivamente rentáveis.
-              </div>
-            </div>
-          </div>
-          <div class="flex xs12 md4">
-            <div class="card elevation-0 transparent" style="height: auto;">
-              <div class="card__text text-xs-center"><i class="material-icons icon blue--text text--lighten-2 icon--x-large">flash_on</i></div>
-              <div class="card__title layout justify-center card__title--primary">
-                <div class="headline">Solução</div>
-              </div>
-              <div class="card__text">
-               Todas as Soluções que disponibilizamos são pensadas de uma forma estratégica, seguindo as melhores práticas. Para alem de desenvolvermos novas soluções, oferecemos soluções nas seguintes áreas: Desenvolvimento e Reformulação de Websites, Lojas Online E-Commerce, Planos de Marketing online e entre outros.
-              </div>
-            </div>
-          </div>
-          <div class="flex xs12 md4">
-            <div class="card elevation-0 transparent" style="height: auto;">
-              <div class="card__text text-xs-center"><i class="material-icons icon blue--text text--lighten-2 icon--x-large">build</i></div>
-              <div class="card__title layout justify-center card__title--primary">
-                <div class="headline text-xs-center">Serviços IT</div>
-              </div>
-              <div class="card__text">
-               Os nossos Serviços abrangem vaŕios sectores, incluíndo Bens de grande consumo, Business-to-Business, Restauração, Cuidados de Saúde, Retalho, Setor Automóvel, Tecnologia, Viagens, etc...
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+  <v-app toolbar footer>
+    <v-toolbar class="" dark fixed>
+      <v-toolbar-title class="mr-4">
+        <router-link tag="span" style="cursor: pointer" :to="{name: this.isUserLoggedIn ? 'dashboard' : '/'}">
+          ORC Admin
+        </router-link>
+      </v-toolbar-title>
+      <v-toolbar-items>
+        <v-btn v-if="!this.isUserLoggedIn" flat dark to="/">
+          Start
+        </v-btn>
+      </v-toolbar-items>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn flat dark v-if="!this.isUserLoggedIn" to="/login">
+          Sign In
+        </v-btn>
+        <v-btn flat dark v-if="!this.isUserLoggedIn" to="/register">
+          Sign Up
+        </v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
 
-      </main>
-</div>
+    <main>
+      <v-container fluid v-bind:class="[this.toolbarAbs ? 'pt-0 pl-0 pr-0' : '']">
+        <router-view></router-view>
+      </v-container>
+    </main>
+    <v-footer class="footer secondary" light dark fixed>
+      <span class="white--text ml-3">© {{ new Date().getFullYear() }}</span>
+    </v-footer>
+  </v-app>
 </template>
+
 <script>
 import {mapState} from 'vuex'
 export default {
-  name: 'dashboard',
+  name: 'getstarted',
   data () {
     return {
-      toolbarAbs: true,
+      toolbarAbs: false,
       items: [
         {
           src: '/static/doc-images/threeone.png'
@@ -83,14 +54,6 @@ export default {
     }
   },
   methods: {
-    logout () {
-      debugger
-      this.$store.dispatch('setToken', null)
-      this.$store.dispatch('setUser', null)
-      this.$router.push({
-        name: '/root'
-      })
-    },
     goTo (_item) {
       const route = _item.route.name
       if (route) {

@@ -1,7 +1,6 @@
 const {
   Bookmark,
-  Song,
-  User
+  Song
 } = require('../models')
 const _ = require('lodash')
 module.exports = {
