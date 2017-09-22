@@ -6,13 +6,12 @@ import Songs from '@/components/Songs/Index'
 import CreateSong from '@/components/CreateSong'
 import ViewSong from '@/components/ViewSong/Index'
 import EditSong from '@/components/EditSong'
-
-import OrcApp from '@/components/orcapp/Start'
-import Dashboard from '@/components/orcapp/Dashboard'
-
+import Start from '@/components/orcapp/Start'
+import Resume from '@/components/orcapp/Resume'
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/register',
@@ -45,22 +44,14 @@ export default new Router({
       component: EditSong
     },
     {
-      path: '/orcapp',
-      name: 'orcapp',
-      component: OrcApp
+      path: '/start',
+      name: 'start',
+      component: Start
     },
     {
-      path: '/dashboard',
-      name: 'dashboard',
-      component: Dashboard
-    },
-    {
-      path: '*',
-      redirect: 'orcapp'
+      path: '/resume',
+      name: 'resume',
+      component: Resume
     }
-/* {
-      path: '*',
-      redirect: 'songs'
-    } */
   ]
 })

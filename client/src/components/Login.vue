@@ -50,8 +50,8 @@ export default {
         console.log('RES', response)
         this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUser', response.data.user)
-        this.$router.push({
-          name: 'dashboard'
+        this.$router.replace({
+          name: 'resume'
         })
       } catch (error) {
         console.log(error)

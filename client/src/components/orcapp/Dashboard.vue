@@ -84,7 +84,7 @@
       <v-container fluid>
         <v-layout align-center justify-center>
           <v-flex xs10>
-            <router-view></router-view>
+           <router-view></router-view>
           </v-flex>
         </v-layout>
       </v-container>
