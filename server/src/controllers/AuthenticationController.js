@@ -1,12 +1,15 @@
 const {User} = require('../models')
 const jwt = require('jsonwebtoken')
 const config = require('../config/config')
+const isAuthenticated = require('../policies/isAuthenticated')
 
 // const ONE_WEEK = 60 * 60 * 24 * 7
-const ONE_MINUTE = 60
+// const ONE_MINUTE = 60
 function jwtSignUser (user) {
   return jwt.sign(user, config.authentication.jwtSecret, {
-    expiresIn: ONE_MINUTE
+    expiresIn: 60
+    // exp: ONE_MINUTE
+    // exp: Math.floor(Date.now() / 1000) + (60 * 60)
   })
 }
 
