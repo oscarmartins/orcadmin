@@ -1,7 +1,7 @@
 const {User} = require('../models')
 const jwt = require('jsonwebtoken')
 const config = require('../config/config')
-const isAuthenticated = require('../policies/isAuthenticated')
+// const isAuthenticated = require('../policies/isAuthenticated')
 
 // const ONE_WEEK = 60 * 60 * 24 * 7
 // const ONE_MINUTE = 60

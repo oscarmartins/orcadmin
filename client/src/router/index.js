@@ -8,6 +8,7 @@ import ViewSong from '@/components/ViewSong/Index'
 import EditSong from '@/components/EditSong'
 import Start from '@/components/orcapp/Start'
 import Resume from '@/components/orcapp/Resume'
+
 Vue.use(Router)
 
 export default new Router({
@@ -52,6 +53,11 @@ export default new Router({
       path: '/resume',
       name: 'resume',
       component: Resume
+    },
+    {
+      path: '*',
+      name: 'start',
+      component: Start
     }
   ]
 })
