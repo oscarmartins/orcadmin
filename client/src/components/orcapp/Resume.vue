@@ -44,10 +44,18 @@ export default {
     ]),
     binding () {
       const binding = {}
-
-      if (this.$vuetify.breakpoint.mdAndUp) binding.column = true
-
+      if (this.$vuetify.breakpoint.mdAndUp) {
+        binding.column = true
+      }
       return binding
+    }
+  },
+  created () {
+    debugger
+    if (!this.isUserLoggedIn) {
+      this.$router.push({
+        name: 'start'
+      })
     }
   }
 }

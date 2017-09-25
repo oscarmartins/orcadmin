@@ -53,7 +53,7 @@ export default {
         this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUSer', response.data.user)
         this.$router.push({
-          name: 'songs'
+          name: 'start'
         })
       } catch (error) {
         this.error = error.response.data.error
