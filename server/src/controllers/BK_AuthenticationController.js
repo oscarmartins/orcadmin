@@ -1,4 +1,4 @@
-const User = require('../models/User')
+const {User} = require('../models')
 const jwt = require('jsonwebtoken')
 const config = require('../config/config')
 
@@ -11,41 +11,15 @@ function jwtSignUser (user) {
 module.exports = {
   async register (req, res) {
     try {
-      const {email, password} = req.body
-      await User.findOne({'email': email}, function (err, user) {
-        if (err) {
-          return res.status(400).send({
-            error: err
-          })
-        } else {
-          if (user) {
-            return res.status(400).send({
-              error: 'This email account is already in use'
-            })
-          } else {
-            var newUser = new User()
-            newUser.email = email
-            newUser.password = newUser.encryptPassword(password)
-            newUser.save(function (err, result) {
-              if (err) {
-                return res.status(400).send({
-                  error: err
-                })
-              }
-              console.log('result', result)
-            })
-            const usrJson = newUser.toJSON()
-            return res.send({
-              user: usrJson,
-              token: jwtSignUser(usrJson)
-            })
-          }
-        }
+      const user = User.create(req.body)
+      const usrJson = user.toJSON()
+      return res.send({
+        user: usrJson,
+        token: jwtSignUser(usrJson)
       })
     } catch (err) {
-      console.log('Erroror', err)
       return res.status(400).send({
-        error: err
+        error: 'This email account is already in use'
       })
     }
   },

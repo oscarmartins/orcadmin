@@ -15,10 +15,10 @@ app.use(morgan('combined'))
 app.use(bodyParser.json())
 app.use(cors())
 
-// require('./passport')
+require('./passport')
 
 app.use(session({
-  secret: 'mysuoerscret',
+  secret: 'mysupersecret',
   resave: false,
   saveUninitialized: false,
   store: new MongoStore({mongooseConnection: mongoose.connection}),

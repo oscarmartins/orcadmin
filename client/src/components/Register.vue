@@ -50,8 +50,9 @@ export default {
           email: this.email,
           password: this.password
         })
+        debugger
         this.$store.dispatch('setToken', response.data.token)
-        this.$store.dispatch('setUSer', response.data.user)
+        this.$store.dispatch('setUser', response.data.user)
         this.$router.push({
           name: 'start'
         })
