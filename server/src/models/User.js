@@ -1,8 +1,9 @@
-var mongoose = require('mongoose')
-var Schema = mongoose.Schema
-var bcrypt = require('bcrypt-nodejs')
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+const Promise = require('bluebird')
+const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'))
 
-var userSchema = new Schema({
+const userSchema = new Schema({
   email: {type: String, required: true},
   password: {type: String, required: true}
 })
@@ -12,7 +13,7 @@ userSchema.methods.encryptPassword = function (password) {
 }
 
 userSchema.methods.validPassword = function (password) {
-  return bcrypt.compareSync(password, this.password)
+  return bcrypt.compareAsync(password, this.password)
 }
 
 module.exports = mongoose.model('User', userSchema)

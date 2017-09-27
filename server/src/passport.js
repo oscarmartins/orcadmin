@@ -13,6 +13,7 @@ passport.use(
     secretOrKey: config.authentication.jwtSecret
   }, async function (jwtPayload, done) {
     try {
+      console.log('passport JwtStrategy init')
       User.findOne({'id': jwtPayload.id}, (err, user) => {
         if (err) {
           done(new Error(), false)

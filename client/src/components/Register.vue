@@ -28,6 +28,21 @@
             @click="register">
             Register
           </v-btn>
+          <v-snackbar
+          top
+          :timeout="timeout"
+          :success="context === 'success'"
+          :info="context === 'info'"
+          :warning="context === 'warning'"
+          :error="context === 'error'"
+          :primary="context === 'primary'"
+          :secondary="context === 'secondary'"
+          :multi-line="mode === 'multi-line'"
+          :vertical="mode === 'vertical'"
+          v-model="snackbar"
+          >
+          {{text}}      
+          </v-snackbar>
       </panel>
     </v-flex>
   </v-layout>  
@@ -40,24 +55,38 @@ export default {
     return {
       email: '',
       password: '',
-      error: null
+      error: null,
+      snackbar: false,
+      mode: '',
+      context: '',
+      timeout: 0,
+      text: ''
     }
   },
   methods: {
+    showSnackbar (opt) {
+      this.mode = opt.mode || ''
+      this.context = opt.context || 'info'
+      this.timeout = opt.timeout || 3600
+      this.text = opt.text || ''
+      this.snackbar = true
+    },
     async register () {
       try {
+        this.error = ''
         const response = await AuthenticationService.register({
           email: this.email,
           password: this.password
         })
+        /** this.$store.dispatch('setToken', response.data.token)
+        this.$store.dispatch('setUser', response.data.user) **/
+        console.log(response.data.token, response.data.user, response.data.message)
+        this.showSnackbar({text: response.data.message, context: 'success'})
+        setTimeout(function (ctx) { ctx.push({name: 'login'}) }, 3800, this.$router)
+      } catch (err) {
         debugger
-        this.$store.dispatch('setToken', response.data.token)
-        this.$store.dispatch('setUser', response.data.user)
-        this.$router.push({
-          name: 'start'
-        })
-      } catch (error) {
-        this.error = error.response.data.error
+        this.error = err.response.data.error
+        this.showSnackbar({text: this.error, context: 'error'})
       }
     }
   }

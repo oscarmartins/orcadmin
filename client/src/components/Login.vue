@@ -29,7 +29,9 @@
 </template>
 
 <script>
+
 import AuthenticationService from '@/services/AuthenticationService'
+
 export default {
   data () {
     return {
@@ -41,21 +43,17 @@ export default {
   methods: {
     async login () {
       try {
-        this.error = null
-        console.log('init login')
+        this.error = ''
         const response = await AuthenticationService.login({
           email: this.email,
           password: this.password
         })
-        console.log('RES', response)
         this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUser', response.data.user)
-        this.$router.replace({
-          name: 'resume'
-        })
-      } catch (error) {
-        console.log(error)
-        this.error = error.response.data.error
+        this.$router.replace({name: 'resume'})
+      } catch (err) {
+        debugger
+        this.error = err.response.data.error
       }
     }
   }
