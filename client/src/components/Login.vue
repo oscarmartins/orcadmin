@@ -1,6 +1,6 @@
 <template>
   <v-layout row wrap>
-    <v-flex xs12 sm8 offset-sm2 md6 offset-md3 lg4 offset-lg4 >
+    <v-flex xs12 sm8 offset-sm2 md6 offset-md3 lg6 offset-lg3 >
       <panel title="Sign In">
         <v-text-field
           label="Email"              

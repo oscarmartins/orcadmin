@@ -1,7 +1,3 @@
 ##OrcAdmin
-
-Account
-    User: {
-        email,
-        password
-    }
+orcAdminConfig 
+local
