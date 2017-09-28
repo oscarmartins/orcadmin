@@ -17,7 +17,9 @@ app.use(bodyParser.json())
 app.use(cors())
 
 require('./passport')
-// const knex = require('./config/knex')
+const knex = require('./config/knex')
+// const mailerAlterTable = require('./models/mailer')
+// const orcmailer = require('./controllers/orcmailer')
 
 app.use(session({
   secret: 'mysupersecret',
@@ -33,4 +35,16 @@ sequelize.sync({force: false})
   .then(() => {
     app.listen(config.port)
     console.log(`Server started on port ${config.port}`)
+    // mailerAlterTable.alterTable(knex)
+    knex('mailer').select()
+      .then((result) => {
+        if (result) {
+          console.log('result', result)
+        }
+      })
+    /** .createTestAccount(function (err, result) {
+      console.log(err)
+      console.log('-----')
+      console.log(result)
+    }) **/
   })

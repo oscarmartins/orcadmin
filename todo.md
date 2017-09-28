@@ -1,3 +1,5 @@
 ##OrcAdmin
-orcAdminConfig 
-local
+orcmailer js 
+--> insert data to mailer profiler
+--> teste send email ondemand
+

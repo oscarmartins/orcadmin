@@ -1,5 +1,5 @@
 module.exports = {
-  make: (knex) => {
+  _make: function (knex) {
     try {
       knex.schema.createTable('mailer', (table) => {
         console.log(table)
@@ -10,6 +10,8 @@ module.exports = {
         table.text('description')
         table.boolean('secure').defaultTo(false).notNullable()
         table.datetime('date').notNullable()
+        table.text('user').notNullable()
+        table.text('pass').notNullable()
       }).then((err, result) => {
         if (err) {
           console.log('error', err)
@@ -21,9 +23,13 @@ module.exports = {
       console.log(error)
     }
   },
-  drop: (knex) => {
+  _drop: function (knex) {
     knex.schema.dropTable('mailer').then(() => {
       console.log('drop table: mailer ')
     })
+  },
+  alterTable: function (knex) {
+    this._drop(knex)
+    this._make(knex)
   }
 }
