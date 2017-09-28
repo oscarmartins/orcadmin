@@ -29,7 +29,9 @@
     "passport": "^0.4.0",
     "passport-jwt": "^3.0.0",
     "sequelize": "^4.8.3",
-    "sqlite3": "^3.1.8"
+    "sqlite3": "^3.1.8",
+    "knex": "latest",
+    "pg": "latest"
   },
   "devDependencies": {
     "eslint-config-standard": "^10.2.1",

@@ -17,6 +17,7 @@ app.use(bodyParser.json())
 app.use(cors())
 
 require('./passport')
+// const knex = require('./config/knex')
 
 app.use(session({
   secret: 'mysupersecret',

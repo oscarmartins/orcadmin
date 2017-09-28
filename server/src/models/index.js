@@ -13,7 +13,7 @@ const sequelize = new Sequelize(
 
 fs
   .readdirSync(__dirname)
-  .filter(file => (file.indexOf('.') !== 0) && (file !== 'index.js'))
+  .filter(file => (file.indexOf('.') !== 0) && (file !== 'index.js') && (['mailer.js', 'User.js'].indexOf(file) < 0))
   .forEach((file) => {
     if (file.slice(-3) !== '.js') return
     const model = sequelize.import(path.join(__dirname, file))
