@@ -4,6 +4,7 @@ const SongsController = require('./controllers/SongsController')
 const BookmarksController = require('./controllers/BookmarksController')
 const HistoriesController = require('./controllers/HistoriesController')
 const isAuthenticated = require('./policies/isAuthenticated')
+const MailerController = require('./controllers/MailerController')
 
 module.exports = (app) => {
   app.post('/register',
@@ -12,6 +13,9 @@ module.exports = (app) => {
   app.post('/login',
     AuthenticationControllerPolicy.register,
     AuthenticationController.login)
+
+  app.get('/emailer', MailerController.fetchProfiles)
+  app.post('/emailer', MailerController.new)
 
   app.get('/songs',
     SongsController.index)
