@@ -51,12 +51,12 @@
            <logout />
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile @click="goTo({name: 'login', params: {}})" >
+        <v-list-tile @click="goTo({name: 'emailer', params: {}})" >
           <v-list-tile-action>
-            <v-icon>home</v-icon>
+            <v-icon>email</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title>Home</v-list-tile-title>
+            <v-list-tile-title>Emailer</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
         

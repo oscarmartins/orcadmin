@@ -8,6 +8,7 @@ import ViewSong from '@/components/ViewSong/Index'
 import EditSong from '@/components/EditSong'
 import Start from '@/components/orcapp/Start'
 import Resume from '@/components/orcapp/Resume'
+import Emailer from '@/components/orcapp/Emailer'
 
 Vue.use(Router)
 
@@ -53,6 +54,11 @@ export default new Router({
       path: '/resume',
       name: 'resume',
       component: Resume
+    },
+    {
+      path: '/emailer',
+      name: 'emailer',
+      component: Emailer
     },
     {
       path: '*',
