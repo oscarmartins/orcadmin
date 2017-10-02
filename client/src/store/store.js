@@ -11,7 +11,8 @@ export default new Vuex.Store({
     token: null,
     user: null,
     isUserLoggedIn: false,
-    toolbarAbs: false
+    toolbarAbs: false,
+    cproxyData: null
   },
   mutations: {
     setToken (state, token) {
@@ -27,6 +28,9 @@ export default new Vuex.Store({
     },
     setToolbarAbs (state, toolbarAbs) {
       state.toolbarAbs = toolbarAbs
+    },
+    componentProxy (state, data) {
+      state.cproxyData = data
     }
   },
   actions: {
@@ -38,6 +42,9 @@ export default new Vuex.Store({
     },
     setToolbarAbs ({commit}, toolbarAbs) {
       commit('setToolbarAbs', toolbarAbs)
+    },
+    componentProxy ({commit}, data) {
+      commit('componentProxy', data)
     }
   }
 })

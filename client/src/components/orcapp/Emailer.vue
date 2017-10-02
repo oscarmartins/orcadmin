@@ -44,7 +44,7 @@
               </v-card-title>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn small flat dark>Editar</v-btn>
+                 <emailer-edit :maileredit="card"/>
               </v-card-actions>
             </v-card>
           </v-flex>
@@ -56,32 +56,53 @@
 </template>
 
 <script>
+import {mapState} from 'vuex'
 import EmailerNew from './EmailerNew'
+import EmailerEdit from './EmailerEdit'
 import EmailerService from '@/services/EmailerService'
 export default {
   components: {
-    EmailerNew
+    EmailerNew,
+    EmailerEdit
+  },
+  computed: {
+    ...mapState([
+      'isUserLoggedIn',
+      'user',
+      'route',
+      'cproxyData'
+    ])
   },
   data: () => ({
-    dialog: false,
-    cards: [
-      { name: 'RecoveryPass', host: 'mail.hostname.com', description: 'recovery password email template', date: new Date() },
-      { name: 'SignIn', host: 'mail.hostname.com', description: 'sigin email template', date: new Date() },
-      { name: 'SignUp', host: 'mail.hostname.com', description: 'sigup email template', date: new Date() },
-      { name: 'Newsletter', host: 'mail.hostname.com', description: 'newsletter email template', date: new Date() },
-      { name: 'Billing', host: 'mail.hostname.com', description: 'Billing email template', date: new Date() }
-    ]
+    cards: []
   }),
-  async mounted () {
+  methods: {
+    async fetchProfiles () {
+      this.cards = (await EmailerService.fetchProfiles()).data.fetchProfiles
+    },
+    tester (a) {
+      debugger
+    }
+  },
+  mounted () {
     try {
-      this.cards = (await EmailerService.fetchProfiles()).fetchProfiles
+      this.fetchProfiles()
     } catch (error) {
       console.log('Error', error)
+    }
+  },
+  watch: {
+    cproxyData: {
+      handler (val, oval) {
+        if (val && val.ok === 1) {
+          this.fetchProfiles()
+          this.$store.dispatch('componentProxy', null)
+        }
+      }
     }
   }
 }
 </script>
 
 <style>
-
 </style>

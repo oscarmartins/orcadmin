@@ -1,10 +1,10 @@
 import Api from '@/services/Api'
 const path = 'emailer'
 export default {
-  fetchProfiles (credentials) {
-    return Api().get(path, credentials)
+  fetchProfiles () {
+    return Api().get(path)
   },
-  new () {
-    return Api().post(path)
+  new (orcmailer) {
+    return Api().post(path, orcmailer)
   }
 }

@@ -1,4 +1,16 @@
 module.exports = {
+  schema: function () {
+    return {
+      name: '',
+      host: '',
+      port: 0,
+      description: '',
+      secure: false,
+      date: '',
+      user: '',
+      pass: ''
+    }
+  },
   _make: function (knex) {
     try {
       knex.schema.createTable('mailer', (table) => {
