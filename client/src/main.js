@@ -12,6 +12,7 @@ import store from '@/store/store'
 
 import Panel from '@/components/globals/Panel'
 import Logout from '@/components/globals/Logout'
+import MicroApp from '@/components/globals/MicroApp'
 
 Vue.config.productionTip = false
 
@@ -21,6 +22,7 @@ Vue.use(Vuetify)
 
 Vue.component('panel', Panel)
 Vue.component('logout', Logout)
+Vue.component('micro-app', MicroApp)
 
 sync(store, router)
 

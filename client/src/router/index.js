@@ -61,6 +61,11 @@ export default new Router({
       component: Emailer
     },
     {
+      path: '/emailer/:emailerid',
+      name: 'emailer-delete',
+      component: Emailer
+    },
+    {
       path: '*',
       name: 'start',
       component: Start

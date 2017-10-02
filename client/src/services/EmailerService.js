@@ -6,5 +6,11 @@ export default {
   },
   new (orcmailer) {
     return Api().post(path, orcmailer)
+  },
+  update (orcmailer) {
+    return Api().put(path, orcmailer)
+  },
+  remove (orcmailer) {
+    return Api().delete(`emailer/${orcmailer.emailerid}`, orcmailer)
   }
 }

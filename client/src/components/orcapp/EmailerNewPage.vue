@@ -1,11 +1,7 @@
 <template>
-  <v-dialog v-model="dialog" persistent width="70%">
-      <v-btn icon slot="activator">
-          <v-icon >add</v-icon>
-      </v-btn>
       <v-card>
         <v-card-title>
-          <span class="headline">New Email Profile</span>
+          <span class="headline">New Profile</span>
         </v-card-title>
          
         <v-alert error value="true" v-if="this.error" >
@@ -65,7 +61,6 @@
           <v-btn class="blue--text darken-1" flat v-on:click="this.validate">Save</v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
 </template>
 
 <script>
@@ -74,8 +69,6 @@
   export default {
     data () {
       return {
-        dialogCloseTimeout: 0,
-        dialog: false,
         error: null,
         orcmailer: {
           name: '',
@@ -97,29 +90,13 @@
       ])
     },
     methods: {
-      applyTimeout (me) {
-        this.dialogCloseTimeout = 500
-      },
-      closeDialog () {
-        console.log('closeDialog')
-        Object.keys(this.orcmailer).forEach((k) => {
-          this.orcmailer[k] = null
-        })
-        setTimeout(function (me) {
-          me.error = null
-          me.dialog = false
-          me.dialogCloseTimeout = -1
-        },
-        this.dialogCloseTimeout, this)
-      },
       async validate () {
         console.log('validate')
         this.error = null
         const result = await EmailerService.new(this.orcmailer)
         debugger
         if (result.data.success) {
-          this.closeDialog()
-          this.$store.dispatch('componentProxy', {ok: 1})
+          this.$store.dispatch('selectorShape', {ok: 1})
           return true
         } else {
           this.error = result.data.error
@@ -129,18 +106,9 @@
     async mounted () {
       try {
         debugger
-        this.$store.dispatch('componentProxy', null)
+        // this.$store.dispatch('componentProxy', null)
       } catch (error) {
         console.log('Error', error)
-      }
-    },
-    watch: {
-      orcmailer: {
-        handler (val, oval) {
-          console.log('watch.orcmailer.handler')
-          this.applyTimeout(this)
-        },
-        deep: true
       }
     }
   }

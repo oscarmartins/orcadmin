@@ -30,8 +30,10 @@
           :key="card.name">
             <v-card class="blue-grey darken-2 white--text">
               <v-system-bar status class="blue-grey darken-2 white--text">
-        <span v-text="card.name"></span>
-      </v-system-bar>
+                <span v-text="card.name"></span>
+                        
+              </v-system-bar>
+              
               <v-card-title primary-title>
                 
                 <div class="headline" ></div>
@@ -44,7 +46,12 @@
               </v-card-title>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                 <emailer-edit :maileredit="card"/>
+                 <emailer-edit :card="card"/>
+                <v-btn  
+                  small                                   
+                  @click="removeProfile(card.id)">
+                  <v-icon>delete</v-icon>
+                </v-btn>     
               </v-card-actions>
             </v-card>
           </v-flex>
@@ -80,8 +87,14 @@ export default {
     async fetchProfiles () {
       this.cards = (await EmailerService.fetchProfiles()).data.fetchProfiles
     },
-    tester (a) {
+    async removeProfile (mid) {
+      const result = (await EmailerService.remove({emailerid: mid})).data
       debugger
+      if (result.success) {
+        this.$store.dispatch('componentProxy', {ok: 1})
+      } else {
+        this.error = result.error
+      }
     }
   },
   mounted () {
@@ -94,7 +107,9 @@ export default {
   watch: {
     cproxyData: {
       handler (val, oval) {
+        console.log('watch.cproxyData.handler')
         if (val && val.ok === 1) {
+          this.cards = null
           this.fetchProfiles()
           this.$store.dispatch('componentProxy', null)
         }

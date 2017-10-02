@@ -16,6 +16,8 @@ module.exports = (app) => {
 
   app.get('/emailer', MailerController.fetchProfiles)
   app.post('/emailer', MailerController.new)
+  app.put('/emailer', MailerController.update)
+  app.delete('/emailer/:emailerid', MailerController.remove)
 
   app.get('/songs',
     SongsController.index)

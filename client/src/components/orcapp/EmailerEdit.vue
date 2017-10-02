@@ -1,11 +1,23 @@
 <template>
-  <v-dialog v-model="dialog" persistent width="70%">
-      <v-btn small flat dark slot="activator">Editar</v-btn>
+  <v-dialog v-model="dialogEdit" persistent width="70%">
+      <v-btn small slot="activator">
+        <v-icon>edit</v-icon>
+      </v-btn>
       <v-card>
         <v-card-title>
           <span class="headline">Edit Email Profile</span>
+           <v-spacer></v-spacer>
+        <v-btn
+          absolute
+          dark
+          right
+          class="red"
+          @click="removeProfile(card.id)"
+        >
+        <v-icon>delete</v-icon>
+        </v-btn> 
         </v-card-title>
-         
+       
         <v-alert error value="true" v-if="this.error" >
           {{this.error}}
         </v-alert>  
@@ -14,31 +26,31 @@
           <v-container fluid grid-list-md>
             <v-layout column wrap>
               <v-flex xs12 sm5 md5 lg4 xl4>
-                <v-text-field label="Perfil Name" required hint="*key" v-model="maileredit.name"></v-text-field>
+                <v-text-field label="Perfil Name" required hint="*key" v-model="orcmaileredit.name"></v-text-field>
               </v-flex>                
             </v-layout>
             <v-layout row wrap>
               <v-flex xs12 sm5 md5 lg4 xl4>
-                <v-text-field label="Host Name" required hint="*example.domain.com" v-model="maileredit.host"></v-text-field>
+                <v-text-field label="Host Name" required hint="*example.domain.com" v-model="orcmaileredit.host"></v-text-field>
               </v-flex>
               <v-flex xs12 sm2 md2 lg2 xl2 >
-                <v-text-field label="Port" type="number" required v-model="maileredit.port"></v-text-field>
+                <v-text-field label="Port" type="number" required v-model="orcmaileredit.port"></v-text-field>
               </v-flex>
               <v-flex xs12 sm5 md5 lg4 xl4>
-                <v-switch v-bind:label="`Secure : ${maileredit.secure ? 'Yes' : 'No'}`" v-model="maileredit.secure" ></v-switch>
+                <v-switch v-bind:label="`Secure : ${orcmaileredit.secure ? 'Yes' : 'No'}`" v-model="orcmaileredit.secure" ></v-switch>
               </v-flex>
             </v-layout>
             <v-layout row wrap>
               <v-flex xs12 sm5 md5 lg4 xl4>
-                <v-text-field label="User" v-model="maileredit.user" required ></v-text-field>
+                <v-text-field label="User" v-model="orcmaileredit.user" required ></v-text-field>
               </v-flex>
               <v-flex xs12 sm5 md5 lg4 xl4>
-                <v-text-field label="Password" type="password" v-model="maileredit.pass" required ></v-text-field>
+                <v-text-field label="Password" type="password" v-model="orcmaileredit.pass" required ></v-text-field>
               </v-flex> 
             </v-layout>
             <v-layout column wrap>
               <v-flex xs12 sm5 md5 lg4 xl4>
-                <v-text-field label="Description" v-model="maileredit.description" required ></v-text-field>
+                <v-text-field label="Description" v-model="orcmaileredit.description" required ></v-text-field>
               </v-flex>                
             </v-layout>
              
@@ -70,21 +82,12 @@
   import {mapState} from 'vuex'
   import EmailerService from '@/services/EmailerService'
   export default {
-    props: ['maileredit'],
+    props: ['card'],
     data () {
       return {
-        dialogCloseTimeout: 0,
-        dialog: false,
+        dialogEdit: false,
         error: null,
-        orcmailer: {
-          name: '',
-          host: '',
-          port: 0,
-          secure: false,
-          user: '',
-          pass: '',
-          description: ''
-        }
+        orcmaileredit: this.cloneData()
       }
     },
     computed: {
@@ -96,30 +99,44 @@
       ])
     },
     methods: {
-      applyTimeout (me) {
-        this.dialogCloseTimeout = 500
+      cloneData () {
+        this.orcmaileredit = {
+          name: this.card.name,
+          host: this.card.host,
+          port: this.card.port,
+          secure: this.card.secure,
+          user: this.card.user,
+          pass: this.card.pass,
+          description: this.card.description
+        }
+        return this.orcmaileredit
       },
       closeDialog () {
-        Object.keys(this.orcmailer).forEach((k) => {
-          this.orcmailer[k] = null
-        })
-        setTimeout(function (me) {
-          me.dialog = false
-          me.dialogCloseTimeout = -1
-        },
-        this.dialogCloseTimeout,
-          this)
+        debugger
+        this.cloneData()
+        this.dialogEdit = false
       },
       async validate () {
         this.error = null
-        const result = await EmailerService.new(this.orcmailer)
+        let data = this.orcmaileredit
+        data['emailer_id'] = this.card.id
+        const result = await EmailerService.update(data)
         debugger
         if (result.data.success) {
-          this.dialog = false
+          this.dialogEdit = false
           this.$store.dispatch('componentProxy', {ok: 1})
           return true
         } else {
           this.error = result.data.error
+        }
+      },
+      async removeProfile (mid) {
+        const result = (await EmailerService.remove({emailerid: mid})).data
+        debugger
+        if (result.success) {
+          this.$store.dispatch('componentProxy', {ok: 1})
+        } else {
+          this.error = result.error
         }
       }
     },
