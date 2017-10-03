@@ -8,7 +8,7 @@ module.exports = function (req, res, next) {
       })
     } else {
       req.user = user
-      next()
+      return next()
     }
   })(req, res, next)
 }

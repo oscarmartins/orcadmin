@@ -16,6 +16,32 @@ module.exports = {
       })
     }
   },
+  async retrieveProfileById (req, res) {
+    try {
+      console.log('=== retrieveProfileById ====')
+      const { profileid } = req.params
+      console.log(profileid)
+      let error = null
+      if (!profileid || profileid.length === 0) {
+        error = 'field profileid is requerid.'
+      }
+      if (error) {
+        return res.send({error: error})
+      }
+      await knex('mailer').where('id', profileid).first()
+        .then(function (profile) {
+          console.log(profile)
+          return res.send({'success': true, profile: profile})
+        }).catch(function (err) {
+          if (err) {
+            console.log(err)
+          }
+          return res.send({'error': err})
+        })
+    } catch (e) {
+      return res.status(400).send({error: e.message})
+    }
+  },
   async new (req, res) {
     try {
       const { name, host, port, secure, user, pass, description } = req.body
@@ -34,7 +60,7 @@ module.exports = {
         console.log('ok')
       }
       if (error) {
-        return res.send({error: error})
+        return res.send({error: {detail: error}})
       }
       mailer.name = name
       mailer.port = port
@@ -45,17 +71,26 @@ module.exports = {
       mailer.date = new Date()
       mailer.description = description
       console.log(mailer)
-      const result = await knex('mailer').insert(mailer, 'id')
-      console.log(result)
-      return res.send({'success': '1'})
+      await knex('mailer').insert(mailer, 'id')
+        .then(function (a, b) {
+          console.log(a, b)
+          return res.send({'success': '1'})
+        })
+        .catch(function (err) {
+          if (err) {
+            console.log(err)
+          }
+          return res.send({'error': err})
+        })
     } catch (e) {
+      console.log(e)
       return res.status(400).send({error: e.message})
     }
   },
   async update (req, res) {
     try {
       console.log('update')
-      const { emailer_id, name, host, port, secure, user, pass, description } = req.body
+      const { profileid, name, host, port, secure, user, pass, description } = req.body
       let error = null
       if (!name || name.length === 0) {
         error = 'field name is requerid.'
@@ -81,10 +116,18 @@ module.exports = {
       mailer.secure = secure
       mailer.date = new Date()
       mailer.description = description
-      console.log(emailer_id)
-      const result = await knex('mailer').where('id', emailer_id).update(mailer)
-      console.log(result)
-      return res.send({'success': '1'})
+      console.log(profileid)
+      await knex('mailer').where('id', profileid).update(mailer)
+        .then(function (result) {
+          console.log('updated!!!.. ', result)
+          return res.send({'success': '1'})
+        })
+        .catch(function (err) {
+          if (err) {
+            console.log('not updated!!!.. ', err)
+          }
+          return res.send({'error': err})
+        })
     } catch (e) {
       return res.status(400).send({error: e.message})
     }
@@ -92,18 +135,26 @@ module.exports = {
   async remove (req, res) {
     try {
       console.log('=== remove ====')
-      const { emailerid } = req.params
-      console.log(emailerid)
+      const { profileid } = req.params
+      console.log(profileid)
       let error = null
-      if (!emailerid || emailerid.length === 0) {
-        error = 'field emailerid is requerid.'
+      if (!profileid || profileid.length === 0) {
+        error = 'field profileid is requerid.'
       }
       if (error) {
         return res.send({error: error})
       }
-      const result = await knex('mailer').where('id', emailerid).del()
-      console.log(result)
-      return res.send({'success': '1'})
+      await knex('mailer').where('id', profileid).del()
+        .then(function (result) {
+          console.log(result)
+          return res.send({'success': '1'})
+        })
+        .catch(function (err) {
+          if (err) {
+            console.log('not updated!!!.. ', err)
+          }
+          return res.send({'error': err})
+        })
     } catch (e) {
       return res.status(400).send({error: e.message})
     }

@@ -53,19 +53,6 @@
                 <v-text-field label="Description" v-model="orcmaileredit.description" required ></v-text-field>
               </v-flex>                
             </v-layout>
-             
-
-    <!-- 
-      table.text('name').notNullable()
-        table.text('host').notNullable()
-        table.integer('port').notNullable()        
-        table.boolean('secure').defaultTo(false).notNullable()        
-        table.text('user').notNullable()
-        table.text('pass').notNullable()
-        table.text('description')
-        table.datetime('date').notNullable()
-    -->
-            </v-layout>
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>

@@ -14,10 +14,11 @@ module.exports = (app) => {
     AuthenticationControllerPolicy.register,
     AuthenticationController.login)
 
-  app.get('/emailer', MailerController.fetchProfiles)
-  app.post('/emailer', MailerController.new)
-  app.put('/emailer', MailerController.update)
-  app.delete('/emailer/:emailerid', MailerController.remove)
+  app.get('/emailer', isAuthenticated, MailerController.fetchProfiles)
+  app.get('/emailer/:profileid', isAuthenticated, MailerController.retrieveProfileById)
+  app.post('/emailer', isAuthenticated, MailerController.new)
+  app.put('/emailer', isAuthenticated, MailerController.update)
+  app.delete('/emailer/:profileid', isAuthenticated, MailerController.remove)
 
   app.get('/songs',
     SongsController.index)

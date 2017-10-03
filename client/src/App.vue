@@ -21,7 +21,7 @@
            <logout />
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile @click="goTo({name: 'emailer', params: {}})" >
+        <v-list-tile @click="orcgoto({name: 'emailer-profiles'})" >
           <v-list-tile-action>
             <v-icon>mail</v-icon>
           </v-list-tile-action>
@@ -118,18 +118,6 @@ export default {
     }
   }),
   methods: {
-    goTo (_item) {
-      const route = _item.name
-      if (route) {
-        this.$router.push(route)
-      } else {
-        debugger
-        const method = _item.params.method
-        if (method) {
-          this[method.name].apply(null, method.args)
-        }
-      }
-    },
     updateToolbarAbs (state) {
       this.$store.dispatch('setToolbarAbs', state)
     }

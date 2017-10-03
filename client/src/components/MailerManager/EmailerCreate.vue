@@ -1,13 +1,15 @@
 <template>
+  <micro-app :micro="{title: 'Create New Profile'}" >
+      <template slot="navitems" />
+                  
+      <template slot="content" >
       <v-card>
-        <v-card-title>
-          <span class="headline">New Profile</span>
-        </v-card-title>
-         
-        <v-alert error value="true" v-if="this.error" >
-          {{this.error}}
+        <v-alert error value="true" v-if="this.error" dismissible >
+          {{this.error}}          
         </v-alert>  
-        
+        <v-card-title>
+          <span class="headline">Edit Profile</span>
+        </v-card-title>       
         <v-card-text>
           <v-container fluid grid-list-md>
             <v-layout column wrap>
@@ -39,28 +41,18 @@
                 <v-text-field label="Description" v-model="orcmailer.description" required ></v-text-field>
               </v-flex>                
             </v-layout>
-             
-
-    <!-- 
-      table.text('name').notNullable()
-        table.text('host').notNullable()
-        table.integer('port').notNullable()        
-        table.boolean('secure').defaultTo(false).notNullable()        
-        table.text('user').notNullable()
-        table.text('pass').notNullable()
-        table.text('description')
-        table.datetime('date').notNullable()
-    -->
-            </v-layout>
+            
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn class="blue--text darken-1" flat v-on:click="this.closeDialog">Close</v-btn>
+          <v-btn class="blue--text darken-1" flat @click.native.stop="orcgoto({name: 'emailer-profiles'})">Cancel</v-btn>
           <v-btn class="blue--text darken-1" flat v-on:click="this.validate">Save</v-btn>
         </v-card-actions>
       </v-card>
+      </template>
+  </micro-app>
 </template>
 
 <script>
@@ -85,8 +77,7 @@
       ...mapState([
         'isUserLoggedIn',
         'user',
-        'route',
-        'cproxyData'
+        'route'
       ])
     },
     methods: {
@@ -94,12 +85,10 @@
         console.log('validate')
         this.error = null
         const result = await EmailerService.new(this.orcmailer)
-        debugger
         if (result.data.success) {
-          this.$store.dispatch('selectorShape', {ok: 1})
-          return true
+          this.orcgoto({name: 'emailer-profiles'})
         } else {
-          this.error = result.data.error
+          this.error = result.data.error.detail
         }
       }
     },
@@ -114,6 +103,4 @@
   }
 </script>
 
-<style>
-
-</style>
+<style></style>

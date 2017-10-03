@@ -6,9 +6,16 @@ import Songs from '@/components/Songs/Index'
 import CreateSong from '@/components/CreateSong'
 import ViewSong from '@/components/ViewSong/Index'
 import EditSong from '@/components/EditSong'
+
+import ForceLogout from '@/components/globals/ForceLogout'
+
 import Start from '@/components/orcapp/Start'
 import Resume from '@/components/orcapp/Resume'
-import Emailer from '@/components/orcapp/Emailer'
+
+import Emailer from '@/components/MailerManager/Emailer'
+import EmailerCreate from '@/components/MailerManager/EmailerCreate'
+import EmailerEdit from '@/components/MailerManager/EmailerEdit'
+import EmailerRemove from '@/components/MailerManager/EmailerRemove'
 
 Vue.use(Router)
 
@@ -56,14 +63,34 @@ export default new Router({
       component: Resume
     },
     {
-      path: '/emailer',
-      name: 'emailer',
+      path: '/emailer/profiles',
+      name: 'emailer-profiles',
       component: Emailer
     },
     {
-      path: '/emailer/:emailerid',
-      name: 'emailer-delete',
-      component: Emailer
+      path: '/emailer/create',
+      name: 'emailer-create',
+      component: EmailerCreate
+    },
+    {
+      path: '/emailer/edit',
+      name: 'emailer-edit',
+      component: EmailerEdit
+    },
+    {
+      path: '/emailer/:profileid/remove',
+      name: 'emailer-remove',
+      component: EmailerRemove
+    },
+    {
+      path: '/logout',
+      name: 'force-logout',
+      component: ForceLogout
+    },
+    {
+      path: '/emailer',
+      name: 'emailer',
+      redirect: '/emailer/profiles'
     },
     {
       path: '*',

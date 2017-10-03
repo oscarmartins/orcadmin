@@ -26,6 +26,22 @@ Vue.component('micro-app', MicroApp)
 
 sync(store, router)
 
+const mixin = {
+  created () {
+    this.orcgoto = function (route) {
+      try {
+        this.$router.push(route)
+      } catch (error) {
+        if (error) {
+          console.log(error)
+        }
+      }
+    }
+  }
+}
+
+Vue.mixin(mixin)
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

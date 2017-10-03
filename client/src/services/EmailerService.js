@@ -4,13 +4,16 @@ export default {
   fetchProfiles () {
     return Api().get(path)
   },
+  retrieveProfileById (profileid) {
+    return Api().get(`emailer/${profileid}`)
+  },
   new (orcmailer) {
     return Api().post(path, orcmailer)
   },
   update (orcmailer) {
     return Api().put(path, orcmailer)
   },
-  remove (orcmailer) {
-    return Api().delete(`emailer/${orcmailer.emailerid}`, orcmailer)
+  remove (profileid) {
+    return Api().delete(`emailer/${profileid}`)
   }
 }

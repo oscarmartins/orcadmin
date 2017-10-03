@@ -12,7 +12,8 @@ export default new Vuex.Store({
     user: null,
     isUserLoggedIn: false,
     toolbarAbs: false,
-    cproxyData: null
+    cproxyData: null,
+    pageSelector: null
   },
   mutations: {
     setToken (state, token) {
@@ -31,6 +32,9 @@ export default new Vuex.Store({
     },
     componentProxy (state, data) {
       state.cproxyData = data
+    },
+    pageSelector (state, data) {
+      state.pageSelector = data
     }
   },
   actions: {
@@ -45,6 +49,9 @@ export default new Vuex.Store({
     },
     componentProxy ({commit}, data) {
       commit('componentProxy', data)
+    },
+    pageSelector ({commit}, data) {
+      commit('pageSelector', data)
     }
   }
 })

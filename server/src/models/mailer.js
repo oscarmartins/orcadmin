@@ -16,7 +16,7 @@ module.exports = {
       knex.schema.createTable('mailer', (table) => {
         console.log(table)
         table.increments()
-        table.text('name').notNullable()
+        table.text('name').notNullable().unique()
         table.text('host').notNullable()
         table.integer('port').notNullable()
         table.text('description')
