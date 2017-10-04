@@ -26,8 +26,6 @@
 export default {
   props: ['micro'],
   methods: {},
-  mounted () {
-    debugger
-  }
+  mounted () {}
 }
 </script>

@@ -44,15 +44,16 @@ export default {
     async login () {
       try {
         this.error = ''
-        const response = await AuthenticationService.login({
+        // const response =
+        await AuthenticationService.login(this, {
           email: this.email,
           password: this.password
         })
-        this.$store.dispatch('setToken', response.data.token)
+        /** this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUser', response.data.user)
         this.$router.replace({name: 'resume'})
+        **/
       } catch (err) {
-        debugger
         this.error = err.response.data.error
       }
     }

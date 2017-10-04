@@ -118,7 +118,6 @@ export default {
       if (route) {
         this.$router.push(route)
       } else {
-        debugger
         const method = _item.params.method
         if (method) {
           this[method.name].apply(null, method.args)
@@ -126,7 +125,7 @@ export default {
       }
     },
     updateToolbarAbs (state) {
-      this.$store.dispatch('setToolbarAbs', state)
+      // this.$store.dispatch('setToolbarAbs', state)
     }
   },
   created () {

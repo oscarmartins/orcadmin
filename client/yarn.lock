@@ -5922,6 +5922,17 @@ void-elements@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/void-elements/-/void-elements-2.0.1.tgz#c066afb582bb1cb4128d60ea92392e94d5e9dbec"
 
+vue-authenticate@latest:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/vue-authenticate/-/vue-authenticate-1.3.1.tgz#2f826d7946d7a685c574a66b5ba03656f1509181"
+  dependencies:
+    vue "^2.2.5"
+    vue-axios "^2.0.2"
+
+vue-axios@^2.0.2, vue-axios@latest:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/vue-axios/-/vue-axios-2.0.2.tgz#0fe5a69f1edb09a1cd6c4a7f88c74d2fb7fe1778"
+
 vue-hot-reload-api@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/vue-hot-reload-api/-/vue-hot-reload-api-2.1.0.tgz#9ca58a6e0df9078554ce1708688b6578754d86de"
@@ -5970,7 +5981,7 @@ vue-youtube-embed@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/vue-youtube-embed/-/vue-youtube-embed-2.1.2.tgz#de5992c4e0aa99cbc9ae5e1e076c94e2f049a5c2"
 
-vue@^2.4.2:
+vue@^2.2.5, vue@^2.4.2:
   version "2.4.4"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.4.4.tgz#ea9550b96a71465fd2b8b17b61673b3561861789"
 

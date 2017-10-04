@@ -121,7 +121,7 @@ export default {
   },
   methods: {
     logout () {
-      debugger
+      
       this.$store.dispatch('setToken', null)
       this.$store.dispatch('setUser', null)
       this.$router.push({
@@ -133,7 +133,7 @@ export default {
       if (route) {
         this.$router.push(route)
       } else {
-        debugger
+        
         const method = _item.route.params.method
         if (method) {
           this[method.name].apply(null, method.args)

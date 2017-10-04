@@ -84,7 +84,6 @@ export default {
         this.showSnackbar({text: response.data.message, context: 'success'})
         setTimeout(function (ctx) { ctx.push({name: 'login'}) }, 3800, this.$router)
       } catch (err) {
-        debugger
         this.error = err.response.data.error
         this.showSnackbar({text: this.error, context: 'error'})
       }

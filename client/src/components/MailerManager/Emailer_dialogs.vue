@@ -89,7 +89,6 @@ export default {
     },
     async removeProfile (mid) {
       const result = (await EmailerService.remove({emailerid: mid})).data
-      debugger
       if (result.success) {
         this.$store.dispatch('componentProxy', {ok: 1})
       } else {

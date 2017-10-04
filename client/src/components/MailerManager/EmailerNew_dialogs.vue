@@ -116,7 +116,7 @@
         console.log('validate')
         this.error = null
         const result = await EmailerService.new(this.orcmailer)
-        debugger
+        
         if (result.data.success) {
           this.closeDialog()
           this.$store.dispatch('componentProxy', {ok: 1})
@@ -128,7 +128,7 @@
     },
     async mounted () {
       try {
-        debugger
+        
         this.$store.dispatch('componentProxy', null)
       } catch (error) {
         console.log('Error', error)

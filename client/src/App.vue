@@ -119,7 +119,7 @@ export default {
   }),
   methods: {
     updateToolbarAbs (state) {
-      this.$store.dispatch('setToolbarAbs', state)
+      // this.$store.dispatch('setToolbarAbs', state)
     }
   }
 }

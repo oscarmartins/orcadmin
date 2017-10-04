@@ -1,5 +1,6 @@
 import axios from 'axios'
-import store from '@/store/store'
+// import store from '@/store/store'
+import store from '@/store'
 
 const baseURL = 'http://localhost:8081'
 

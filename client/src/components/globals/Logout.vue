@@ -22,7 +22,6 @@ export default {
   },
   methods: {
     logout () {
-      debugger
       this.$store.dispatch('setToken', null)
       this.$store.dispatch('setUser', null)
       this.$router.push({
@@ -30,7 +29,7 @@ export default {
       })
     },
     updateToolbarAbs (state) {
-      this.$store.dispatch('setToolbarAbs', state)
+      // this.$store.dispatch('setToolbarAbs', state)
     }
   }
 }

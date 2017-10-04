@@ -4,7 +4,7 @@ const config = require('../config/config')
 
 function jwtSignUser (user) {
   return jwt.sign(user, config.authentication.jwtSecret, {
-    expiresIn: 60
+    expiresIn: 3600
   })
 }
 
@@ -55,7 +55,6 @@ module.exports = {
   },
   async login (req, res) {
     try {
-      console.log(req.session)
       const {email, password} = req.body
       const filter = {'email': 1, password: 1}
       await User.findOne({email: email}, filter, function (err, result) {
@@ -79,8 +78,8 @@ module.exports = {
           const usrJson = result.toJSON()
           const theToken = jwtSignUser(usrJson)
           res.send({
-            user: usrJson,
-            token: theToken,
+            profile: usrJson,
+            access_token: theToken,
             message: 'signin ok'
           })
         }

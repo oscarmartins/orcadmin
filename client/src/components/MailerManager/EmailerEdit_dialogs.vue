@@ -99,7 +99,7 @@
         return this.orcmaileredit
       },
       closeDialog () {
-        debugger
+        
         this.cloneData()
         this.dialogEdit = false
       },
@@ -108,7 +108,7 @@
         let data = this.orcmaileredit
         data['emailer_id'] = this.card.id
         const result = await EmailerService.update(data)
-        debugger
+        
         if (result.data.success) {
           this.dialogEdit = false
           this.$store.dispatch('componentProxy', {ok: 1})
@@ -119,7 +119,7 @@
       },
       async removeProfile (mid) {
         const result = (await EmailerService.remove({emailerid: mid})).data
-        debugger
+        
         if (result.success) {
           this.$store.dispatch('componentProxy', {ok: 1})
         } else {
@@ -129,7 +129,7 @@
     },
     mounted () {
       try {
-        debugger
+        
         this.$store.dispatch('componentProxy', null)
       } catch (error) {
         console.log('Error', error)

@@ -9,7 +9,7 @@
               <v-avatar>
                 <v-icon>account_circle</v-icon>
               </v-avatar>
-              {{user.email}}
+              {{this.auth.profile.email}}
             </v-chip>
           </v-card-text>
         </v-card>
@@ -38,8 +38,7 @@ export default {
   methods: {},
   computed: {
     ...mapState([
-      'isUserLoggedIn',
-      'user',
+      'auth',
       'route'
     ]),
     binding () {
@@ -52,11 +51,7 @@ export default {
   },
   created () {
     debugger
-    if (!this.isUserLoggedIn) {
-      this.$router.push({
-        name: 'start'
-      })
-    }
+    console.log(this.auth.isAuthenticated)
   }
 }
 </script>

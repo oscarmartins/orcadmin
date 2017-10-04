@@ -22,7 +22,7 @@ require('./passport')
 // const orcmailer = require('./controllers/orcmailer')
 
 app.use(session({
-  secret: 'mysupersecret',
+  secret: 'access_token',
   resave: true,
   saveUninitialized: true,
   store: new MongoStore({mongooseConnection: mongoose.connection}),

@@ -94,7 +94,6 @@
     },
     async mounted () {
       try {
-        debugger
         // this.$store.dispatch('componentProxy', null)
       } catch (error) {
         console.log('Error', error)

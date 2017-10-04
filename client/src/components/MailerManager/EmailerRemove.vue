@@ -53,14 +53,12 @@
       getPathName () {
         const output = {name: 'emailer-profiles', params: {}}
         if (this.parentPath) {
-          debugger
           output.name = this.parentPath
           output.params = {profileid: this.profileid}
         }
         return output
       },
       async yes () {
-        debugger
         const result = (await EmailerService.remove(this.profileid)).data
         if (result.success) {
           this.orcgoto({name: 'emailer-profiles'})
