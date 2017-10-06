@@ -18,8 +18,15 @@ app.use(cors())
 
 // const knex = require('./config/knex')
 // const mailerAlterTable = require('./models/mailer')
-const orcmailer = require('./controllers/orcmailer').sendMail({})
-
+/**
+const mailOptions = {
+  to: 'orcdemo@gmail.com', // list of receivers
+  subject: 'Hello ✔✔', // Subject line
+  text: 'Hello world? ✔', // plain text body
+  html: '<b>Hello world? oscar</b>' // html body
+}
+require('./controllers/orcmailer').sendMail(mailOptions)
+**/
 app.use(session({
   secret: 'access_token',
   resave: true,

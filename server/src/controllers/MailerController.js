@@ -3,9 +3,7 @@ const mailer = require('../models/mailer').schema()
 module.exports = {
   async fetchProfiles (req, res) {
     try {
-      console.log('### fetchProfiles ###')
       await knex('mailer').select('*').then((result) => {
-        console.log(result)
         return res.send({'fetchProfiles': result})
       })
     } catch (err) {
@@ -18,9 +16,7 @@ module.exports = {
   },
   async retrieveProfileById (req, res) {
     try {
-      console.log('=== retrieveProfileById ====')
       const { profileid } = req.params
-      console.log(profileid)
       let error = null
       if (!profileid || profileid.length === 0) {
         error = 'field profileid is requerid.'
@@ -30,7 +26,6 @@ module.exports = {
       }
       await knex('mailer').where('id', profileid).first()
         .then(function (profile) {
-          console.log(profile)
           return res.send({'success': true, profile: profile})
         }).catch(function (err) {
           if (err) {
@@ -72,8 +67,7 @@ module.exports = {
       mailer.description = description
       console.log(mailer)
       await knex('mailer').insert(mailer, 'id')
-        .then(function (a, b) {
-          console.log(a, b)
+        .then(function () {
           return res.send({'success': '1'})
         })
         .catch(function (err) {
@@ -119,7 +113,6 @@ module.exports = {
       console.log(profileid)
       await knex('mailer').where('id', profileid).update(mailer)
         .then(function (result) {
-          console.log('updated!!!.. ', result)
           return res.send({'success': '1'})
         })
         .catch(function (err) {
@@ -146,7 +139,6 @@ module.exports = {
       }
       await knex('mailer').where('id', profileid).del()
         .then(function (result) {
-          console.log(result)
           return res.send({'success': '1'})
         })
         .catch(function (err) {

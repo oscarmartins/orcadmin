@@ -1,22 +1,27 @@
 <template>
-  <micro-app :micro="{title: 'Edit Profile'}" >                  
+  <micro-app :micro="{title: 'Edit Profile'}" >  
+      <template slot="navitems" >
+        <v-spacer></v-spacer>
+        <v-btn          
+          dark          
+          class="red"
+          @click.native.stop="orcgoto({name: 'emailer-remove', params: {profileid: profileid, parentPath: 'emailer-edit'}})"
+        >
+        <v-icon>delete</v-icon>
+        </v-btn> 
+         <v-btn  class="green"  @click.native.stop="orcgoto({name: 'emailer-create'})">
+            <v-icon>add</v-icon>
+            <span>new</span>
+        </v-btn>
+      </template>                 
       <template slot="content" >
       <v-card>
         <v-alert error value="true" v-if="this.error" dismissible >
           {{this.error}}          
         </v-alert>  
         <v-card-title>
-          <span class="headline">Edit Profile</span>
-          <v-spacer></v-spacer>
-        <v-btn
-          absolute
-          dark
-          right
-          class="red"
-          @click.native.stop="orcgoto({name: 'emailer-remove', params: {profileid: profileid, parentPath: 'emailer-edit'}})"
-        >
-        <v-icon>delete</v-icon>
-        </v-btn> 
+          <span class="headline">Profile</span>         
+          <small class=" ml-2 blue--text" >{{orcmailer.name}}</small>               
         </v-card-title>       
         <v-card-text>
           <v-container fluid grid-list-md>

@@ -2,7 +2,7 @@
 'use strict'
 const nodemailer = require('nodemailer')
 const knex = require('../config/knex')
-
+/**
 // Generate test SMTP service account from ethereal.email
 // Only needed if you don't have a real mail account for testing
 nodemailer.createTestAccount((err, account) => {
@@ -43,6 +43,7 @@ nodemailer.createTestAccount((err, account) => {
     // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
   })
 })
+ */
 /**
   from - The email address of the sender. All email addresses can be plain ‘sender@server.com’ or formatted ’“Sender Name” sender@server.com‘, see Address object for details
   to - Comma separated list or an array of recipients email addresses that will appear on the To: field
@@ -63,12 +64,27 @@ var message = {
 */
 const ACCOUNT_PROFILE = 'info_orc-project.com'
 module.exports = {
-  sendMail: async (message) => {
-    await knex('mailer').where({'name': ACCOUNT_PROFILE}).first().then((err, result) => {
-      if (err) {
-        console.log(err)
-      }
-      console.log(result)
+  sendMail: async function (message) {
+    await knex('mailer').where({'name': ACCOUNT_PROFILE}).first().then(function (account) {
+      let transporter = nodemailer.createTransport({
+        host: account.host,
+        port: account.port,
+        secure: account.secure, // true for 465, false for other ports
+        auth: {
+          user: account.user, // generated ethereal user
+          pass: account.pass // generated ethereal password
+        }
+      })
+
+      message.from = account.user
+
+      transporter.sendMail(message, (error, info) => {
+        if (error) {
+          return console.log(error)
+        }
+        console.log('Message sent: %s', info.messageId)
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info))
+      })
     })
   }
 }
