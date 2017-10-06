@@ -7,7 +7,7 @@ const knex = require('../config/knex')
 // Only needed if you don't have a real mail account for testing
 nodemailer.createTestAccount((err, account) => {
   console.log('account before', account)
-  account = {user: 'info@orc-project.com', pass: '2p2ssword'}
+  account = {user: '', pass: ''}
   console.log('account after', account)
   if (err) {
     console.log(err)
