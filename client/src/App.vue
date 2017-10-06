@@ -40,7 +40,7 @@
         </router-link>
       </v-toolbar-title>
       <v-toolbar-items>
-        <v-btn dark :to="{path: this.isAuthenticated ? 'resume' : 'start'}">
+        <v-btn dark :to="{name: this.isAuthenticated ? 'resume' : 'start'}">
           <span v-if="this.isAuthenticated">dashboard</span>
           <span v-else>start</span>
         </v-btn>
