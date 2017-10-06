@@ -4,11 +4,28 @@ const config = require('../config/config')
 
 function jwtSignUser (user) {
   return jwt.sign(user, config.authentication.jwtSecret, {
-    expiresIn: 3600
+    expiresIn: '30m'
   })
 }
 
 module.exports = {
+  async logout (req, res) {
+    try {
+      req.session.destroy(function (err) {
+        if (err) {
+          console.log('### erro ao destruir sessão')
+          return res.status(400).send({
+            error: err
+          })
+        }
+        return res.status(200).send({success: 1})
+      })
+    } catch (err) {
+      return res.status(400).send({
+        error: err
+      })
+    }
+  },
   async register (req, res) {
     try {
       const {email, password} = req.body
@@ -34,11 +51,7 @@ module.exports = {
               } else {
                 const msg = 'Your registration has been successfully completed. Redirect to Sign In...'
                 console.log(msg, result)
-                const usrJson = newUser.toJSON()
-                const theToken = jwtSignUser(usrJson)
-                return res.send({
-                  user: usrJson,
-                  token: theToken,
+                return res.status(200).send({
                   message: msg
                 })
               }

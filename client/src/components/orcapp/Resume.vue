@@ -9,7 +9,7 @@
               <v-avatar>
                 <v-icon>account_circle</v-icon>
               </v-avatar>
-              {{this.auth.profile.email}}
+              {{this.profile.email}}
             </v-chip>
           </v-card-text>
         </v-card>
@@ -30,17 +30,16 @@
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import {mapGetters} from 'vuex'
 export default {
   data () {
     return {}
   },
-  methods: {},
   computed: {
-    ...mapState([
-      'auth',
-      'route'
-    ]),
+    ...mapGetters({
+      'isAuthenticated': 'isAuthenticated',
+      'profile': 'profile'
+    }),
     binding () {
       const binding = {}
       if (this.$vuetify.breakpoint.mdAndUp) {
@@ -51,7 +50,6 @@ export default {
   },
   created () {
     debugger
-    console.log(this.auth.isAuthenticated)
   }
 }
 </script>

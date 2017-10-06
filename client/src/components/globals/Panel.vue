@@ -4,11 +4,13 @@
       <v-toolbar-title>{{title}}</v-toolbar-title>
       <slot name="action" />
     </v-toolbar>
-    <div class="pl-4 pr-4 pt-2 pb-2">
-        <slot>
+    <v-container grid-list-xl text-xs-center>
+    <v-layout row wrap>
+      <v-flex xs12 >
+     <slot>
         No slot content defined.
-        </slot>          
-    </div>
+     </slot>       
+      </v-flex></v-layout></v-container>
   </div> 
 </template>
 

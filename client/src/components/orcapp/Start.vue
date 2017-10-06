@@ -2,8 +2,8 @@
   <v-app>  
     <v-container fluid>
         <v-layout align-center justify-center>
-          <v-flex xs10>  
-    <section>
+          <v-flex >  
+    <section class="hidden-xs-only">
       <div class="layout my-5 column wrap align-center">
         <div class="flex my-3 xs12 sm4">
           <div class="text-xs-center">
@@ -64,7 +64,6 @@
 </template>
 
 <script>
-import {mapState} from 'vuex'
 export default {
   name: 'getstarted',
   data () {
@@ -82,34 +81,6 @@ export default {
         }
       ]
     }
-  },
-  methods: {
-    goTo (_item) {
-      const route = _item.route.name
-      if (route) {
-        this.$router.push(route)
-      } else {
-        const method = _item.route.params.method
-        if (method) {
-          this[method.name].apply(null, method.args)
-        }
-      }
-    },
-    updateToolbarAbs (state) {
-      // this.$store.dispatch('setToolbarAbs', state)
-    }
-  },
-  computed: {
-    ...mapState([
-      'isUserLoggedIn',
-      'user'
-    ])
-  },
-  created () {
-    this.updateToolbarAbs(true)
-  },
-  destroyed () {
-    this.updateToolbarAbs(false)
   }
 }
 </script>

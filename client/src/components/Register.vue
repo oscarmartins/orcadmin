@@ -2,6 +2,9 @@
   <v-layout row wrap>
     <v-flex xs12 sm8 offset-sm2 md6 offset-md3 lg6 offset-lg3>
       <panel title="Sign Up">
+          <v-alert error value="true" v-if="this.error" >
+            {{this.error}}
+          </v-alert>  
           <form 
             name="tab-orcadmin-form"
             autocomplete="off">
@@ -17,11 +20,6 @@
               type="password"
               autocomplete="new-password">
           </v-text-field>        
-          <br>
-          <v-alert error value="true" v-if="this.error" >
-            {{this.error}}
-          </v-alert>  
-          <br>
           <v-btn
             class="cyan" 
             dark
@@ -80,7 +78,7 @@ export default {
         })
         /** this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUser', response.data.user) **/
-        console.log(response.data.token, response.data.user, response.data.message)
+        console.log(response.data.message)
         this.showSnackbar({text: response.data.message, context: 'success'})
         setTimeout(function (ctx) { ctx.push({name: 'login'}) }, 3800, this.$router)
       } catch (err) {

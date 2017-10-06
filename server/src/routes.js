@@ -13,6 +13,7 @@ module.exports = (app) => {
   app.post('/login',
     AuthenticationControllerPolicy.register,
     AuthenticationController.login)
+  app.post('/logout', AuthenticationController.logout)
 
   app.get('/emailer', isAuthenticated, MailerController.fetchProfiles)
   app.get('/emailer/:profileid', isAuthenticated, MailerController.retrieveProfileById)

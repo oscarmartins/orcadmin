@@ -1,33 +1,36 @@
 
 const passport = require('passport')
 const User = require('./models/User')
-
-const JwtStrategy = require('passport-jwt').Strategy
-const ExtractJwt = require('passport-jwt').ExtractJwt
+const PassportJWT = require('passport-jwt')
+const JwtStrategy = PassportJWT.Strategy
+const ExtractJwt = PassportJWT.ExtractJwt
 
 const config = require('./config/config')
+const options = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: config.authentication.jwtSecret
+}
 
-passport.use(
-  new JwtStrategy({
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: config.authentication.jwtSecret
-  }, async function (jwtPayload, done) {
-    try {
-      console.log('passport.js => JwtStrategy init')
-      User.findOne({'id': jwtPayload.id}, (err, user) => {
-        if (err) {
-          console.log('JwtStrategy Error:', err)
-          done(new Error(), false)
-        }
-        if (!user) {
-          console.log('JwtStrategy Error: no user')
-          done(new Error(), false)
-        }
-        done(null, user)
-      })
-    } catch (error) {
-      return done(new Error(), false)
-    }
-  })
-)
-module.exports = null
+async function strategyCallback (jwtPayload, done) {
+  try {
+    console.log('passport.js => JwtStrategy init')
+    await User.findOne({'id': jwtPayload.id}, (err, user) => {
+      if (err) {
+        done(new Error(err), false)
+      }
+      if (!user) {
+        console.log('JwtStrategy Error: no user')
+        done(new Error('JWT error user not exist'), false)
+      }
+      done(null, user)
+    })
+  } catch (error) {
+    return done(new Error(error), false)
+  }
+}
+
+const strategy = new JwtStrategy(options, strategyCallback)
+
+passport.use(strategy)
+
+module.exports = passport

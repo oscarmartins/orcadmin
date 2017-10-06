@@ -69,8 +69,9 @@
     },
     async mounted () {
       try {
-        this.profileid = this.$store.state.route.params.profileid
-        this.parentPath = this.$store.state.route.params.parentPath
+        const params = this.$route.params
+        this.profileid = params.profileid
+        this.parentPath = params.parentPath
         let problems = (!this.profileid)
         if (!problems) {
           const result = (await EmailerService.retrieveProfileById(this.profileid)).data

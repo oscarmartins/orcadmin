@@ -22,9 +22,10 @@ Vue.component('micro-app', MicroApp)
 
 const mixin = {
   created () {
-    this.orcgoto = function (route) {
+    this.orcgoto = function (route, action) {
       try {
-        this.$router.push(route)
+        let method = action || 'push'
+        this.$router[method](route)
       } catch (error) {
         if (error) {
           console.log(error)
@@ -42,5 +43,6 @@ new Vue({
   router,
   store,
   template: '<App/>',
-  components: { App }
+  // components: { App }
+  render: h => h(App)
 })

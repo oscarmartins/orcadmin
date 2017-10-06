@@ -7,7 +7,7 @@ import CreateSong from '@/components/CreateSong'
 import ViewSong from '@/components/ViewSong/Index'
 import EditSong from '@/components/EditSong'
 
-import ForceLogout from '@/components/globals/ForceLogout'
+import Logout from '@/components/globals/Logout'
 
 import Start from '@/components/orcapp/Start'
 import Resume from '@/components/orcapp/Resume'
@@ -23,15 +23,22 @@ Vue.use(VueRouter)
 
 const routes = [
   {
+    path: '/start',
+    name: 'start',
+    component: Start,
+    meta: { auth: false, title: 'Login to existing account' }
+  },
+  {
     path: '/register',
     name: 'register',
-    component: Register
+    component: Register,
+    meta: { auth: false, title: 'Login to existing account' }
   },
   {
     path: '/login',
     name: 'login',
     component: Login,
-    meta: { auth: true, title: 'Login to existing account' }
+    meta: { auth: false, title: 'Login to existing account' }
   },
   {
     path: '/songs',
@@ -54,49 +61,52 @@ const routes = [
     component: EditSong
   },
   {
-    path: '/start',
-    name: 'start',
-    component: Start
-  },
-  {
     path: '/resume',
     name: 'resume',
-    component: Resume
+    component: Resume,
+    meta: { auth: true, title: 'Login to existing account' }
   },
   {
     path: '/emailer/profiles',
     name: 'emailer-profiles',
-    component: Emailer
+    component: Emailer,
+    meta: { auth: true, title: 'Login to existing account' }
   },
   {
     path: '/emailer/create',
     name: 'emailer-create',
-    component: EmailerCreate
+    component: EmailerCreate,
+    meta: { auth: true, title: 'Login to existing account' }
   },
   {
     path: '/emailer/edit',
     name: 'emailer-edit',
-    component: EmailerEdit
+    component: EmailerEdit,
+    meta: { auth: true, title: 'Login to existing account' }
   },
   {
     path: '/emailer/:profileid/remove',
     name: 'emailer-remove',
-    component: EmailerRemove
+    component: EmailerRemove,
+    meta: { auth: true, title: 'Login to existing account' }
+
   },
   {
     path: '/logout',
-    name: 'force-logout',
-    component: ForceLogout
+    name: 'logout',
+    component: Logout,
+    meta: { auth: true, title: 'Login to existing account' }
   },
   {
     path: '/emailer',
     name: 'emailer',
-    redirect: '/emailer/profiles'
+    redirect: '/emailer/profiles',
+    meta: { auth: true, title: 'Login to existing account' }
   },
   {
     path: '*',
-    name: 'start',
-    component: Start
+    redirect: '/start',
+    meta: { auth: false, title: 'Login to existing account' }
   }
 ]
 
@@ -108,23 +118,20 @@ const vueRouterInstance = new VueRouter({
 
 vueRouterInstance.beforeEach(function (to, from, next) {
   debugger
-  console.log(vueAuthInstance.isAuthenticated)
   if (to.meta && to.meta.auth !== undefined) {
     if (to.meta.auth) {
       if (vueAuthInstance.isAuthenticated()) {
-        next()
+        return next()
       } else {
-        vueRouterInstance.push({ name: 'login' })
+        // vueRouterInstance.push({ name: 'login' })
+        // return next('/login')
+        location.href = '/login'
       }
     } else {
-      if (vueAuthInstance.isAuthenticated()) {
-        vueRouterInstance.push({ name: 'overview' })
-      } else {
-        next()
-      }
+      return next()
     }
   } else {
-    next()
+    return next()
   }
 })
 

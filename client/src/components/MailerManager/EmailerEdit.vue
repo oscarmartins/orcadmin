@@ -104,7 +104,7 @@
     },
     async mounted () {
       try {
-        this.profileid = this.$store.state.route.params.profileid
+        this.profileid = this.$route.params.profileid
         if (this.profileid) {
           console.log(this.profileid)
           this.orcmailer = (await EmailerService.retrieveProfileById(this.profileid)).data.profile

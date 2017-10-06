@@ -2,6 +2,9 @@
   <v-layout row wrap>
     <v-flex xs12 sm8 offset-sm2 md6 offset-md3 lg6 offset-lg3 >
       <panel title="Sign In">
+        <v-alert error value="true" v-if="this.error" >
+          {{this.error}}
+        </v-alert>  
         <v-text-field
           label="Email"              
           v-model="email">
@@ -12,11 +15,6 @@
           v-model="password"
           type="password">
         </v-text-field>        
-        <br>
-        <v-alert error value="true" v-if="this.error" >
-          {{this.error}}
-        </v-alert>  
-        <br>
         <v-btn
           class="cyan" 
           dark

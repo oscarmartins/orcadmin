@@ -61,16 +61,14 @@ var message = {
   html: '<p>HTML version of the message</p>'
 }
 */
-
+const ACCOUNT_PROFILE = 'info_orc-project.com'
 module.exports = {
   sendMail: async (message) => {
-    let account = {}
-    await knex('mailer').select().then((err, result) => {
+    await knex('mailer').where({'name': ACCOUNT_PROFILE}).first().then((err, result) => {
       if (err) {
         console.log(err)
       }
-      account = result[0]
+      console.log(result)
     })
-    console.log(account)
   }
 }

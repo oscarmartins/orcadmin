@@ -4,20 +4,27 @@ import vueAuthInstance from '../../services/auth.js'
 const state = {
   isAuthenticated: vueAuthInstance.isAuthenticated(),
   isLoggedIn: !!localStorage.getItem('token'),
-  profile: localStorage.getItem('userProfile') ? JSON.parse(localStorage.getItem('userProfile')) : {}
+  profile: JSON.parse(localStorage.getItem('userProfile')) || {}
 }
 
 const getters = {
-  isLoggedIn: context => context.isLoggedIn
+  isLoggedIn: context => context.isLoggedIn,
+  isAuthenticated: context => context.isAuthenticated,
+  profile: context => context.profile
 }
 
 const mutations = {
   [types.ISAUTHENTICATED] (state, payload) {
+    debugger
     state.isAuthenticated = payload.isAuthenticated
   },
   [types.SETPROFILE] (state, payload) {
-    debugger
-    localStorage.setItem('userProfile', JSON.stringify(payload.profile))
+    if (payload) {
+      localStorage.setItem('userProfile', JSON.stringify(payload.profile))
+      state.profile = JSON.parse(localStorage.getItem('userProfile'))
+    } else {
+      localStorage.removeItem('userProfile')
+    }
   },
   [types.LOGIN] (state) {
     state.pending = true
@@ -34,24 +41,27 @@ const mutations = {
 const actions = {
   [types.LOGIN] (context, payload) {
     payload = payload || {}
+    debugger
     return vueAuthInstance.login(payload)
       .then((response) => {
         context.commit(types.ISAUTHENTICATED, {
           isAuthenticated: vueAuthInstance.isAuthenticated()
         })
         debugger
-        if (state.isAuthenticated) {
+        if (vueAuthInstance.isAuthenticated()) {
           context.commit(types.SETPROFILE, response.data)
         }
       })
   },
   [types.LOGOUT] (context, payload) {
     payload = payload || {}
+    debugger
     return vueAuthInstance.logout(payload.requestOptions)
       .then(() => {
         context.commit(types.ISAUTHENTICATED, {
           isAuthenticated: vueAuthInstance.isAuthenticated()
         })
+        context.commit(types.SETPROFILE, null)
       })
   },
   [types.AUTHENTICATE] (context, payload) {

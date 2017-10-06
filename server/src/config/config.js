@@ -12,6 +12,7 @@ module.exports = {
     }
   },
   authentication: {
-    jwtSecret: process.env.JWT_SECRET || 'access_token'
+    jwtSecret: process.env.JWT_SECRET || 'vue-authenticate.vueauth_access_token',
+    jwtSession: false
   }
 }

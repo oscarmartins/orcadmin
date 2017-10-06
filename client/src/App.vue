@@ -1,17 +1,17 @@
 <template>
   <v-app id="sandbox" :dark="dark" :light="!dark" standalone toolbar footer>
         
-    <v-navigation-drawer v-if="this.isUserLoggedIn" v-model="primaryDrawer.model" :permanent="primaryDrawer.type === 'permanent'" :persistent="primaryDrawer.type === 'persistent'" :temporary="primaryDrawer.type === 'temporary'" :clipped="primaryDrawer.clipped" :floating="primaryDrawer.floating"
+    <v-navigation-drawer v-if="this.isAuthenticated" v-model="primaryDrawer.model" :permanent="primaryDrawer.type === 'permanent'" :persistent="primaryDrawer.type === 'persistent'" :temporary="primaryDrawer.type === 'temporary'" :clipped="primaryDrawer.clipped" :floating="primaryDrawer.floating"
     :mini-variant="primaryDrawer.mini" overflow enable-resize-watcher>    
     <v-list dense>
       <v-list-tile avatar tag="div">
           <v-list-tile-avatar>
-            <img src="https://randomuser.me/api/portraits/men/85.jpg" v-if="isUserLoggedIn"/>
+            <img src="https://randomuser.me/api/portraits/men/85.jpg" v-if="this.isAuthenticated"/>
             <img src="http://www.ceskymac.cz/wp-content/uploads/2012/07/GuestUserIcon.png" v-else/>
           </v-list-tile-avatar>
           <v-list-tile-content>
             <v-list-tile-title>
-              <span v-if="this.user" >{{this.user.email}}</span>
+              <span v-if="this.profile" >{{this.profile.email}}</span>
               <span v-else>Guest</span>
             </v-list-tile-title>
           </v-list-tile-content>
@@ -33,28 +33,28 @@
     </v-navigation-drawer>
 
     <v-toolbar fixed dark>
-      <v-toolbar-side-icon @click.stop="primaryDrawer.model = !primaryDrawer.model" v-if="primaryDrawer.type !== 'permanent' && this.isUserLoggedIn"></v-toolbar-side-icon>
+      <v-toolbar-side-icon @click.stop="primaryDrawer.model = !primaryDrawer.model" v-if="primaryDrawer.type !== 'permanent' && this.isAuthenticated"></v-toolbar-side-icon>
       <v-toolbar-title class="mr-4">
-        <router-link tag="span" style="cursor: pointer" :to="{name: this.isUserLoggedIn ? 'resume' : 'start'}">
+        <router-link tag="span" style="cursor: pointer" :to="{name: this.isAuthenticated ? 'resume' : 'start'}">
           ORC Admin
         </router-link>
       </v-toolbar-title>
       <v-toolbar-items>
-        <v-btn dark :to="{name: this.isUserLoggedIn ? 'resume' : 'start'}">
-          <span v-if="this.isUserLoggedIn">dashboard</span>
+        <v-btn dark :to="{path: this.isAuthenticated ? 'resume' : 'start'}">
+          <span v-if="this.isAuthenticated">dashboard</span>
           <span v-else>start</span>
         </v-btn>
       </v-toolbar-items>
       <v-spacer></v-spacer>
   
       <v-toolbar-items>
-        <v-btn flat dark v-if="!this.isUserLoggedIn" to="/login">
+        <v-btn flat dark v-if="!this.isAuthenticated" to="/login">
           Sign In
         </v-btn>
-        <v-btn flat dark v-if="!this.isUserLoggedIn" to="/register">
+        <v-btn flat dark v-if="!this.isAuthenticated" to="/register">
           Sign Up
         </v-btn>
-        <logout v-if="this.isUserLoggedIn" />
+        <logout v-if="this.isAuthenticated" />
       </v-toolbar-items>
     </v-toolbar>
 
@@ -62,7 +62,7 @@
      
       <v-container fluid>
         <v-layout align-center justify-center>
-          <v-flex xs10>
+          <v-flex xs12>
             <router-view></router-view>
           </v-flex>
         </v-layout>
@@ -76,32 +76,23 @@
   </v-app>
 </template>
 <script>
-import {mapState} from 'vuex'
+import {mapGetters} from 'vuex'
 import Home from '@/components/orcapp/Index'
 import Dashboard from '@/components/orcapp/Dashboard'
 export default {
   name: 'app',
+  computed: {
+    ...mapGetters({
+      'isAuthenticated': 'isAuthenticated',
+      'profile': 'profile'
+    })
+  },
   components: {
     Home,
     Dashboard
   },
-  computed: {
-    ...mapState([
-      'isUserLoggedIn',
-      'toolbarAbs',
-      'user',
-      'route'
-    ])
-  },
   created () {
-    /* if (this.isUserLoggedIn) {
-      this.$router.push({name: 'dashboard'})
-    } else {
-      this.$router.push({name: 'start'})
-    } */
-  },
-  destroyed () {
-    this.updateToolbarAbs(false)
+    debugger
   },
   data: () => ({
     dark: false,
@@ -116,12 +107,7 @@ export default {
     footer: {
       fixed: true
     }
-  }),
-  methods: {
-    updateToolbarAbs (state) {
-      // this.$store.dispatch('setToolbarAbs', state)
-    }
-  }
+  })
 }
 </script>
 

@@ -14,19 +14,22 @@
 </template>
 
 <script>
+import AuthenticationService from '@/services/AuthenticationService'
+import {mapState} from 'vuex'
 export default {
   data () {
     return {
       dialog: false
     }
   },
+  computed: {
+    ...mapState([
+      'auth'
+    ])
+  },
   methods: {
-    logout () {
-      this.$store.dispatch('setToken', null)
-      this.$store.dispatch('setUser', null)
-      this.$router.push({
-        name: 'start'
-      })
+    async logout () {
+      await AuthenticationService.logout(this)
     },
     updateToolbarAbs (state) {
       // this.$store.dispatch('setToolbarAbs', state)
