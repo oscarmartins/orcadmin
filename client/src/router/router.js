@@ -105,7 +105,7 @@ const routes = [
   },
   {
     path: '*',
-    redirect: '/start',
+    redirect: vueAuthInstance.isAuthenticated() ? '/resume' : '/start',
     meta: { auth: false, title: 'Login to existing account' }
   }
 ]

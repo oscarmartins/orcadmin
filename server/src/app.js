@@ -26,7 +26,7 @@ const mailOptions = {
   html: '<b>Hello world? oscar</b>' // html body
 }
 require('./controllers/orcmailer').sendMail(mailOptions)
-**/
+ */
 app.use(session({
   secret: 'access_token',
   resave: true,
