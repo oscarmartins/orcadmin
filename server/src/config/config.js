@@ -1,4 +1,5 @@
 const path = require('path')
+const jwtSecret = require('../../../orccontext')['jwtSecret']
 module.exports = {
   port: process.env.PORT || 8081,
   db: {
@@ -12,7 +13,7 @@ module.exports = {
     }
   },
   authentication: {
-    jwtSecret: process.env.JWT_SECRET || 'vue-authenticate.vueauth_access_token',
+    jwtSecret: process.env.JWT_SECRET || jwtSecret,
     jwtSession: false
   }
 }
