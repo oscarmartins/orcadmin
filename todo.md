@@ -17,24 +17,18 @@ Account flow
            created 
        }
 
-       sentCode () {
+       sentCode () {}
+
+       generateCode () {         
+         return code
+       }
+
+       validateCode (code) {
 
        }
 
-       generateCode () {
+       onActivation () {}
 
-       }
-
-       validateCode () {
-
-       }
-
-       onActivation () {
-
-       }
-
-       onPassRecovery () {
-
-       }
+       onPassRecovery () {}
        
       

@@ -32,7 +32,8 @@
     "sqlite3": "^3.1.8",
     "knex": "latest",
     "pg": "latest",
-    "nodemailer": "latest"
+    "nodemailer": "latest",
+    "uuid": "latest"
   },
   "devDependencies": {
     "eslint-config-standard": "^10.2.1",
