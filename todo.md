@@ -1,34 +1,27 @@
 ##OrcAdmin
-Account flow
+        Account Manager
 
-        Account Registration
-        Account Activation 
-                -> onActivation (status:3000)
-        Account Password Recovery 
-                -> onPassRecovery (status:2000)
-        activated (status:1000)
+        Obs. 
 
-       AccountStatus {
-           userId, 
-           userEmail, 
-           status, 
-           code,
-           updated,
-           created 
-       }
+        Request Parameters: { REQ_CONTEX      REQ_ACTION      REQ_INPUTS }
 
-       sentCode () {}
+        REQ_CONTEX
+        1000 -> user_registration
+        2000 -> login
+        3000 -> account_verify
+        4000 -> recovery_password
 
-       generateCode () {         
-         return code
-       }
+        REQ_ACTION
+        1000:1010 -> createNewUser
 
-       validateCode (code) {
+        2000:2010 -> login
 
-       }
+        3000:3010 -> checkAccount
+        3000:3020 -> validateAccountEmail
+        3000:3030 -> validateAccountCode
 
-       onActivation () {}
+        4000:4010 -> recoveryPasswordEmail
 
-       onPassRecovery () {}
-       
-      
+
+
+
