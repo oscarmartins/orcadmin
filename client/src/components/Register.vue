@@ -72,18 +72,13 @@ export default {
     async register () {
       try {
         this.error = ''
-        const response = await AuthenticationService.register({
+        await AuthenticationService.register(this, {
           email: this.email,
           password: this.password
         })
-        /** this.$store.dispatch('setToken', response.data.token)
-        this.$store.dispatch('setUser', response.data.user) **/
-        console.log(response.data.message)
-        this.showSnackbar({text: response.data.message, context: 'success'})
-        setTimeout(function (ctx) { ctx.push({name: 'login'}) }, 3800, this.$router)
       } catch (err) {
-        this.error = err.response.data.error
-        this.showSnackbar({text: this.error, context: 'error'})
+        debugger
+        console.log(err)
       }
     }
   }

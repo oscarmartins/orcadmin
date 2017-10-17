@@ -21,6 +21,8 @@
         3000:3030 -> validateAccountCode
 
         4000:4010 -> recoveryPasswordEmail
+        4000:4020 -> recoveryPasswordCode
+        4000:4030 -> recoveryPasswordReset
 
 
 

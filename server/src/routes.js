@@ -1,5 +1,5 @@
-const AuthenticationController = require('./controllers/AuthenticationController')
-const AuthenticationControllerPolicy = require('./policies/AuthenticationControllerPolicy')
+const AccountManagement = require('./controllers/AccountManagement')
+// const AuthenticationController = require('./controllers/AuthenticationController')
 const SongsController = require('./controllers/SongsController')
 const BookmarksController = require('./controllers/BookmarksController')
 const HistoriesController = require('./controllers/HistoriesController')
@@ -7,13 +7,9 @@ const isAuthenticated = require('./policies/isAuthenticated')
 const MailerController = require('./controllers/MailerController')
 
 module.exports = (app) => {
-  app.post('/register',
-    AuthenticationControllerPolicy.register,
-    AuthenticationController.register)
-  app.post('/login',
-    AuthenticationControllerPolicy.register,
-    AuthenticationController.login)
-  app.post('/logout', AuthenticationController.logout)
+  app.post('/register', AccountManagement.execute)
+  app.post('/login', AccountManagement.execute)
+  app.post('/logout', AccountManagement.execute)
 
   app.get('/emailer', isAuthenticated, MailerController.fetchProfiles)
   app.get('/emailer/:profileid', isAuthenticated, MailerController.retrieveProfileById)

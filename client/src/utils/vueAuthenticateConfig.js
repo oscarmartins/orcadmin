@@ -5,6 +5,8 @@ export default {
   requestDataKey: 'data',
   responseDataKey: 'data',
   loginUrl: '/login',
+  registerUrl: '/register',
+  logoutUrl: '/logout',
   bindRequestInterceptor: function () {
     debugger
     this.$http.interceptors.request.use((config) => {

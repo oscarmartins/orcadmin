@@ -1,6 +1,6 @@
 import * as types from '../mutation-types'
 import vueAuthInstance from '../../services/auth.js'
-
+import apiRoles from '../../services/ApiRoles.js'
 const state = {
   isAuthenticated: vueAuthInstance.isAuthenticated(),
   isLoggedIn: !!localStorage.getItem('token'),
@@ -39,10 +39,15 @@ const mutations = {
 }
 
 const actions = {
+  [types.REGISTER] (context, payload) {
+    payload = payload || {}
+    return vueAuthInstance.register(apiRoles.register(payload))
+    .then((response) => { return response })
+  },
   [types.LOGIN] (context, payload) {
     payload = payload || {}
     debugger
-    return vueAuthInstance.login(payload)
+    return vueAuthInstance.login(apiRoles.login(payload))
       .then((response) => {
         context.commit(types.ISAUTHENTICATED, {
           isAuthenticated: vueAuthInstance.isAuthenticated()
@@ -56,8 +61,9 @@ const actions = {
   [types.LOGOUT] (context, payload) {
     payload = payload || {}
     debugger
-    return vueAuthInstance.logout(payload.requestOptions)
+    return vueAuthInstance.logout({data: apiRoles.logout(payload)})
       .then(() => {
+        debugger
         context.commit(types.ISAUTHENTICATED, {
           isAuthenticated: vueAuthInstance.isAuthenticated()
         })
