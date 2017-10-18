@@ -31,13 +31,13 @@ main['REQ_CONTEX'] = 0
 main['REQ_ACTION'] = 0
 main['REQ_INPUTS'] = {}
 
-const SIGNUP = 1000;
-const SIGNIN = 2000;
+const SIGNUP = 1000
+const SIGNIN = 2000
 const ACCOUNT_VERIFY = 3000
 const ACCOUNT_RECOVERY = 4000
-const NEW_SIGNUP = 1010;
-const ON_SIGNIN = 2010;
-const ON_SIGNOUT = 2020;
+const NEW_SIGNUP = 1010
+const ON_SIGNIN = 2010
+const ON_SIGNOUT = 2020
 
 function preparams () {
   let msg = null
