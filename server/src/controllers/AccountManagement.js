@@ -39,6 +39,12 @@ const NEW_SIGNUP = 1010
 const ON_SIGNIN = 2010
 const ON_SIGNOUT = 2020
 
+//Account STATES
+const onAccountValidation = 10100
+const onAccountValidationCode = 10200
+const onPasswordRecovery = 20100
+const onPasswordRecoveryCode = 20200
+
 function preparams () {
   let msg = null
   if (!main.httpRequest) { msg = 'Error [Http] [missing httpRequest]' }
@@ -55,24 +61,32 @@ function preparams () {
   console.log(main.REQ_CONTEX, main.REQ_ACTION, main.REQ_INPUTS)
   return {isok: true, error: msg}
 }
+function validateSignInAndUp () { return AccountPolicy.validateSignInAndUp(main.REQ_INPUTS) }
 module.exports = {
   async execute (req, res) {
     console.log('Account Management execute')
     main.httpRequest = req
     main.httpResponse = res
     const paramValidator = preparams()
+    let checkpoint = null
     if (paramValidator.isok) {
       if (main.REQ_CONTEX === SIGNUP) {
         if (main.REQ_ACTION === NEW_SIGNUP) {
-          if (AccountPolicy.validateSignInAndUp(main.httpResponse, main.REQ_INPUTS).isok) {
+          checkpoint = validateSignInAndUp()
+          if (checkpoint.isok) {
             signup()
+          } else {
+            responseSender(400, checkpoint)
           }
         }
       }
       if (main.REQ_CONTEX === SIGNIN) {
         if (main.REQ_ACTION === ON_SIGNIN) {
-          if (AccountPolicy.validateSignInAndUp(main.httpResponse, main.REQ_INPUTS).isok) {
+          checkpoint = validateSignInAndUp()
+          if (checkpoint.isok) {
             signin()
+          } else {
+            responseSender(400, checkpoint)
           }
         } else if (main.REQ_ACTION === ON_SIGNOUT) {
           signout()
@@ -109,8 +123,4 @@ async function signout () {
 
 function responseSender (result) {
   main.httpResponse.status(result.status).send(result.output)
-}
-
-function sendError (status, msg) {
-  main.httpResponse.status(403).send({error: msg})
 }

@@ -1,5 +1,4 @@
 const Joi = require('joi')
-let httpResponse = null
 const schema = {
   email: Joi.string().email(),
   password: Joi.string().regex(new RegExp('^[a-zA-Z0-9]{8,32}$')).required().options({
@@ -12,12 +11,8 @@ const schema = {
     }
   })
 }
-function sendError (error) {
-  httpResponse.status(400).send(error)
-}
 module.exports = {
-  validateSignInAndUp (res, inputs) {
-    httpResponse = res
+  validateSignInAndUp (inputs) {
     let output = {error: '', isok: true}
     const {error} = Joi.validate(inputs, schema)
     if (error) {
@@ -32,7 +27,6 @@ module.exports = {
         default:
           output.error = error.details[0].message
       }
-      sendError(output)
       return output
     } else {
       return output
