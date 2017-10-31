@@ -26,59 +26,66 @@
         {
         id : 0,
         user_id : 0,
-        accountState : 0,
+        accountStatus : 0,
         nextStep : 0,
         code : '',
         dateCreated : date,
         dateUpdated : date
         }
+       
+        ACCOUNTS.accountStatus OR ACCOUNTS.nextStep
+            const accountValid = 101010
+            const onAccountValidation = 10000
+            const onAccountValidationCode = 11000
+            const onPasswordRecovery = 20000
+            const onPasswordRecoveryCode = 21000
+            const onPasswordRecoveryChange = 22000
 
         Logic Modes
           Mode.Signup: 
-                  {user validation passed}
+                  {user input validation passed}
                   1. create new user 
-                  2. create new account by userid and accountState = onAccountValidation and nextStep = onAccountValidationCode
+                  2. create new account by (user_id = userid & code = null  & accountStatus = onAccountValidation & nextStep = onAccountValidationCode)
                   3. send email info new user created
-            Mode.Signin: 
-                  {user validation trusted}
-                  1. check account state 
-                    1.2. if (accountState equals onAccountValidation && nextStep equals onAccountValidationCode) 
-                      1.2.1 generate new code
-                      1.2.2 update ACCOUNTS by userid + accountState = onAccountValidationCode 
-                      1.2.3 send email plus code validator
-                      1.2.4 return false
-                    1.3. if (accountState equals onAccountValidationCode && nextStep equals onAccountValidationCode)
-                      1.3.1 verify code validator is valid
-                      1.3.2 if true? update ACCOUNTS by userid + accountState = accountValid + nextStep = accountValid
-                      1.3.3 send email info account is valid
-                      1.3.4 return true
-                    1.4. if (accountState equals onPasswordRecovery && nextStep equals onPasswordRecovery)
-                      1.4.1 if (mode.signin) ? return false : confirm input email exist
-                      1.4.2 generate new code
-                      1.4.3 update ACCOUNTS by userid + accountState = onPasswordRecovery + nextStep = onPasswordRecoveryCode
-                      1.4.4 send email plus code validator password recovery
-                      1.4.4 return false
-                    1.5. if (accountState equals onPasswordRecovery && nextStep equals onPasswordRecoveryCode)
-                      1.5.1 verify code validator is valid
-                      1.5.2 if true update ACCOUNTS by userid + accountState = onPasswordRecoveryCode + nextStep = onPasswordRecoveryCode
-                      1.5.3 send email plus code validator
-                      1.5.4 return false
-            Mode.RecoveryPassword
-                  {validate input email passed}
-                  1. check account state
-                    1.2. if (accountState equals accountValid && nextStep equals accountValid)
-                      1.2.1 generate new code
-                      1.2.2 update ACCOUNTS by userid + accountState = onPasswordRecovery + nextStep = onPasswordRecoveryCode
-                      1.2.3 return false
-                    1.3 if (accountState equals onPasswordRecovery && nextStep equals onPasswordRecoveryCode)
-                      1.3.1 verify code validator is valid
-                      1.3.2 update ACCOUNTS by userid + accountState = onPasswordRecovery + nextStep = onPasswordRecoveryChange
-                      1.3.3 return false
-                    1.4 if (accountState equals onPasswordRecovery && nextStep equals onPasswordRecoveryChange)
-                      1.4.1 {password's confirmed}
-                      1.4.2 update USER password 
-                      1.4.3 update ACCOUNTS by userid + accountState = accountValid + nextStep = accountValid
-                      1.4.4 return true
+          Mode.Signin: 
+                {user input validation trusted}
+                1. [check account state] 
+                  1.2. if (accountStatus equals onAccountValidation && nextStep equals onAccountValidationCode) 
+                    1.2.1 var newCode = generateNewCode()
+                    1.2.2 update ACCOUNTS by (user_id = userid & code = newCode & accountStatus = onAccountValidationCode) 
+                    1.2.3 send email : newCode
+                    1.2.4 return false
+                  1.3. if (accountStatus equals onAccountValidationCode && nextStep equals onAccountValidationCode)
+                    1.3.1 {verify input code is valid}
+                    1.3.2 if true ? (update ACCOUNTS by (user_id = userid & code = newCode & accountStatus = accountValid & nextStep = accountValid)) : return false
+                    1.3.3 send email info account is valid
+                    1.3.4 return true
+                  1.4. if ( (accountStatus equals onPasswordRecovery && nextStep equals onPasswordRecovery) || 
+                            (accountStatus equals onPasswordRecovery && nextStep equals onPasswordRecoveryCode) ||
+                            (accountStatus equals onPasswordRecovery && nextStep equals onPasswordRecoveryChange))          
+                    1.4.4 redirect(/passwordRecovery)        
+                    1.4.5 return false
+          Mode.RecoveryPassword
+                {validate input email passed}
+                1. [check account state]
+                  1.2. if ((accountStatus equals accountValid && nextStep equals accountValid) || 
+                            (accountStatus equals onAccountValidation && nextStep equals onAccountValidation) || 
+                            (accountStatus equals onAccountValidation && nextStep equals onAccountValidationCode) || 
+                            (accountStatus equals onAccountValidationCode && nextStep equals onAccountValidationCode))
+                    1.2.1 var newCode = generateNewCode()
+                    1.2.2 update ACCOUNTS by (user_id = userid & code = newCode  & accountStatus = onPasswordRecovery & nextStep = onPasswordRecoveryCode)
+                    1.2.3 send email : newCode
+                    1.2.4 return false
+                  1.3 if (accountStatus equals onPasswordRecovery && nextStep equals onPasswordRecoveryCode)
+                    1.3.1 var codeIsValid = verifyCodeValidatorIsValid()
+                    1.3.2 if (codeIsValid ? update ACCOUNTS by (user_id = userid & code = null  & accountStatus = onPasswordRecovery & nextStep = onPasswordRecoveryChange) )
+                    1.3.3 return false
+                  1.4 if (accountStatus equals onPasswordRecovery && nextStep equals onPasswordRecoveryChange)
+                    1.4.1 {password's confirmed}
+                    1.4.2 update USER password 
+                    1.4.3 update ACCOUNTS by user_id = userid & code = null  & accountStatus = accountValid & nextStep = accountValid
+                    1.4.4 send email info 'password recovery success'
+                    1.4.5 return true
 
         
 
