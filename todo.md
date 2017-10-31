@@ -67,6 +67,18 @@
                   {validate input email passed}
                   1. check account state
                     1.2. if (accountState equals accountValid && nextStep equals accountValid)
+                      1.2.1 generate new code
+                      1.2.2 update ACCOUNTS by userid + accountState = onPasswordRecovery + nextStep = onPasswordRecoveryCode
+                      1.2.3 return false
+                    1.3 if (accountState equals onPasswordRecovery && nextStep equals onPasswordRecoveryCode)
+                      1.3.1 verify code validator is valid
+                      1.3.2 update ACCOUNTS by userid + accountState = onPasswordRecovery + nextStep = onPasswordRecoveryChange
+                      1.3.3 return false
+                    1.4 if (accountState equals onPasswordRecovery && nextStep equals onPasswordRecoveryChange)
+                      1.4.1 {password's confirmed}
+                      1.4.2 update USER password 
+                      1.4.3 update ACCOUNTS by userid + accountState = accountValid + nextStep = accountValid
+                      1.4.4 return true
 
         
 
