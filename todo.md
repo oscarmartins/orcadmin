@@ -24,13 +24,13 @@
 
         ACCOUNTS 
         {
-        id : 0,
-        user_id : 0,
-        accountStatus : 0,
-        nextStep : 0,
-        code : '',
-        dateCreated : date,
-        dateUpdated : date
+          id : 0,
+          user_id : 0,
+          accountStatus : 0,
+          nextStep : 0,
+          code : '',
+          dateCreated : date,
+          dateUpdated : date
         }
        
         ACCOUNTS.accountStatus OR ACCOUNTS.nextStep
@@ -56,26 +56,27 @@
                     1.2.3 send email : newCode
                     1.2.4 return false
                   1.3. if (accountStatus equals onAccountValidationCode && nextStep equals onAccountValidationCode)
-                    1.3.1 {verify input code is valid}
-                    1.3.2 if true ? (update ACCOUNTS by (user_id = userid & code = newCode & accountStatus = accountValid & nextStep = accountValid)) : return false
-                    1.3.3 send email info account is valid
+                    1.3.1 var codeIsValid = verifyCodeValidatorIsValid()
+                    1.3.2 if codeIsValid ? (update ACCOUNTS by (user_id = userid & code = null & accountStatus = accountValid & nextStep = accountValid)) : return false
+                    1.3.3 send email info: 'account is valid'
                     1.3.4 return true
                   1.4. if ( (accountStatus equals onPasswordRecovery && nextStep equals onPasswordRecovery) || 
                             (accountStatus equals onPasswordRecovery && nextStep equals onPasswordRecoveryCode) ||
                             (accountStatus equals onPasswordRecovery && nextStep equals onPasswordRecoveryChange))          
                     1.4.4 redirect(/passwordRecovery)        
                     1.4.5 return false
-          Mode.RecoveryPassword
-                {validate input email passed}
+                  1.5. if (accountStatus equals accountValid && nextStep equals accountValid)
+                    1.5.1 return true
+          Mode.PasswordRecovery
                 1. [check account state]
                   1.2. if ((accountStatus equals accountValid && nextStep equals accountValid) || 
                             (accountStatus equals onAccountValidation && nextStep equals onAccountValidation) || 
                             (accountStatus equals onAccountValidation && nextStep equals onAccountValidationCode) || 
                             (accountStatus equals onAccountValidationCode && nextStep equals onAccountValidationCode))
-                    1.2.1 var newCode = generateNewCode()
-                    1.2.2 update ACCOUNTS by (user_id = userid & code = newCode  & accountStatus = onPasswordRecovery & nextStep = onPasswordRecoveryCode)
-                    1.2.3 send email : newCode
-                    1.2.4 return false
+                    1.2.2 var newCode = generateNewCode()
+                    1.2.3 update ACCOUNTS by (user_id = userid & code = null & accountStatus = onPasswordRecovery & nextStep = onPasswordRecovery)
+                    1.2.4 send email : newCode
+                    1.2.5 return false
                   1.3 if (accountStatus equals onPasswordRecovery && nextStep equals onPasswordRecoveryCode)
                     1.3.1 var codeIsValid = verifyCodeValidatorIsValid()
                     1.3.2 if (codeIsValid ? update ACCOUNTS by (user_id = userid & code = null  & accountStatus = onPasswordRecovery & nextStep = onPasswordRecoveryChange) )
@@ -86,6 +87,10 @@
                     1.4.3 update ACCOUNTS by user_id = userid & code = null  & accountStatus = accountValid & nextStep = accountValid
                     1.4.4 send email info 'password recovery success'
                     1.4.5 return true
+
+
+
+
 
         
 
