@@ -1,4 +1,5 @@
 const User = require('../models/User')
+const AccountManager = require('../utils/AccountManager')
 const jwt = require('jsonwebtoken')
 const config = require('../config/config')
 
@@ -31,7 +32,7 @@ async function _signup (payload) {
       const result = await newUser.save()
       if (result) {
         const msg = 'Your registration has been successfully completed. Redirect to Sign In...'
-        console.log(msg, result)
+        await AccountManager.createNewAccount(newUser)
         return {
           status: 200,
           output: {message: msg}
@@ -119,7 +120,7 @@ async function _signout (main) {
       status: 500,
       output: {error: 'An error has occured trying to signout'}
     }
-  } 
+  }
 }
 
 module.exports = {

@@ -1,4 +1,4 @@
-const AccountManagement = require('./controllers/AccountManagement')
+const AccountController = require('./controllers/AccountController')
 // const AuthenticationController = require('./controllers/AuthenticationController')
 const SongsController = require('./controllers/SongsController')
 const BookmarksController = require('./controllers/BookmarksController')
@@ -7,9 +7,9 @@ const isAuthenticated = require('./policies/isAuthenticated')
 const MailerController = require('./controllers/MailerController')
 
 module.exports = (app) => {
-  app.post('/register', AccountManagement.execute)
-  app.post('/login', AccountManagement.execute)
-  app.post('/logout', AccountManagement.execute)
+  app.post('/register', AccountController.execute)
+  app.post('/login', AccountController.execute)
+  app.post('/logout', AccountController.execute)
 
   app.get('/emailer', isAuthenticated, MailerController.fetchProfiles)
   app.get('/emailer/:profileid', isAuthenticated, MailerController.retrieveProfileById)

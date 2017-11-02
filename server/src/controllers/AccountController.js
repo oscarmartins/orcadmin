@@ -76,7 +76,7 @@ module.exports = {
           if (checkpoint.isok) {
             signup()
           } else {
-            responseSender(400, checkpoint)
+            responseSender({status: 400, output: checkpoint})
           }
         }
       }
@@ -86,14 +86,14 @@ module.exports = {
           if (checkpoint.isok) {
             signin()
           } else {
-            responseSender(400, checkpoint)
+            responseSender({status: 400, output: checkpoint})
           }
         } else if (main.REQ_ACTION === ON_SIGNOUT) {
           signout()
         }
       }
     } else {
-      sendError(500, paramValidator.error)
+      responseSender({status: 500, output: paramValidator.error})
     }
   }
 }

@@ -27,9 +27,7 @@ module.exports = {
         default:
           output.error = error.details[0].message
       }
-      return output
-    } else {
-      return output
     }
+    return output
   }
 }
