@@ -88,6 +88,7 @@ async function _signin (payload) {
           }
         }
       } else {
+        // check account status
         const usrJson = result.toJSON()
         const theToken = jwtSignUser(usrJson)
         return {

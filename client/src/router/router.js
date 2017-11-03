@@ -120,6 +120,7 @@ vueRouterInstance.beforeEach(function (to, from, next) {
   debugger
   if (to.meta && to.meta.auth !== undefined) {
     if (to.meta.auth) {
+      debugger
       if (vueAuthInstance.isAuthenticated()) {
         return next()
       } else {

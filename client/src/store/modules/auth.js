@@ -52,7 +52,6 @@ const actions = {
         context.commit(types.ISAUTHENTICATED, {
           isAuthenticated: vueAuthInstance.isAuthenticated()
         })
-        debugger
         if (vueAuthInstance.isAuthenticated()) {
           context.commit(types.SETPROFILE, response.data)
         }
