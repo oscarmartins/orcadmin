@@ -64,8 +64,11 @@ var message = {
 */
 const ACCOUNT_PROFILE = 'info_orc-project.com'
 module.exports = {
+  accountProfile: null,
   sendMail: async function (message) {
-    await knex('mailer').where({'name': ACCOUNT_PROFILE}).first().then(function (account) {
+    const accountProfile = this.accountProfile || ACCOUNT_PROFILE
+    console.log('accountProfile', accountProfile)
+    await knex('mailer').where({'name': accountProfile}).first().then(function (account) {
       let transporter = nodemailer.createTransport({
         host: account.host,
         port: account.port,
@@ -86,5 +89,6 @@ module.exports = {
         console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info))
       })
     })
+    return true
   }
 }

@@ -32,10 +32,17 @@ async function _signup (payload) {
       const result = await newUser.save()
       if (result) {
         const msg = 'Your registration has been successfully completed. Redirect to Sign In...'
-        await AccountManager.createNewAccount(newUser)
-        return {
-          status: 200,
-          output: {message: msg}
+        const result = await AccountManager.createNewAccount(newUser)
+        if (result.iook) {
+          return {
+            status: 200,
+            output: {message: msg, success: result.success}
+          }
+        } else {
+          return {
+            status: 400,
+            output: {error: result.error}
+          }
         }
       } else {
         console.log('register fail')
