@@ -6,13 +6,13 @@ module.exports = {
       /**connection: 'postgres://hostname/database_name'**/
       client: 'pg',
       connection: {
-        "host": "orcseven.com",
-        "database": "my_life",
-        "user": "oscar",
-        "password": "238229700"
+        "host": "",
+        "database": "",
+        "user": "",
+        "password": ""
       },
       useNullAsDefault: true
     }      
   },
-  jwtSecret: 'orcsecret'
+  jwtSecret: ''
 }
