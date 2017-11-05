@@ -13,7 +13,6 @@ const options = {
 
 async function strategyCallback (jwtPayload, done) {
   try {
-    console.log('passport.js => JwtStrategy init')
     await User.findOne({'id': jwtPayload.id}, (err, user) => {
       if (err) {
         done(new Error(err), false)
