@@ -4,8 +4,6 @@ const EmailSender = require('../controllers/orcmailer')
 
 EmailSender.accountProfile = 'accounts_notificator'
 
-let accountStatus = false
-
 function resultOutput (iook, success, error, data) {
   console.log('AccountManager DEBUG begin', '\niook = ' + iook, ', success = ' + success, ', error = ' + error, '\nAccountManager DEBUG end')
   return {
@@ -105,26 +103,56 @@ module.exports = {
       }
     }
   },
+  /**
+   * 
+   * @param {*} user 
+   * return Object
+   * status number http status code
+   */
   async checkAccountStatus (user) {
     const account = await this.querySelect({user_id: user._id})
+    const result = {
+      status: 200,
+      accountStatus: {
+        as: 0,
+        ns: 0,
+        redirect: ''
+      },
+      output: {}
+    }
     if (account && account.length !== 0) {
-      const accountStatus = account.accountStatus
-      const nextStage = account.nextStage
+      const accountStatus = account[0].accountStatus
+      const nextStage = account[0].nextStage
+
+      result.accountStatus.as = accountStatus
+      result.accountStatus.ns = nextStage
+
       if (accountStatus === this.accountValid && nextStage === this.accountValid) {
-        
+        result.status = 200
       }
       if ((accountStatus === this.onPasswordRecovery && nextStage === this.onPasswordRecovery) ||
           (accountStatus === this.onPasswordRecovery && nextStage === this.onPasswordRecoveryCode) ||
           (accountStatus === this.onPasswordRecovery && nextStage === this.onPasswordRecoveryChange)) {
-        
+        // 307 Temporary Redirect (since HTTP/1.1)
+        result.status = 307
+        result.accountStatus.redirect = '/PasswordRecovery'
+        // TODO depende do path actual - nao tem sentido fazer o redirect se o path estiver com o mesmo contexto
       }
-      if (accountStatus === this.onAccountValidationCode && nextStage === this.onAccountValidationCode) {
-        
-      }
+      if (accountStatus === this.onAccountValidationCode && nextStage === this.onAccountValidationCode) {}
       if (accountStatus === this.onAccountValidation && nextStage === this.onAccountValidationCode) {
-        
+        /** unit test init */
+        result.status = 307
+        result.accountStatus.redirect = {
+          name: 'passwordRecovery',
+          params: {
+            selectionMode: 'code',
+            email: user.email
+          }
+        }
+        result.output = result.accountStatus
+        /** unit test exit */
       }
     }
-    return accountStatus
+    return result
   }
 }

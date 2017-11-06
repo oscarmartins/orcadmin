@@ -22,8 +22,19 @@ export default {
         global.$router.replace({ name: 'resume' })
       })
       .catch((error) => {
-        global.error = error.response.data.error
-        console.log(error)
+        debugger
+        const responses = error.response
+        const respStatus = responses.status
+        switch (respStatus) {
+          case 307:
+            console.log(this)
+            global.orcgoto(responses.data.redirect)
+            break
+          default:
+            global.error = responses.data.error
+            console.log(error)
+            break
+        }
       })
     }
   },

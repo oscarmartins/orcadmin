@@ -86,16 +86,5 @@
                     1.4.2 update USER password 
                     1.4.3 update ACCOUNTS by user_id = userid & code = null  & accountStatus = accountValid & nextStage = accountValid
                     1.4.4 send email info 'password recovery success'
-                    1.4.5 return true
-
-
-
-
-
-        
-
-        
-
-
-
-
+                    1.4.5 return true                            
+                    

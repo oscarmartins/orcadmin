@@ -90,21 +90,20 @@ async function _signin (payload) {
         }
       } else {
         // check account status
-
         const checkAccountStatus = await AccountManager.checkAccountStatus(result)
         if (checkAccountStatus) {
           console.log(12345)
-        }
-
-        const usrJson = result.toJSON()
-        const theToken = jwtSignUser(usrJson)
-
-        return {
-          status: 200,
-          output: {
-            profile: usrJson,
-            access_token: theToken,
-            message: 'signin ok'
+          return checkAccountStatus
+        } else {
+          const usrJson = result.toJSON()
+          const theToken = jwtSignUser(usrJson)
+          return {
+            status: 200,
+            output: {
+              profile: usrJson,
+              access_token: theToken,
+              message: 'signin ok'
+            }
           }
         }
       }

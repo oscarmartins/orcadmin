@@ -14,13 +14,19 @@
           label="Password"              
           v-model="password"
           type="password">
-        </v-text-field>        
+        </v-text-field>
         <v-btn
-          class="cyan" 
+          class="red" 
+          dark
+          @click="orcgoto('PasswordRecovery')">
+          Password Recovery
+        </v-btn>        
+        <v-btn
+          class="green" 
           dark
           @click="login">
           Login
-        </v-btn>
+        </v-btn>        
       </panel>
     </v-flex>
   </v-layout>  

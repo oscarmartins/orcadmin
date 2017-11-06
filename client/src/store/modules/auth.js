@@ -51,9 +51,6 @@ const actions = {
       .then((response) => {
         context.commit(types.ISAUTHENTICATED, {isAuthenticated: vueAuthInstance.isAuthenticated()})
         if (vueAuthInstance.isAuthenticated()) { context.commit(types.SETPROFILE, response.data) }
-      }).catch((response) => {
-        debugger
-        console.log(response.data)
       })
   },
   [types.LOGOUT] (context, payload) {

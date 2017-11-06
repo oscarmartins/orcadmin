@@ -7,6 +7,8 @@ import CreateSong from '@/components/CreateSong'
 import ViewSong from '@/components/ViewSong/Index'
 import EditSong from '@/components/EditSong'
 
+import PasswordRecovery from '@/components/PasswordRecovery'
+
 import Logout from '@/components/globals/Logout'
 
 import Start from '@/components/orcapp/Start'
@@ -39,6 +41,12 @@ const routes = [
     name: 'login',
     component: Login,
     meta: { auth: false, title: 'Login to existing account' }
+  },
+  {
+    path: '/passwordRecovery',
+    name: 'passwordRecovery',
+    component: PasswordRecovery,
+    meta: { auth: false, title: 'Password Recovery to existing account' }
   },
   {
     path: '/songs',
