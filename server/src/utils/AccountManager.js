@@ -94,7 +94,9 @@ module.exports = {
       account.nextStage = this.onAccountValidationCode
       account.dateCreated = new Date()
       account.dateUpdated = new Date()
+      /** */
       const saveResult = await account.save()
+      /** */
       if (saveResult) {
         this.notificator.sendEmailInfoNewUserCreated(user.email)
         return resultOutput(true, 'A conta foi criada com sucesso.', null, saveResult)
@@ -103,7 +105,26 @@ module.exports = {
       }
     }
   },
-  checkAccountStatus () {
+  async checkAccountStatus (user) {
+    const account = await this.querySelect({user_id: user._id})
+    if (account && account.length !== 0) {
+      const accountStatus = account.accountStatus
+      const nextStage = account.nextStage
+      if (accountStatus === this.accountValid && nextStage === this.accountValid) {
+        
+      }
+      if ((accountStatus === this.onPasswordRecovery && nextStage === this.onPasswordRecovery) ||
+          (accountStatus === this.onPasswordRecovery && nextStage === this.onPasswordRecoveryCode) ||
+          (accountStatus === this.onPasswordRecovery && nextStage === this.onPasswordRecoveryChange)) {
+        
+      }
+      if (accountStatus === this.onAccountValidationCode && nextStage === this.onAccountValidationCode) {
+        
+      }
+      if (accountStatus === this.onAccountValidation && nextStage === this.onAccountValidationCode) {
+        
+      }
+    }
     return accountStatus
   }
 }

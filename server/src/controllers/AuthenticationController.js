@@ -16,6 +16,7 @@ function jwtSignUser (user) {
     expiresIn: '30m'
   })
 }
+
 async function _signup (payload) {
   try {
     const {email, password} = payload
@@ -89,8 +90,15 @@ async function _signin (payload) {
         }
       } else {
         // check account status
+
+        const checkAccountStatus = await AccountManager.checkAccountStatus(result)
+        if (checkAccountStatus) {
+          console.log(12345)
+        }
+
         const usrJson = result.toJSON()
         const theToken = jwtSignUser(usrJson)
+
         return {
           status: 200,
           output: {
