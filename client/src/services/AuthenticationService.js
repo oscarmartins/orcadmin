@@ -1,8 +1,22 @@
 import Api from '@/services/Api'
 
 export default {
-  register (global, credentials) {
-    global.$store.dispatch('REGISTER', credentials).then((response) => {
+  passwordRecovery (global, data) {
+    global.$store.dispatch('PasswordRecovery', data).then((response) => {
+      debugger
+      /**
+      global.showSnackbar({text: response.data.message, context: 'success'})
+      setTimeout(function (ctx) { ctx.push({name: 'login'}) }, 3800, global.$router)
+      **/
+    })
+    .catch((error) => {
+      global.error = error.response.data.error
+      global.showSnackbar({text: global.error, context: 'error'})
+      console.log(error)
+    })
+  },
+  register (global, data) {
+    global.$store.dispatch('REGISTER', data).then((response) => {
       debugger
       global.showSnackbar({text: response.data.message, context: 'success'})
       setTimeout(function (ctx) { ctx.push({name: 'login'}) }, 3800, global.$router)

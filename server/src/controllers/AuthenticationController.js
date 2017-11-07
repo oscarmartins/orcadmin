@@ -90,7 +90,7 @@ async function _signin (payload) {
         }
       } else {
         // check account status
-        const checkAccountStatus = await AccountManager.checkAccountStatus(result)
+        const checkAccountStatus = await AccountManager.checkAccountStatus(AccountManager.mode.Signin, result)
         if (checkAccountStatus) {
           console.log(12345)
           return checkAccountStatus

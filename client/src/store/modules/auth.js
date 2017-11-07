@@ -39,6 +39,10 @@ const mutations = {
 }
 
 const actions = {
+  [types.passwordRecovery] (context, payload) {
+    debugger
+    payload = payload || {}
+  },
   [types.REGISTER] (context, payload) {
     payload = payload || {}
     return vueAuthInstance.register(apiRoles.register(payload))

@@ -18,6 +18,12 @@ function resultOutputSuccess (success) { return resultOutput(true, success, null
 function resultOutputError (error) { return resultOutput(false, null, error, null) }
 function resultOutputData (data) { return resultOutput(true, null, null, data) }
 
+const Modes = {
+  Signin: 'Signin',
+  Signup: 'Signup',
+  PasswordRecovery: 'PasswordRecovery'
+}
+
 module.exports = {
   accountValid: 101010,
   onAccountValidation: 10000,
@@ -25,6 +31,7 @@ module.exports = {
   onPasswordRecovery: 20000,
   onPasswordRecoveryCode: 21000,
   onPasswordRecoveryChange: 22000,
+  mode: Modes,
   backoffice: {
     initAccounts: function () {
     },
@@ -109,7 +116,7 @@ module.exports = {
    * return Object
    * status number http status code
    */
-  async checkAccountStatus (user) {
+  async checkAccountStatus (mode, user) {
     const account = await this.querySelect({user_id: user._id})
     const result = {
       status: 200,
@@ -130,28 +137,46 @@ module.exports = {
       if (accountStatus === this.accountValid && nextStage === this.accountValid) {
         result.status = 200
       }
-      if ((accountStatus === this.onPasswordRecovery && nextStage === this.onPasswordRecovery) ||
-          (accountStatus === this.onPasswordRecovery && nextStage === this.onPasswordRecoveryCode) ||
-          (accountStatus === this.onPasswordRecovery && nextStage === this.onPasswordRecoveryChange)) {
-        // 307 Temporary Redirect (since HTTP/1.1)
-        result.status = 307
-        result.accountStatus.redirect = '/PasswordRecovery'
-        // TODO depende do path actual - nao tem sentido fazer o redirect se o path estiver com o mesmo contexto
+
+      if (accountStatus === this.onAccountValidationCode && nextStage === this.onAccountValidationCode) {
+        result.status = 400
       }
-      if (accountStatus === this.onAccountValidationCode && nextStage === this.onAccountValidationCode) {}
+
       if (accountStatus === this.onAccountValidation && nextStage === this.onAccountValidationCode) {
-        /** unit test init */
-        result.status = 307
-        result.accountStatus.redirect = {
-          name: 'passwordRecovery',
-          params: {
-            selectionMode: 'code',
-            email: user.email
-          }
-        }
-        result.output = result.accountStatus
-        /** unit test exit */
+        result.status = 400
       }
+
+      /** ======= isPasswordRecovery */
+      if (accountStatus === this.onPasswordRecovery) {
+        if (mode !== Modes.PasswordRecovery) {
+          // 307 Temporary Redirect (since HTTP/1.1)
+          /** unit test init */
+          result.status = 307
+          result.accountStatus.redirect = {
+            name: 'passwordRecovery',
+            params: {
+              selectionMode: '',
+              email: user.email
+            }
+          }
+          /** unit test exit */
+          // TODO depende do path actual - nao tem sentido fazer o redirect se o path estiver com o mesmo contexto
+        } else {
+          result.status = 200
+        }
+        if (nextStage === this.onPasswordRecovery) {
+          result.accountStatus.redirect.params.selectionMode = 'email'
+        }
+        if (nextStage === this.onPasswordRecoveryCode) {
+          result.accountStatus.redirect.params.selectionMode = 'code'
+        }
+        if (nextStage === this.onPasswordRecoveryChange) {
+          result.accountStatus.redirect.params.selectionMode = 'passwords'
+        }
+
+        result.output = result.accountStatus
+      }
+      /** ======= isPasswordRecovery */
     }
     return result
   }
