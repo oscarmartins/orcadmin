@@ -78,6 +78,7 @@ module.exports = {
           } else {
             responseSender({status: 400, output: checkpoint})
           }
+          return
         }
       }
       if (main.REQ_CONTEX === SIGNIN) {
@@ -91,10 +92,11 @@ module.exports = {
         } else if (main.REQ_ACTION === ON_SIGNOUT) {
           signout()
         }
+        return
       }
-    } else {
-      responseSender({status: 500, output: paramValidator.error})
     }
+    const error = (paramValidator.error && paramValidator.error.length !== 0) ? paramValidator.error : 'Não foi possivel concluir o pedido requerido. Por favor tente mais tarde. Obrigado.'
+    responseSender({status: 500, output: {error: error}})
   }
 }
 

@@ -10,6 +10,7 @@ module.exports = (app) => {
   app.post('/register', AccountController.execute)
   app.post('/login', AccountController.execute)
   app.post('/logout', AccountController.execute)
+  app.post('/passwordRecovery', AccountController.execute)
 
   app.get('/emailer', isAuthenticated, MailerController.fetchProfiles)
   app.get('/emailer/:profileid', isAuthenticated, MailerController.retrieveProfileById)

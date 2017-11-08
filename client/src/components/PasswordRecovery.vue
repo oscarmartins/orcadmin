@@ -44,7 +44,7 @@
 </template>
 
 <script>
-/** import AuthenticationService from '@/services/AuthenticationService' */
+import AuthenticationService from '@/services/AuthenticationService'
 export default {
   data () {
     return {
@@ -70,12 +70,11 @@ export default {
     async PasswordRecovery () {
       try {
         this.error = ''
-        /**
-        await AuthenticationService.register(this, {
+        await AuthenticationService.passwordRecovery(this, {
           email: this.email,
-          password: this.password
+          password: this.password,
+          selectionMode: this.selectionMode
         })
-        */
       } catch (err) {
         debugger
         console.log(err)

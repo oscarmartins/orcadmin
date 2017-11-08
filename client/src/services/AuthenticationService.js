@@ -2,7 +2,7 @@ import Api from '@/services/Api'
 
 export default {
   passwordRecovery (global, data) {
-    global.$store.dispatch('PasswordRecovery', data).then((response) => {
+    global.$store.dispatch('passwordRecovery', data).then((response) => {
       debugger
       /**
       global.showSnackbar({text: response.data.message, context: 'success'})
@@ -10,6 +10,7 @@ export default {
       **/
     })
     .catch((error) => {
+      debugger
       global.error = error.response.data.error
       global.showSnackbar({text: global.error, context: 'error'})
       console.log(error)

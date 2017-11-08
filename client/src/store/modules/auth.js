@@ -1,6 +1,7 @@
 import * as types from '../mutation-types'
-import vueAuthInstance from '../../services/auth.js'
-import apiRoles from '../../services/ApiRoles.js'
+import vueAuthInstance from '../../services/auth'
+import apiRoles from '../../services/ApiRoles'
+import utils from '../../utils/utils'
 const state = {
   isAuthenticated: vueAuthInstance.isAuthenticated(),
   isLoggedIn: !!localStorage.getItem('token'),
@@ -40,8 +41,29 @@ const mutations = {
 
 const actions = {
   [types.passwordRecovery] (context, payload) {
-    debugger
     payload = payload || {}
+    if (payload.hasOwnProperty('selectionMode')) {
+      if (payload.selectionMode === 'email') {
+        payload = apiRoles.passwordRecoveryEmail(payload)
+      }
+      if (payload.selectionMode === 'code') {
+        payload = apiRoles.passwordRecoveryCode(payload)
+      }
+      if (payload.selectionMode === 'reset') {
+        payload = apiRoles.passwordRecoveryReset(payload)
+      }
+    } else {
+      payload = apiRoles.passwordRecoveryEmail(payload)
+    }
+    const requestOptions = requestOptions || {}
+    requestOptions.url = utils.joinUrl(vueAuthInstance.options.baseUrl, '/passwordRecovery')
+    requestOptions[vueAuthInstance.options.requestDataKey] = payload || requestOptions[vueAuthInstance.options.requestDataKey]
+    requestOptions.method = 'POST'
+    requestOptions.withCredentials = vueAuthInstance.options.withCredentials
+    debugger
+    return vueAuthInstance.$http(requestOptions).then(function (response) {
+      return response
+    })
   },
   [types.REGISTER] (context, payload) {
     payload = payload || {}
