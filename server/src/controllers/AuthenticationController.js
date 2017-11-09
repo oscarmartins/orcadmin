@@ -3,6 +3,23 @@ const AccountManager = require('../utils/AccountManager')
 const jwt = require('jsonwebtoken')
 const config = require('../config/config')
 
+const options = {
+  SIGNUP: 1000,
+  SIGNIN: 2000,
+  ACCOUNT_VERIFY: 3000,
+  ACCOUNT_RECOVERY: 4000,
+  ACCOUNT_RECOVERY_EMAIL: 4010,
+  ACCOUNT_RECOVERY_CODE: 4020,
+  ACCOUNT_RECOVERY_RESET: 4030,
+  NEW_SIGNUP: 1010,
+  ON_SIGNIN: 2010,
+  ON_SIGNOUT: 2020,
+  onAccountValidation: 10100,
+  onAccountValidationCode: 10200,
+  onPasswordRecovery: 20100,
+  onPasswordRecoveryCode: 20200
+}
+
 function _resolveResponse (res, result) {
   if (result.status === 200) {
     res.send(result.output)
@@ -137,8 +154,28 @@ async function _signout (main) {
     }
   }
 }
+/**
+ * todo
+ * primeiro post --> require email
+ * segundo post --> require email & code
+ * terceiro post --> require email & code & password & passwordConfirm
+ * 
+ * @param {*} payload 
+ */
+async function _passwordRecovery (payload) {
+  if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_EMAIL) {
+    console.log('email')
+  }
+  if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_CODE) {
+    console.log('code')
+  }
+  if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_RESET) {
+    console.log('reset')
+  }
+}
 
 module.exports = {
+  options: options,
   async signup (payload) {
     const result = await _signup(payload)
     return result
@@ -149,6 +186,10 @@ module.exports = {
   },
   async signout (main) {
     const result = await _signout(main)
+    return result
+  },
+  async passwordRecovery (main) {
+    const result = await _passwordRecovery(main)
     return result
   },
   async logout (req, res) {

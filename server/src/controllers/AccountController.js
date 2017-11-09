@@ -31,20 +31,6 @@ main['REQ_CONTEX'] = 0
 main['REQ_ACTION'] = 0
 main['REQ_INPUTS'] = {}
 
-const SIGNUP = 1000
-const SIGNIN = 2000
-const ACCOUNT_VERIFY = 3000
-const ACCOUNT_RECOVERY = 4000
-const NEW_SIGNUP = 1010
-const ON_SIGNIN = 2010
-const ON_SIGNOUT = 2020
-
-//Account STATES
-const onAccountValidation = 10100
-const onAccountValidationCode = 10200
-const onPasswordRecovery = 20100
-const onPasswordRecoveryCode = 20200
-
 function preparams () {
   let msg = null
   if (!main.httpRequest) { msg = 'Error [Http] [missing httpRequest]' }
@@ -62,6 +48,7 @@ function preparams () {
   return {isok: true, error: msg}
 }
 function validateSignInAndUp () { return AccountPolicy.validateSignInAndUp(main.REQ_INPUTS) }
+function accountRecovery (mode) { return AccountPolicy.accountRecovery(mode, main.REQ_INPUTS) }
 module.exports = {
   async execute (req, res) {
     console.log('Account Management execute')
@@ -70,8 +57,25 @@ module.exports = {
     const paramValidator = preparams()
     let checkpoint = null
     if (paramValidator.isok) {
-      if (main.REQ_CONTEX === SIGNUP) {
-        if (main.REQ_ACTION === NEW_SIGNUP) {
+      if (main.REQ_CONTEX === AuthenticationController.options.ACCOUNT_RECOVERY) {
+        let mode = null
+        if (main.REQ_ACTION === AuthenticationController.options.ACCOUNT_RECOVERY_EMAIL) {
+          mode = 'email'
+        }
+        if (main.REQ_ACTION === AuthenticationController.options.ACCOUNT_RECOVERY_RESET) {
+          mode = 'reset'
+        }
+        if (mode) {
+          checkpoint = accountRecovery(mode)
+        }
+        if ((checkpoint && checkpoint.isok) || main.REQ_ACTION === AuthenticationController.options.ACCOUNT_RECOVERY_CODE) {
+          passwordRecovery()
+        } else {
+          responseSender({status: 400, output: checkpoint})
+        }
+      }
+      if (main.REQ_CONTEX === AuthenticationController.options.SIGNUP) {
+        if (main.REQ_ACTION === AuthenticationController.options.NEW_SIGNUP) {
           checkpoint = validateSignInAndUp()
           if (checkpoint.isok) {
             signup()
@@ -81,15 +85,15 @@ module.exports = {
           return
         }
       }
-      if (main.REQ_CONTEX === SIGNIN) {
-        if (main.REQ_ACTION === ON_SIGNIN) {
+      if (main.REQ_CONTEX === AuthenticationController.options.SIGNIN) {
+        if (main.REQ_ACTION === AuthenticationController.options.ON_SIGNIN) {
           checkpoint = validateSignInAndUp()
           if (checkpoint.isok) {
             signin()
           } else {
             responseSender({status: 400, output: checkpoint})
           }
-        } else if (main.REQ_ACTION === ON_SIGNOUT) {
+        } else if (main.REQ_ACTION === AuthenticationController.options.ON_SIGNOUT) {
           signout()
         }
         return
@@ -120,6 +124,11 @@ async function signin () {
 
 async function signout () {
   const result = await AuthenticationController.signout(main)
+  responseSender(result)
+}
+
+async function passwordRecovery () {
+  const result = await AuthenticationController.passwordRecovery(main)
   responseSender(result)
 }
 
