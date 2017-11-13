@@ -109,7 +109,6 @@ async function _signin (payload) {
         // check account status
         const checkAccountStatus = await AccountManager.checkAccountStatus(AccountManager.mode.Signin, result)
         if (checkAccountStatus) {
-          console.log(12345)
           return checkAccountStatus
         } else {
           const usrJson = result.toJSON()
@@ -163,14 +162,46 @@ async function _signout (main) {
  * @param {*} payload 
  */
 async function _passwordRecovery (payload) {
-  if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_EMAIL) {
-    console.log('email')
-  }
-  if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_CODE) {
-    console.log('code')
-  }
-  if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_RESET) {
-    console.log('reset')
+  try {
+    let checkAccountStatus = null
+    let accountUser = null
+    const {email, code, password, confirmPassword} = payload.REQ_INPUTS
+    if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_EMAIL) {
+      accountUser = await AccountManager.checkAccountEmail(email)
+      if (accountUser) {
+        const accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.onPasswordRecoveryCode)
+        if (accountResult) {
+          console.log(accountResult)
+        } else {
+          // failed
+        }
+      } else {
+        console.log(accountUser)
+      }
+    }
+    if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_CODE) {
+      console.log('code')
+    }
+    if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_RESET) {
+      console.log('reset')
+    }
+    checkAccountStatus = await AccountManager.checkAccountStatus(AccountManager.mode.PasswordRecovery, accountUser)
+    if (checkAccountStatus) {
+      return checkAccountStatus
+    } else {
+      return {
+        status: 200,
+        output: {
+          profile: 'usrJson',
+          message: 'signin ok'
+        }
+      }
+    }
+  } catch (error) {
+    return {
+      status: 500,
+      output: {error: 'An error has occured trying to passwordRecovery'}
+    }
   }
 }
 

@@ -1,6 +1,7 @@
 const Account = require('../models/Accounts')
 const User = require('../models/User')
 const EmailSender = require('../controllers/orcmailer')
+const uuid = require('uuid')
 
 EmailSender.accountProfile = 'accounts_notificator'
 
@@ -79,7 +80,17 @@ module.exports = {
       return emailSent
     }
   },
-  getAccountModel () {
+  async checkAccountEmail (email) {
+    let user = null
+    try {
+      user = await User.findOne({'email': email})
+    } catch (error) {
+      user = null
+      console.log(error)
+    }
+    return user
+  },
+  async getAccountModel () {
     return new Account()
   },
   async querySelect (query, filter) {
@@ -92,7 +103,7 @@ module.exports = {
     if (checkExist && checkExist.length !== 0) {
       return resultOutputError('ERROR CODE 500 [ ** nao e possivel concluir criar uma conta para este utilizador **  ]')
     } else {
-      const account = this.getAccountModel()
+      const account = await this.getAccountModel()
       account.user_id = user._id
       account.code = null
       account.accountStatus = this.onAccountValidation
@@ -179,5 +190,45 @@ module.exports = {
       /** ======= isPasswordRecovery */
     }
     return result
+  },
+  async _changeAccountNextStage (id, email, ns) {
+    if (ns === this.onPasswordRecoveryCode) {
+      // 1 - check : accountStatus equals onPasswordRecovery
+      // 2 - generate : code
+      // 3 - update - account update [code and nextStage]
+      const accounts = await this.querySelect({user_id: id})
+      if (accounts && accounts.length === 1) {
+        const account = accounts[0]
+        console.log('debug nextStage=' + account.nextStage)
+        const code = uuid()
+        const dateUpdated = new Date()
+        // TODO multi: true revision
+        const resultUPD = await Account.update({user_id: id}, {accountStatus: this.onPasswordRecovery, nextStage: this.onPasswordRecoveryCode, code: code, dateUpdated: dateUpdated}, {multi: true})
+        if (resultUPD) {
+          console.log(123)
+        } else {
+          console.log(123)
+        }
+      } else {
+        // errors
+      }
+    }
+  },
+  async changeAccountNextStageByUser (user, nextStage) {
+    if (user) {
+      const {_id, email} = user
+      const result = await this._changeAccountNextStage(_id, email, nextStage)
+      return result
+    }
+    return null
+  },
+  async changeAccountNextStageByEmail (email, nextStage) {
+    const user = await this.checkAccountEmail(email)
+    if (user) {
+      const {_id, email} = user
+      const result = await this._changeAccountNextStage(_id, email, nextStage)
+      return result
+    }
+    return null
   }
 }
