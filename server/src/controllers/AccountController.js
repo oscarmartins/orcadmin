@@ -73,6 +73,7 @@ module.exports = {
         } else {
           responseSender({status: 400, output: checkpoint})
         }
+        return true
       }
       if (main.REQ_CONTEX === AuthenticationController.options.SIGNUP) {
         if (main.REQ_ACTION === AuthenticationController.options.NEW_SIGNUP) {
@@ -82,7 +83,7 @@ module.exports = {
           } else {
             responseSender({status: 400, output: checkpoint})
           }
-          return
+          return true
         }
       }
       if (main.REQ_CONTEX === AuthenticationController.options.SIGNIN) {
@@ -96,7 +97,7 @@ module.exports = {
         } else if (main.REQ_ACTION === AuthenticationController.options.ON_SIGNOUT) {
           signout()
         }
-        return
+        return true
       }
     }
     const error = (paramValidator.error && paramValidator.error.length !== 0) ? paramValidator.error : 'Não foi possivel concluir o pedido requerido. Por favor tente mais tarde. Obrigado.'

@@ -62,6 +62,7 @@ const actions = {
     requestOptions.withCredentials = vueAuthInstance.options.withCredentials
     debugger
     return vueAuthInstance.$http(requestOptions).then(function (response) {
+      debugger
       return response
     })
   },

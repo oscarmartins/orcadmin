@@ -6,18 +6,19 @@ const uuid = require('uuid')
 EmailSender.accountProfile = 'accounts_notificator'
 
 function resultOutput (iook, success, error, data) {
-  console.log('AccountManager DEBUG begin', '\niook = ' + iook, ', success = ' + success, ', error = ' + error, '\nAccountManager DEBUG end')
+  console.log('AccountManager DEBUG begin', '\niook = ' + iook, ', success = ' + success, ', error = ' + error, ', data = ' + data, '\nAccountManager DEBUG end')
   return {
     iook: iook,
     success: success,
     error: error,
-    data: data | null
+    data: data || null
   }
 }
 
 function resultOutputSuccess (success) { return resultOutput(true, success, null, null) }
 function resultOutputError (error) { return resultOutput(false, null, error, null) }
-function resultOutputData (data) { return resultOutput(true, null, null, data) }
+function resultOutputDataOk (data) { return resultOutput(true, null, null, data) }
+function resultOutputDataError (data) { return resultOutput(false, null, null, data) }
 
 const Modes = {
   Signin: 'Signin',
@@ -62,6 +63,10 @@ module.exports = {
           subject = 'Welcome to ORC Admin'
           html = '<h3>Congratulations {{username}}, </h3><p>Your account was successfully created. See you soon.<p>'
           break
+        case 200:
+          subject = 'ORC Admin - Password Account Recovery'
+          html = '<h3>Código de segurança</h3><p>Utilize o seguinte código de segurança para recuperar a sua conta {{email}} .<p> <p>Código de segurança: {{code}} <p><p>Obrigado, A equipa de Orc Admin</p>'
+          break
         default:
           break
       }
@@ -76,6 +81,12 @@ module.exports = {
     sendEmailInfoNewUserCreated: async function (to) {
       const msg = this.emailMessageTransport(100, to)
       msg.html = msg.html.replace('{{username}}', to.split('@')[0])
+      const emailSent = await EmailSender.sendMail(msg)
+      return emailSent
+    },
+    sendSecurityCodeByEmail: async function (to, opt, code) {
+      const msg = this.emailMessageTransport(opt, to)
+      msg.html = msg.html.replace('{{email}}', to).replace('{{code}}', code)
       const emailSent = await EmailSender.sendMail(msg)
       return emailSent
     }
@@ -114,7 +125,7 @@ module.exports = {
       const saveResult = await account.save()
       /** */
       if (saveResult) {
-        this.notificator.sendEmailInfoNewUserCreated(user.email)
+        await this.notificator.sendEmailInfoNewUserCreated(user.email)
         return resultOutput(true, 'A conta foi criada com sucesso.', null, saveResult)
       } else {
         return resultOutput(false, null, 'ERROR CODE 510 [ ** Nao foi possivel criar conta.. **  ]', saveResult)
@@ -191,7 +202,33 @@ module.exports = {
     }
     return result
   },
-  async _changeAccountNextStage (id, email, ns) {
+  async _sendPredefinedMail (opt) {
+    const {email, accountStatus, nextStage} = opt
+    if (email && accountStatus && nextStage) {
+      const user = await this.checkAccountEmail(email)
+      if (user) {
+        const res = await this.querySelect({user_id: user._id, accountStatus: accountStatus, nextStage: nextStage})
+        if (res && res.length === 1) {
+          const account = res[0]
+          if (accountStatus === this.onPasswordRecovery && nextStage === this.onPasswordRecoveryCode) {
+            if (account.code !== null) {
+              await this.notificator.sendSecurityCodeByEmail(user.email, 200, account.code)
+              return resultOutputSuccess('email enviado com sucesso!! ')
+            } else {
+              return resultOutputError('ERROR _sendPredefinedMail.querySelect account.code [ ** ocorreu um erro, o codigo nao foi gerado.  **  ]')
+            }
+          }
+        } else {
+          return resultOutputError('ERROR _sendPredefinedMail.querySelect [ ** ocorreu um erro, ' + (res && res.length > 1 ? ' problema inconsistencia de dados. ' : ' nao foi possivel localizar a sua conta. ') + '  **  ]')
+        }
+      } else {
+        return resultOutputError('ERROR _sendPredefinedMail.checkAccountEmail [ ** ocorreu um erro, o email nao pertence a um utilizador registado. **  ]')
+      }
+    } else {
+      return resultOutputError('ERROR _sendPredefinedMail [ ** ocorreu um erro, o campo ' + (email ? (accountStatus ? (nextStage ? ' _###_ ' : 'nextStage') : 'accountStatus') : 'email') + ' é requerido!!! **  ]')
+    }
+  },
+  async _changeAccountNextStage (id, ns) {
     if (ns === this.onPasswordRecoveryCode) {
       // 1 - check : accountStatus equals onPasswordRecovery
       // 2 - generate : code
@@ -199,25 +236,31 @@ module.exports = {
       const accounts = await this.querySelect({user_id: id})
       if (accounts && accounts.length === 1) {
         const account = accounts[0]
-        console.log('debug nextStage=' + account.nextStage)
+        const criteria = {user_id: account.user_id}
         const code = uuid()
-        const dateUpdated = new Date()
-        // TODO multi: true revision
-        const resultUPD = await Account.update({user_id: id}, {accountStatus: this.onPasswordRecovery, nextStage: this.onPasswordRecoveryCode, code: code, dateUpdated: dateUpdated}, {multi: true})
-        if (resultUPD) {
-          console.log(123)
+        const query = {
+          accountStatus: this.onPasswordRecovery,
+          nextStage: this.onPasswordRecoveryCode,
+          code: code,
+          dateUpdated: new Date()
+        }
+        const resultUPD = await Account.update(criteria, query)
+        if (resultUPD && resultUPD.ok === 1) {
+          console.log('**DEBUG Account.update: ', resultUPD)
+          return resultOutputDataOk(query)
         } else {
-          console.log(123)
+          return resultOutputError('ERROR ACCOUNT UPDATE [ ** ocorreu um erro ao actualizar a conta **  ]')
         }
       } else {
-        // errors
+        return resultOutputError('ERROR ACCOUNT [ ** não foi encontrada nenhuma conta com o user_id **  ]')
       }
-    }
+    }// ns === this.onPasswordRecoveryCode
+    return resultOutputError('ERROR VALIDATION [ ** o NextStage que pretende mudar não é reconhecido **  ]')
   },
   async changeAccountNextStageByUser (user, nextStage) {
     if (user) {
-      const {_id, email} = user
-      const result = await this._changeAccountNextStage(_id, email, nextStage)
+      const {_id} = user
+      const result = await this._changeAccountNextStage(_id, nextStage)
       return result
     }
     return null
@@ -225,10 +268,14 @@ module.exports = {
   async changeAccountNextStageByEmail (email, nextStage) {
     const user = await this.checkAccountEmail(email)
     if (user) {
-      const {_id, email} = user
-      const result = await this._changeAccountNextStage(_id, email, nextStage)
+      const {_id} = user
+      const result = await this._changeAccountNextStage(_id, nextStage)
       return result
     }
     return null
+  },
+  async sendPredefinedMail (opt) {
+    const result = await this._sendPredefinedMail(opt)
+    return result
   }
 }

@@ -170,13 +170,34 @@ async function _passwordRecovery (payload) {
       accountUser = await AccountManager.checkAccountEmail(email)
       if (accountUser) {
         const accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.onPasswordRecoveryCode)
-        if (accountResult) {
+        if (accountResult.iook) {
           console.log(accountResult)
+          const optionmail = {
+            email: accountUser.email,
+            accountStatus: accountResult.data.accountStatus,
+            nextStage: accountResult.data.nextStage
+          }
+          /**
+            accountResult.data = {
+            accountStatus:20000
+            code:"c96baf26-3285-4913-85db-94a07aedf128"
+            nextStage:21000
+          }
+          **/
+          const emailAccountCode = await AccountManager.sendPredefinedMail(optionmail)
+          if (emailAccountCode.iook) {
+            console.log(emailAccountCode)
+          } else {
+            console.log(emailAccountCode.error)
+            throw emailAccountCode.error
+          }
         } else {
-          // failed
+          console.log(accountResult.error)
+          throw accountResult.error
         }
       } else {
-        console.log(accountUser)
+        const error = 'O email que indicou não está registado.'
+        throw error
       }
     }
     if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_CODE) {
@@ -200,7 +221,7 @@ async function _passwordRecovery (payload) {
   } catch (error) {
     return {
       status: 500,
-      output: {error: 'An error has occured trying to passwordRecovery'}
+      output: {error: error || 'An error has occured trying to passwordRecovery'}
     }
   }
 }
