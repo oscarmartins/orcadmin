@@ -145,7 +145,11 @@ module.exports = {
       accountStatus: {
         as: 0,
         ns: 0,
-        redirect: ''
+        name: 'passwordRecovery',
+        params: {
+          selectionMode: '',
+          email: user.email
+        }
       },
       output: {}
     }
@@ -183,19 +187,27 @@ module.exports = {
           }
           /** unit test exit */
           // TODO depende do path actual - nao tem sentido fazer o redirect se o path estiver com o mesmo contexto
+          if (nextStage === this.onPasswordRecovery) {
+            result.accountStatus.redirect.params.selectionMode = 'email'
+          }
+          if (nextStage === this.onPasswordRecoveryCode) {
+            result.accountStatus.redirect.params.selectionMode = 'code'
+          }
+          if (nextStage === this.onPasswordRecoveryChange) {
+            result.accountStatus.redirect.params.selectionMode = 'passwords'
+          }
         } else {
           result.status = 200
+          if (nextStage === this.onPasswordRecovery) {
+            result.accountStatus.params.selectionMode = 'email'
+          }
+          if (nextStage === this.onPasswordRecoveryCode) {
+            result.accountStatus.params.selectionMode = 'code'
+          }
+          if (nextStage === this.onPasswordRecoveryChange) {
+            result.accountStatus.params.selectionMode = 'passwords'
+          }
         }
-        if (nextStage === this.onPasswordRecovery) {
-          result.accountStatus.redirect.params.selectionMode = 'email'
-        }
-        if (nextStage === this.onPasswordRecoveryCode) {
-          result.accountStatus.redirect.params.selectionMode = 'code'
-        }
-        if (nextStage === this.onPasswordRecoveryChange) {
-          result.accountStatus.redirect.params.selectionMode = 'passwords'
-        }
-
         result.output = result.accountStatus
       }
       /** ======= isPasswordRecovery */
@@ -255,7 +267,43 @@ module.exports = {
         return resultOutputError('ERROR ACCOUNT [ ** não foi encontrada nenhuma conta com o user_id **  ]')
       }
     }// ns === this.onPasswordRecoveryCode
+    if (ns === this.onPasswordRecoveryChange) {
+      // 1 - check : accountStatus equals onPasswordRecovery
+      // 2 - generate : code
+      // 3 - update - account update [code and nextStage]
+      const accounts = await this.querySelect({user_id: id})
+      if (accounts && accounts.length === 1) {
+        const account = accounts[0]
+        const criteria = {user_id: account.user_id}
+        const query = {
+          accountStatus: this.onPasswordRecovery,
+          nextStage: this.onPasswordRecoveryChange,
+          dateUpdated: new Date()
+        }
+        const resultUPD = await Account.update(criteria, query)
+        if (resultUPD && resultUPD.ok === 1) {
+          console.log('**DEBUG Account.update: ', resultUPD)
+          return resultOutputDataOk(query)
+        } else {
+          return resultOutputError('ERROR ACCOUNT UPDATE [ ** ocorreu um erro ao actualizar a conta **  ]')
+        }
+      } else {
+        return resultOutputError('ERROR ACCOUNT [ ** não foi encontrada nenhuma conta com o user_id **  ]')
+      }
+    }// ns === this.onPasswordRecoveryChange
     return resultOutputError('ERROR VALIDATION [ ** o NextStage que pretende mudar não é reconhecido **  ]')
+  },
+  async codeValidator (user, code) {
+    if (user) {
+      const {_id} = user
+      const accountCode = await this.querySelect({user_id: _id, code: code})
+      if (accountCode && accountCode.length === 1) {
+        return resultOutputDataOk(accountCode[0])
+      } else {
+        return resultOutputError('ERROR ACCOUNT [ ** não foi encontrada nenhuma conta com o user_id **  ]')
+      }
+    }
+    return null
   },
   async changeAccountNextStageByUser (user, nextStage) {
     if (user) {

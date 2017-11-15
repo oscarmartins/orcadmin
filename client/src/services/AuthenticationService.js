@@ -4,10 +4,8 @@ export default {
   passwordRecovery (global, data) {
     global.$store.dispatch('passwordRecovery', data).then((response) => {
       debugger
-      /**
+      global.formState({state: response.data.ns})
       global.showSnackbar({text: response.data.message, context: 'success'})
-      setTimeout(function (ctx) { ctx.push({name: 'login'}) }, 3800, global.$router)
-      **/
     })
     .catch((error) => {
       debugger

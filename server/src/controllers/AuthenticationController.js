@@ -11,6 +11,7 @@ const options = {
   ACCOUNT_RECOVERY_EMAIL: 4010,
   ACCOUNT_RECOVERY_CODE: 4020,
   ACCOUNT_RECOVERY_RESET: 4030,
+  ACCOUNT_RECOVERY_RESUME: 40102030,
   NEW_SIGNUP: 1010,
   ON_SIGNIN: 2010,
   ON_SIGNOUT: 2020,
@@ -166,9 +167,10 @@ async function _passwordRecovery (payload) {
     let checkAccountStatus = null
     let accountUser = null
     const {email, code, password, confirmPassword} = payload.REQ_INPUTS
-    if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_EMAIL) {
-      accountUser = await AccountManager.checkAccountEmail(email)
-      if (accountUser) {
+    accountUser = await AccountManager.checkAccountEmail(email)
+    if (accountUser) {
+      console.log('DEBUG _passwordRecovery [email checked]')
+      if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_EMAIL) {
         const accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.onPasswordRecoveryCode)
         if (accountResult.iook) {
           console.log(accountResult)
@@ -177,13 +179,6 @@ async function _passwordRecovery (payload) {
             accountStatus: accountResult.data.accountStatus,
             nextStage: accountResult.data.nextStage
           }
-          /**
-            accountResult.data = {
-            accountStatus:20000
-            code:"c96baf26-3285-4913-85db-94a07aedf128"
-            nextStage:21000
-          }
-          **/
           const emailAccountCode = await AccountManager.sendPredefinedMail(optionmail)
           if (emailAccountCode.iook) {
             console.log(emailAccountCode)
@@ -195,28 +190,45 @@ async function _passwordRecovery (payload) {
           console.log(accountResult.error)
           throw accountResult.error
         }
-      } else {
-        const error = 'O email que indicou não está registado.'
-        throw error
       }
-    }
-    if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_CODE) {
-      console.log('code')
-    }
-    if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_RESET) {
-      console.log('reset')
-    }
-    checkAccountStatus = await AccountManager.checkAccountStatus(AccountManager.mode.PasswordRecovery, accountUser)
-    if (checkAccountStatus) {
-      return checkAccountStatus
-    } else {
-      return {
-        status: 200,
-        output: {
-          profile: 'usrJson',
-          message: 'signin ok'
+      if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_CODE) {
+        if (code) {
+          const codeValidator = await AccountManager.codeValidator(accountUser, code)
+          if (codeValidator.iook) {
+            const accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.onPasswordRecoveryChange)
+            if (accountResult.iook) {
+              console.log(accountResult)
+            } else {
+              console.log(accountResult.error)
+              throw accountResult.error
+            }
+          } else {
+            console.log(codeValidator.error)
+            throw codeValidator.error
+          }
+        } else {
+          const error = 'O codigo de segurança que indicou não está correcto.'
+          throw error
         }
       }
+      if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_RESET) {
+        console.log('reset')
+      }
+      checkAccountStatus = await AccountManager.checkAccountStatus(AccountManager.mode.PasswordRecovery, accountUser)
+      if (checkAccountStatus) {
+        return checkAccountStatus
+      } else {
+        return {
+          status: 200,
+          output: {
+            profile: 'usrJson',
+            message: 'signin ok'
+          }
+        }
+      }
+    } else {
+      const error = 'O email que indicou não está registado.'
+      throw error
     }
   } catch (error) {
     return {
