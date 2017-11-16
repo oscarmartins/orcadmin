@@ -23,6 +23,7 @@
               :class="checkClass('code')">
             </v-text-field>
             <v-text-field
+              type="password"
               label="Password"              
               v-model="password"
               v-if="checkVisibility('passwords')"
@@ -30,6 +31,7 @@
               :class="checkClass('passwords')">
             </v-text-field>
             <v-text-field
+              type="password"
               label="Password Confirmation"              
               v-model="confirmPassword"
               v-if="checkVisibility('passwords')"

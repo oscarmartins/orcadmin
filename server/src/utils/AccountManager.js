@@ -146,6 +146,7 @@ module.exports = {
         as: 0,
         ns: 0,
         name: 'passwordRecovery',
+        message: '',
         params: {
           selectionMode: '',
           email: user.email
@@ -202,9 +203,11 @@ module.exports = {
             result.accountStatus.params.selectionMode = 'email'
           }
           if (nextStage === this.onPasswordRecoveryCode) {
+            result.accountStatus.message = 'Enviamos um email com o código de segurança. Obrigado.'
             result.accountStatus.params.selectionMode = 'code'
           }
           if (nextStage === this.onPasswordRecoveryChange) {
+            result.accountStatus.message = 'Código de segurança foi aceite.'
             result.accountStatus.params.selectionMode = 'passwords'
           }
         }
@@ -292,6 +295,9 @@ module.exports = {
       }
     }// ns === this.onPasswordRecoveryChange
     return resultOutputError('ERROR VALIDATION [ ** o NextStage que pretende mudar não é reconhecido **  ]')
+  },
+  async resetPassword (user, password, confirmPassword) {
+
   },
   async codeValidator (user, code) {
     if (user) {

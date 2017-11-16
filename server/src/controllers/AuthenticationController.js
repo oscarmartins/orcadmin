@@ -166,14 +166,15 @@ async function _passwordRecovery (payload) {
   try {
     let checkAccountStatus = null
     let accountUser = null
+    let accountResult
     const {email, code, password, confirmPassword} = payload.REQ_INPUTS
     accountUser = await AccountManager.checkAccountEmail(email)
     if (accountUser) {
-      console.log('DEBUG _passwordRecovery [email checked]')
+      console.log('DEBUG _passwordRecovery.checkAccountEmail [email checked]')
       if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_EMAIL) {
-        const accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.onPasswordRecoveryCode)
+        accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.onPasswordRecoveryCode)
         if (accountResult.iook) {
-          console.log(accountResult)
+          console.log('DEBUG changeAccountNextStageByUser [account Stage changed to onPasswordRecoveryCode = ' + AccountManager.onPasswordRecoveryCode + ']')
           const optionmail = {
             email: accountUser.email,
             accountStatus: accountResult.data.accountStatus,
@@ -181,38 +182,56 @@ async function _passwordRecovery (payload) {
           }
           const emailAccountCode = await AccountManager.sendPredefinedMail(optionmail)
           if (emailAccountCode.iook) {
-            console.log(emailAccountCode)
+            console.log('DEBUG sendPredefinedMail [' + emailAccountCode.success + ']')
           } else {
-            console.log(emailAccountCode.error)
-            throw emailAccountCode.error
+            console.log('ERROR sendPredefinedMail [' + emailAccountCode.error + ']')
+            throw new Error(emailAccountCode.error)
           }
         } else {
-          console.log(accountResult.error)
-          throw accountResult.error
+          console.log('ERROR changeAccountNextStageByUser [' + accountResult.error + ']')
+          throw new Error(accountResult.error)
         }
       }
-      if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_CODE) {
+      if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_CODE || payload.REQ_ACTION === options.ACCOUNT_RECOVERY_RESET) {
         if (code) {
           const codeValidator = await AccountManager.codeValidator(accountUser, code)
           if (codeValidator.iook) {
-            const accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.onPasswordRecoveryChange)
+            console.log('DEBUG codeValidator [código valido!!!}')
+          } else {
+            console.log('ERROR codeValidator [' + codeValidator.error + ']')
+            throw new Error(codeValidator.error)
+          }
+        } else {
+          throw new Error('O codigo de segurança que indicou não está correcto.')
+        }
+      }
+      if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_CODE) {
+        accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.onPasswordRecoveryChange)
+        if (accountResult.iook) {
+          console.log(accountResult)
+        } else {
+          console.log(accountResult.error)
+          throw new Error(accountResult.error)
+        }
+      }
+      if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_RESET) {
+        if ((password && confirmPassword) || password === confirmPassword) {
+          const resetPassword = await AccountManager.resetPassword(accountUser, password, confirmPassword)
+          if (resetPassword.iook) {
+            accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.onAccountValidation)
             if (accountResult.iook) {
               console.log(accountResult)
             } else {
               console.log(accountResult.error)
-              throw accountResult.error
+              throw new Error(accountResult.error)
             }
           } else {
-            console.log(codeValidator.error)
-            throw codeValidator.error
+            console.log(resetPassword.error)
+            throw new Error(resetPassword.error)
           }
         } else {
-          const error = 'O codigo de segurança que indicou não está correcto.'
-          throw error
+          throw new Error('As password´s não estão correctas. Por favor verifique se esta a indicar as password´s iguais.')
         }
-      }
-      if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_RESET) {
-        console.log('reset')
       }
       checkAccountStatus = await AccountManager.checkAccountStatus(AccountManager.mode.PasswordRecovery, accountUser)
       if (checkAccountStatus) {
@@ -227,13 +246,13 @@ async function _passwordRecovery (payload) {
         }
       }
     } else {
-      const error = 'O email que indicou não está registado.'
-      throw error
+      throw new Error('O email que indicou não está registado.')
     }
   } catch (error) {
+    console.log('Error: ' + error)
     return {
       status: 500,
-      output: {error: error || 'An error has occured trying to passwordRecovery'}
+      output: {error: error.message || 'An error has occured trying to passwordRecovery'}
     }
   }
 }

@@ -42,7 +42,14 @@ function schemaAccountRecovery (mode) {
 module.exports = {
   accountRecovery (mode, inputs) {
     let output = {error: '', isok: true}
-    const {error} = Joi.validate(inputs, schemaAccountRecovery(mode))
+    let objinput = {}
+    if (mode === 'email') {
+      objinput = {email: inputs.email}
+    }
+    if (mode === 'reset') {
+      objinput = {password: inputs.password, confirmPassword: inputs.confirmPassword}
+    }
+    const {error} = Joi.validate(objinput, schemaAccountRecovery(mode))
     if (error) {
       switch (error.details[0].context.key) {
         case 'email':
