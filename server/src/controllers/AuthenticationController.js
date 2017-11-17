@@ -1,5 +1,3 @@
-import { currentId } from 'async_hooks';
-
 const User = require('../models/User')
 const AccountManager = require('../utils/AccountManager')
 const jwt = require('jsonwebtoken')
@@ -112,19 +110,35 @@ async function _signin (payload) {
         // check account status
         const checkAccountStatus = await AccountManager.checkAccountStatus(AccountManager.mode.Signin, result)
         if (checkAccountStatus) {
-          return checkAccountStatus
-        } else {
-          const usrJson = result.toJSON()
-          const theToken = jwtSignUser(usrJson)
-          return {
-            status: 200,
-            output: {
+          if (checkAccountStatus.status === 200) {
+            const usrJson = result.toJSON()
+            const theToken = jwtSignUser(usrJson)
+            checkAccountStatus.output = {
               profile: usrJson,
               access_token: theToken,
               message: 'signin ok'
             }
+          } else {
+            console.log('TODO')
+            if (checkAccountStatus.status === 400) {
+              const {as, ns} = checkAccountStatus.accountStatus
+              switch (as) {
+                case AccountManager.onAccountValidation:
+                  if (ns === AccountManager.onAccountValidationCode) {
+                    /**
+                     * aqui deve ser enviado um email com o codigo segurança
+                     */
+                  }
+                  break
+                default:
+                  break
+              }
+            }
           }
+        } else {
+          console.log('error')
         }
+        return checkAccountStatus
       }
     }
   } catch (err) {
@@ -167,18 +181,18 @@ async function _signout (main) {
 async function _passwordRecovery (payload) {
   try {
     let checkAccountStatus = null
-    let currentUser = null
+    let accountUser = null
     let accountResult
     const {email, code, password, confirmPassword} = payload.REQ_INPUTS
-    currentUser = await AccountManager.checkAccountEmail(email)
-    if (currentUser) {
+    accountUser = await AccountManager.checkAccountEmail(email)
+    if (accountUser) {
       console.log('DEBUG _passwordRecovery.checkAccountEmail [email checked]')
       if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_EMAIL) {
-        accountResult = await AccountManager.changeAccountNextStageByUser(currentUser, AccountManager.onPasswordRecoveryCode)
+        accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.onPasswordRecoveryCode)
         if (accountResult.iook) {
           console.log('DEBUG changeAccountNextStageByUser [account Stage changed to onPasswordRecoveryCode = ' + AccountManager.onPasswordRecoveryCode + ']')
           const optionmail = {
-            email: currentUser.email,
+            email: accountUser.email,
             accountStatus: accountResult.data.accountStatus,
             nextStage: accountResult.data.nextStage
           }
@@ -196,7 +210,7 @@ async function _passwordRecovery (payload) {
       }
       if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_CODE || payload.REQ_ACTION === options.ACCOUNT_RECOVERY_RESET) {
         if (code) {
-          const codeValidator = await AccountManager.codeValidator(currentUser, code)
+          const codeValidator = await AccountManager.codeValidator(accountUser, code)
           if (codeValidator.iook) {
             console.log('DEBUG codeValidator [código valido!!!}')
           } else {
@@ -208,44 +222,38 @@ async function _passwordRecovery (payload) {
         }
       }
       if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_CODE) {
-        accountResult = await AccountManager.changeAccountNextStageByUser(currentUser, AccountManager.onPasswordRecoveryChange)
+        accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.onPasswordRecoveryChange)
         if (accountResult.iook) {
-          console.log(accountResult)
+          console.log('DEBUG changeAccountNextStageByUser [' + accountResult.success + ']')
         } else {
-          console.log(accountResult.error)
+          console.log('ERROR codeValidator [' + accountResult.error + ']')
           throw new Error(accountResult.error)
         }
       }
       if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_RESET) {
         if ((password && confirmPassword) || password === confirmPassword) {
-          const resetPassword = await AccountManager.resetPassword(currentUser, code, password)
+          const resetPassword = await AccountManager.resetPassword(accountUser, code, password)
           if (resetPassword.iook) {
-            accountResult = await AccountManager.changeAccountNextStageByUser(currentUser, AccountManager.onAccountValidation)
+            accountResult = await AccountManager.activateAccountAction(accountUser, code)
             if (accountResult.iook) {
-              console.log(accountResult)
+              console.log('DEBUG activateAccountAction [' + accountResult.success + ']')
             } else {
-              console.log(accountResult.error)
+              console.log('ERROR activateAccountAction [' + accountResult.error + ']')
               throw new Error(accountResult.error)
             }
           } else {
-            console.log(resetPassword.error)
+            console.log('ERROR resetPassword [' + resetPassword.error + ']')
             throw new Error(resetPassword.error)
           }
         } else {
           throw new Error('As password´s não estão correctas. Por favor verifique se esta a indicar as password´s iguais.')
         }
       }
-      checkAccountStatus = await AccountManager.checkAccountStatus(AccountManager.mode.PasswordRecovery, currentUser)
+      checkAccountStatus = await AccountManager.checkAccountStatus(AccountManager.mode.PasswordRecovery, accountUser)
       if (checkAccountStatus) {
         return checkAccountStatus
       } else {
-        return {
-          status: 200,
-          output: {
-            profile: 'usrJson',
-            message: 'signin ok'
-          }
-        }
+        throw new Error('nao foi possivel determinar o estado da conta.')
       }
     } else {
       throw new Error('O email que indicou não está registado.')

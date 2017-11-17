@@ -145,7 +145,7 @@ module.exports = {
       accountStatus: {
         as: 0,
         ns: 0,
-        name: 'passwordRecovery',
+        mode: mode,
         message: '',
         params: {
           selectionMode: '',
@@ -154,7 +154,7 @@ module.exports = {
       },
       output: {}
     }
-    if (account && account.length !== 0) {
+    if (account && account.length === 1) {
       const accountStatus = account[0].accountStatus
       const nextStage = account[0].nextStage
 
@@ -163,58 +163,51 @@ module.exports = {
 
       if (accountStatus === this.accountValid && nextStage === this.accountValid) {
         result.status = 200
-      }
-
-      if (accountStatus === this.onAccountValidationCode && nextStage === this.onAccountValidationCode) {
+        if (mode === Modes.PasswordRecovery) {
+          result.accountStatus.message = 'A sua password foi recupera com sucesso. '
+          result.accountStatus.params.selectionMode = 'resume'
+        }
+      } else if (accountStatus === this.onAccountValidationCode && nextStage === this.onAccountValidationCode) {
         result.status = 400
-      }
-
-      if (accountStatus === this.onAccountValidation && nextStage === this.onAccountValidationCode) {
+      } else if (accountStatus === this.onAccountValidation && nextStage === this.onAccountValidationCode) {
         result.status = 400
-      }
-
-      /** ======= isPasswordRecovery */
-      if (accountStatus === this.onPasswordRecovery) {
-        if (mode !== Modes.PasswordRecovery) {
-          // 307 Temporary Redirect (since HTTP/1.1)
-          /** unit test init */
-          result.status = 307
-          result.accountStatus.redirect = {
-            name: 'passwordRecovery',
-            params: {
-              selectionMode: '',
-              email: user.email
-            }
-          }
-          /** unit test exit */
-          // TODO depende do path actual - nao tem sentido fazer o redirect se o path estiver com o mesmo contexto
-          if (nextStage === this.onPasswordRecovery) {
-            result.accountStatus.redirect.params.selectionMode = 'email'
-          }
-          if (nextStage === this.onPasswordRecoveryCode) {
-            result.accountStatus.redirect.params.selectionMode = 'code'
-          }
-          if (nextStage === this.onPasswordRecoveryChange) {
-            result.accountStatus.redirect.params.selectionMode = 'passwords'
+      } else if (accountStatus === this.onPasswordRecovery && mode === Modes.PasswordRecovery) {
+        result.status = 200
+        if (nextStage === this.onPasswordRecovery) {
+          result.accountStatus.params.selectionMode = 'email'
+        }
+        if (nextStage === this.onPasswordRecoveryCode) {
+          result.accountStatus.message = 'Enviamos um email com o código de segurança. Obrigado.'
+          result.accountStatus.params.selectionMode = 'code'
+        }
+        if (nextStage === this.onPasswordRecoveryChange) {
+          result.accountStatus.message = 'Código de segurança foi aceite.'
+          result.accountStatus.params.selectionMode = 'passwords'
+        }
+      } else {
+        if (accountStatus === this.onPasswordRecovery && mode === Modes.Signin) {
+          const {code} = account[0]
+          const forceUPD = await this.activateAccountAction(user, code)
+          if (forceUPD.iook) {
+            return this.checkAccountStatus(mode, user)
+          } else {
+            result.status = 400
+            result.accountStatus.message = 'activateAccountAction failed'
+            result.accountStatus.error = 'activateAccountAction failed'
           }
         } else {
-          result.status = 200
-          if (nextStage === this.onPasswordRecovery) {
-            result.accountStatus.params.selectionMode = 'email'
-          }
-          if (nextStage === this.onPasswordRecoveryCode) {
-            result.accountStatus.message = 'Enviamos um email com o código de segurança. Obrigado.'
-            result.accountStatus.params.selectionMode = 'code'
-          }
-          if (nextStage === this.onPasswordRecoveryChange) {
-            result.accountStatus.message = 'Código de segurança foi aceite.'
-            result.accountStatus.params.selectionMode = 'passwords'
-          }
+          result.status = ((mode === Modes.Signin || mode === Modes.Signup) ? 200 : 400)
+          const msg = ((mode === Modes.Signin || mode === Modes.Signup) ? 'DEBUG [ estado da conta errado. forçar nova validação ]' : 'Erro [o estado da conta nao tem conrrespondencia com o modo indicado. ]')
+          result.accountStatus.error = msg
+          result.accountStatus.message = msg
         }
-        result.output = result.accountStatus
       }
-      /** ======= isPasswordRecovery */
+    } else {
+      result.status = 400
+      result.accountStatus.message = 'Erro [não foi possivel encontrar a conta.]'
+      result.accountStatus.error = 'Erro [não foi possivel encontrar a conta.]'
     }
+    result.output = result.accountStatus
     return result
   },
   async _sendPredefinedMail (opt) {
@@ -262,7 +255,7 @@ module.exports = {
         const resultUPD = await Account.update(criteria, query)
         if (resultUPD && resultUPD.ok === 1) {
           console.log('**DEBUG Account.update: ', resultUPD)
-          return resultOutputDataOk(query)
+          return resultOutput(true, 'alteração de estagio conluida com sucesso.', null, query)
         } else {
           return resultOutputError('ERROR ACCOUNT UPDATE [ ** ocorreu um erro ao actualizar a conta **  ]')
         }
@@ -295,6 +288,33 @@ module.exports = {
       }
     }// ns === this.onPasswordRecoveryChange
     return resultOutputError('ERROR VALIDATION [ ** o NextStage que pretende mudar não é reconhecido **  ]')
+  },
+  async activateAccountAction (user, code) {
+    if (user) {
+      const {_id} = user
+      const criteria = {
+        user_id: _id,
+        code: code
+      }
+      const query = {
+        code: null,
+        accountStatus: this.accountValid,
+        nextStage: this.accountValid,
+        dateUpdated: new Date()
+      }
+      const accountCode = await this.querySelect(criteria)
+      if (accountCode && accountCode.length === 1) {
+        const accountUpd = await Account.update(criteria, query)
+        if (accountUpd && accountUpd.ok === 1) {
+          return resultOutputSuccess('a conta foi ativada com sucesso.')
+        } else {
+          return resultOutputError('ERROR ACTIVATE ACCOUNT [ ** ocorreu um erro interno. não foi possivel activar a conta **  ]')
+        }
+      } else {
+        return resultOutputError('ERROR ACCOUNT [ ** não foi encontrada nenhuma conta com o user_id **  ]')
+      }
+    }
+    return resultOutputError('ERROR ACCOUNT [ ** utilizador inválido **  ]')
   },
   async resetPassword (user, code, password) {
     if (user) {

@@ -7,7 +7,7 @@
           </v-alert>  
           <form 
             name="tab-orcadmin-form"
-            autocomplete="off">
+            autocomplete="off">           
             <v-text-field
               label="Email"              
               v-model="email" 
@@ -15,6 +15,9 @@
               :disabled="this.emailDisabled"
               :class="checkClass('email')">
             </v-text-field>
+             <v-alert success value="true" v-if="this.emailSuccess" >
+              {{this.emailSuccess}}
+            </v-alert>  
             <v-text-field
               label="Code Confirmation"              
               v-model="code"
@@ -22,6 +25,9 @@
               :disabled="this.codeDisabled"
               :class="checkClass('code')">
             </v-text-field>
+             <v-alert success value="true" v-if="this.codeSuccess" >
+              {{this.codeSuccess}}
+            </v-alert>  
             <v-text-field
               type="password"
               label="Password"              
@@ -38,12 +44,22 @@
               :disabled="this.passwordsDisabled"
               :class="checkClass('passwords')">
             </v-text-field>
+             <v-alert success value="true" v-if="this.passwordSuccess" >
+              {{this.passwordSuccess}}
+            </v-alert>  
           </form>            
           <v-btn
             class="cyan" 
             dark
             @click="PasswordRecovery"
-            :disabled="this.selectionMode === 'success'" >
+            v-if="this.selectionMode !== 'success'" >
+            {{this.btnLabel}}
+          </v-btn>
+           <v-btn
+            class="cyan" 
+            dark
+            @click="orcgoto({name: 'login'})"
+            v-if="this.selectionMode === 'success'" >
             {{this.btnLabel}}
           </v-btn>
           <v-snackbar
@@ -71,7 +87,7 @@ import AuthenticationService from '@/services/AuthenticationService'
 const ACCOUNT_RECOVERY_EMAIL = 20000
 const ACCOUNT_RECOVERY_CODE = 21000
 const ACCOUNT_RECOVERY_RESET = 22000
-const ACCOUNT_RECOVERY_RESUME = 40102030
+const ACCOUNT_RECOVERY_RESUME = 101010
 export default {
   data () {
     return {
@@ -92,7 +108,11 @@ export default {
       emailDisabled: false,
       codeDisabled: false,
       passwordsDisabled: false,
-      confirmPasswordDisabled: false
+      confirmPasswordDisabled: false,
+      btnsignin: false,
+      emailSuccess: '',
+      codeSuccess: '',
+      passwordSuccess: ''
     }
   },
   methods: {
@@ -127,6 +147,7 @@ export default {
         this.panelTitle = 'Password Recovery - Code Security verification'
         this.btnLabel = 'check code security'
         this.selectionMode = 'code'
+        this.emailSuccess = 'email válido'
       }
       if (opts.state === ACCOUNT_RECOVERY_RESET) {
         this.displayInputs = ['email', 'code', 'passwords']
@@ -135,14 +156,16 @@ export default {
         this.panelTitle = 'Password Recovery - Reset Password'
         this.btnLabel = 'reset password'
         this.selectionMode = 'reset'
+        this.codeSuccess = 'código de segurança válido'
       } if (opts.state === ACCOUNT_RECOVERY_RESUME) {
         this.displayInputs = ['email', 'code', 'password']
         this.emailDisabled = true
         this.codeDisabled = true
         this.passwordsDisabled = true
         this.panelTitle = 'Password Recovery - Success '
-        this.btnLabel = ''
+        this.btnLabel = 'Fazer Login'
         this.selectionMode = 'success'
+        this.passwordSuccess = 'nova password válida'
       }
     },
     async PasswordRecovery () {
@@ -165,18 +188,6 @@ export default {
     try {
       debugger
       this.formState({})
-      /**
-      const params = this.$route.params
-      if (params) {
-        if (params.selectionMode === 'email') {
-          this.email = params.email
-        } else if (params.selectionMode === 'code') {
-          this.selectionMode = params.selectionMode
-          this.panelTitle = 'Password Recovery - Code Confirmation'
-        }
-      }
-      // this.email = this.$route.params.email
-       */
     } catch (error) {
       console.log('Error', error)
     }
