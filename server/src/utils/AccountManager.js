@@ -296,8 +296,31 @@ module.exports = {
     }// ns === this.onPasswordRecoveryChange
     return resultOutputError('ERROR VALIDATION [ ** o NextStage que pretende mudar não é reconhecido **  ]')
   },
-  async resetPassword (user, password, confirmPassword) {
-
+  async resetPassword (user, code, password) {
+    if (user) {
+      const {_id, email} = user
+      const accountCode = await this.querySelect({user_id: _id, code: code})
+      if (accountCode && accountCode.length === 1) {
+        const tmpusr = new User()
+        const pwdencript = tmpusr.encryptPassword(password)
+        const criteria = {
+          _id: _id,
+          email: email
+        }
+        const query = {
+          password: pwdencript
+        }
+        const usrUpd = await User.update(criteria, query)
+        if (usrUpd && usrUpd.ok === 1) {
+          return resultOutputSuccess('password resetada com sucesso.')
+        } else {
+          return resultOutputError('ERROR RESET PASSWORD [ ** ocorreu um erro interno. não foi possivel resetar a password **  ]')
+        }
+      } else {
+        return resultOutputError('ERROR ACCOUNT [ ** não foi encontrada nenhuma conta com o user_id **  ]')
+      }
+    }
+    return resultOutputError('ERROR ACCOUNT [ ** utilizador inválido **  ]')
   },
   async codeValidator (user, code) {
     if (user) {
@@ -309,7 +332,7 @@ module.exports = {
         return resultOutputError('ERROR ACCOUNT [ ** não foi encontrada nenhuma conta com o user_id **  ]')
       }
     }
-    return null
+    return resultOutputError('ERROR ACCOUNT [ ** utilizador inválido **  ]')
   },
   async changeAccountNextStageByUser (user, nextStage) {
     if (user) {
@@ -317,7 +340,7 @@ module.exports = {
       const result = await this._changeAccountNextStage(_id, nextStage)
       return result
     }
-    return null
+    return resultOutputError('ERROR ACCOUNT [ ** utilizador inválido **  ]')
   },
   async changeAccountNextStageByEmail (email, nextStage) {
     const user = await this.checkAccountEmail(email)
@@ -326,7 +349,7 @@ module.exports = {
       const result = await this._changeAccountNextStage(_id, nextStage)
       return result
     }
-    return null
+    return resultOutputError('ERROR ACCOUNT [ ** utilizador inválido **  ]')
   },
   async sendPredefinedMail (opt) {
     const result = await this._sendPredefinedMail(opt)

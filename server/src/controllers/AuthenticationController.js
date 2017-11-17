@@ -1,3 +1,5 @@
+import { currentId } from 'async_hooks';
+
 const User = require('../models/User')
 const AccountManager = require('../utils/AccountManager')
 const jwt = require('jsonwebtoken')
@@ -165,18 +167,18 @@ async function _signout (main) {
 async function _passwordRecovery (payload) {
   try {
     let checkAccountStatus = null
-    let accountUser = null
+    let currentUser = null
     let accountResult
     const {email, code, password, confirmPassword} = payload.REQ_INPUTS
-    accountUser = await AccountManager.checkAccountEmail(email)
-    if (accountUser) {
+    currentUser = await AccountManager.checkAccountEmail(email)
+    if (currentUser) {
       console.log('DEBUG _passwordRecovery.checkAccountEmail [email checked]')
       if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_EMAIL) {
-        accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.onPasswordRecoveryCode)
+        accountResult = await AccountManager.changeAccountNextStageByUser(currentUser, AccountManager.onPasswordRecoveryCode)
         if (accountResult.iook) {
           console.log('DEBUG changeAccountNextStageByUser [account Stage changed to onPasswordRecoveryCode = ' + AccountManager.onPasswordRecoveryCode + ']')
           const optionmail = {
-            email: accountUser.email,
+            email: currentUser.email,
             accountStatus: accountResult.data.accountStatus,
             nextStage: accountResult.data.nextStage
           }
@@ -194,7 +196,7 @@ async function _passwordRecovery (payload) {
       }
       if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_CODE || payload.REQ_ACTION === options.ACCOUNT_RECOVERY_RESET) {
         if (code) {
-          const codeValidator = await AccountManager.codeValidator(accountUser, code)
+          const codeValidator = await AccountManager.codeValidator(currentUser, code)
           if (codeValidator.iook) {
             console.log('DEBUG codeValidator [código valido!!!}')
           } else {
@@ -206,7 +208,7 @@ async function _passwordRecovery (payload) {
         }
       }
       if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_CODE) {
-        accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.onPasswordRecoveryChange)
+        accountResult = await AccountManager.changeAccountNextStageByUser(currentUser, AccountManager.onPasswordRecoveryChange)
         if (accountResult.iook) {
           console.log(accountResult)
         } else {
@@ -216,9 +218,9 @@ async function _passwordRecovery (payload) {
       }
       if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_RESET) {
         if ((password && confirmPassword) || password === confirmPassword) {
-          const resetPassword = await AccountManager.resetPassword(accountUser, password, confirmPassword)
+          const resetPassword = await AccountManager.resetPassword(currentUser, code, password)
           if (resetPassword.iook) {
-            accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.onAccountValidation)
+            accountResult = await AccountManager.changeAccountNextStageByUser(currentUser, AccountManager.onAccountValidation)
             if (accountResult.iook) {
               console.log(accountResult)
             } else {
@@ -233,7 +235,7 @@ async function _passwordRecovery (payload) {
           throw new Error('As password´s não estão correctas. Por favor verifique se esta a indicar as password´s iguais.')
         }
       }
-      checkAccountStatus = await AccountManager.checkAccountStatus(AccountManager.mode.PasswordRecovery, accountUser)
+      checkAccountStatus = await AccountManager.checkAccountStatus(AccountManager.mode.PasswordRecovery, currentUser)
       if (checkAccountStatus) {
         return checkAccountStatus
       } else {
