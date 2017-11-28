@@ -39,9 +39,11 @@ export default {
         const responses = error.response
         const respStatus = responses.status
         switch (respStatus) {
-          case 307:
+          case 400:
             console.log(this)
-            global.orcgoto(responses.data.redirect)
+            // global.orcgoto({name: 'account-activation', params: responses.data})
+            global.error = responses.data.error
+            console.log(error)
             break
           default:
             global.error = responses.data.error

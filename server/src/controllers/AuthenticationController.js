@@ -95,7 +95,7 @@ async function _signin (payload) {
     if (!result) {
       return {
         status: 403,
-        output: {error: 'The login info was incorrect'}
+        output: {error: 'The login info was incorrect.'}
       }
     } else {
       const isPasswordValid = await result.validPassword(password)
@@ -127,7 +127,17 @@ async function _signin (payload) {
                   if (ns === AccountManager.onAccountValidationCode) {
                     /**
                      * aqui deve ser enviado um email com o codigo segurança
+                     * depois de validar o codigo com sucesso deve ser feita a seguinte operacao:
+                     *  const usrJson = result.toJSON()
+                        const theToken = jwtSignUser(usrJson)
                      */
+                    const usrJson = result.toJSON()
+                    const theToken = jwtSignUser(usrJson)
+                    checkAccountStatus.output = {
+                      profile: usrJson,
+                      access_token: theToken,
+                      message: 'signin ok'
+                    }
                   }
                   break
                 default:

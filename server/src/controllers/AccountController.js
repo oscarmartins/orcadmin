@@ -44,6 +44,7 @@ function preparams () {
   main.REQ_CONTEX = REQ_CONTEX
   main.REQ_ACTION = REQ_ACTION
   main.REQ_INPUTS = REQ_INPUTS
+  /** use debug mode */
   console.log(main.REQ_CONTEX, main.REQ_ACTION, main.REQ_INPUTS)
   return {isok: true, error: msg}
 }

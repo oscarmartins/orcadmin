@@ -171,6 +171,8 @@ module.exports = {
         result.status = 400
       } else if (accountStatus === this.onAccountValidation && nextStage === this.onAccountValidationCode) {
         result.status = 400
+        result.accountStatus.message = 'Validar Código de Segurança'
+        result.accountStatus.params.selectionMode = 'codevalidation'
       } else if (accountStatus === this.onPasswordRecovery && mode === Modes.PasswordRecovery) {
         result.status = 200
         if (nextStage === this.onPasswordRecovery) {

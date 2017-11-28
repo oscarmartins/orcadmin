@@ -5,5 +5,6 @@ module.exports = {
   logout (payload) { return parameters(2000, 2020, payload) },
   passwordRecoveryEmail (payload) { return parameters(4000, 4010, payload) },
   passwordRecoveryCode (payload) { return parameters(4000, 4020, payload) },
-  passwordRecoveryReset (payload) { return parameters(4000, 4030, payload) }
+  passwordRecoveryReset (payload) { return parameters(4000, 4030, payload) },
+  checkAccountStatus (payload) { return parameters(5000, 5010, payload) }
 }

@@ -41,23 +41,23 @@ const mutations = {
 
 const actions = {
   [types.passwordRecovery] (context, payload) {
-    payload = payload || {}
-    if (payload.hasOwnProperty('selectionMode')) {
-      if (payload.selectionMode === 'email') {
-        payload = apiRoles.passwordRecoveryEmail(payload)
+    let _payload = payload || {}
+    if (_payload.hasOwnProperty('selectionMode')) {
+      if (_payload.selectionMode === 'email') {
+        _payload = apiRoles.passwordRecoveryEmail(_payload)
       }
-      if (payload.selectionMode === 'code') {
-        payload = apiRoles.passwordRecoveryCode(payload)
+      if (_payload.selectionMode === 'code') {
+        _payload = apiRoles.passwordRecoveryCode(_payload)
       }
-      if (payload.selectionMode === 'reset') {
-        payload = apiRoles.passwordRecoveryReset(payload)
+      if (_payload.selectionMode === 'reset') {
+        _payload = apiRoles.passwordRecoveryReset(_payload)
       }
     } else {
-      payload = apiRoles.passwordRecoveryEmail(payload)
+      _payload = apiRoles.passwordRecoveryEmail(_payload)
     }
     const requestOptions = requestOptions || {}
     requestOptions.url = utils.joinUrl(vueAuthInstance.options.baseUrl, '/passwordRecovery')
-    requestOptions[vueAuthInstance.options.requestDataKey] = payload || requestOptions[vueAuthInstance.options.requestDataKey]
+    requestOptions[vueAuthInstance.options.requestDataKey] = _payload || requestOptions[vueAuthInstance.options.requestDataKey]
     requestOptions.method = 'POST'
     requestOptions.withCredentials = vueAuthInstance.options.withCredentials
     debugger

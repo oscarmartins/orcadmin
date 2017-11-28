@@ -20,6 +20,7 @@ import EmailerEdit from '@/components/MailerManager/EmailerEdit'
 import EmailerRemove from '@/components/MailerManager/EmailerRemove'
 
 import vueAuthInstance from '../services/auth.js'
+import AccountService from '../services/AccountService.js'
 
 Vue.use(VueRouter)
 
@@ -124,11 +125,17 @@ const vueRouterInstance = new VueRouter({
   linkActiveClass: 'active'
 })
 
-vueRouterInstance.beforeEach(function (to, from, next) {
+vueRouterInstance.beforeEach(async function (to, from, next) {
   debugger
   if (to.meta && to.meta.auth !== undefined) {
     if (to.meta.auth) {
       debugger
+      const resacr = await AccountService.checkAccountStatus(vueAuthInstance)
+      if (resacr) {
+        debugger
+      }
+      debugger
+
       if (vueAuthInstance.isAuthenticated()) {
         return next()
       } else {
