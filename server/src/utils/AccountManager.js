@@ -109,6 +109,43 @@ module.exports = {
     const result = await Account.find(query)
     return result
   },
+  async fetchAccountStatus (userEmail) {
+    const result = {
+      status: 200,
+      output: {
+        accountStatus: {
+          as: 0,
+          ns: 0,
+          mode: 'fetchAccountStatus',
+          message: 'fetchAccountStatus',
+          params: {
+            selectionMode: 'fetchAccountStatus',
+            email: userEmail
+          }
+        }
+      }
+    }
+    try {
+      const user = await this.checkAccountEmail(userEmail)
+      if (user) {
+        const account = await this.querySelect({user_id: user._id})
+        if (account && account.length === 1) {
+          const accTmp = account[0]
+          result.output.accountStatus.as = accTmp.accountStatus
+          result.output.accountStatus.ns = accTmp.nextStage
+        } else {
+          throw new Error('Nao foi possivel verificar estado da conta.')
+        }
+      } else {
+        throw new Error('O email que indicou não está registado.')
+      }
+    } catch (error) {
+      console.error(error)
+      result.status = 400
+      result.output.accountStatus.message = error
+    }
+    return result
+  },
   async createNewAccount (user) {
     const checkExist = await this.querySelect({user_id: user._id})
     if (checkExist && checkExist.length !== 0) {

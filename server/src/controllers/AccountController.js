@@ -58,6 +58,15 @@ module.exports = {
     const paramValidator = preparams()
     let checkpoint = null
     if (paramValidator.isok) {
+      // checkAccountStatus API
+      if (main.REQ_CONTEX === AuthenticationController.options.CHECKACCOUNTSTATUS) {
+        if (main.REQ_ACTION === AuthenticationController.options.onCheckAccountStatus) {
+          accountStatus()
+        } else {
+          responseSender({status: 400, output: {error: 'REQ_ACTION not found.', isok: false}})
+        }
+        return true
+      }
       if (main.REQ_CONTEX === AuthenticationController.options.ACCOUNT_RECOVERY) {
         let mode = null
         if (main.REQ_ACTION === AuthenticationController.options.ACCOUNT_RECOVERY_EMAIL) {
@@ -131,6 +140,11 @@ async function signout () {
 
 async function passwordRecovery () {
   const result = await AuthenticationController.passwordRecovery(main)
+  responseSender(result)
+}
+
+async function accountStatus () {
+  const result = await AuthenticationController.accountStatus(main)
   responseSender(result)
 }
 

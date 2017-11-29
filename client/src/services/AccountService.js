@@ -7,20 +7,18 @@ export default {
     if (user) {
       const params = methods.checkAccountStatus(JSON.parse(user))
       const requestOptions = requestOptions || {}
-      requestOptions.url = utils.joinUrl(vueAuthInstance.options.baseUrl, '/passwordRecovery')
+      requestOptions.url = utils.joinUrl(vueAuthInstance.options.baseUrl, '/services')
       requestOptions[vueAuthInstance.options.requestDataKey] = params || requestOptions[vueAuthInstance.options.requestDataKey]
       requestOptions.method = 'POST'
       requestOptions.withCredentials = vueAuthInstance.options.withCredentials
-      debugger
-      const result = await vueAuthInstance.$http(requestOptions).then(function (response) {
+      return await vueAuthInstance.$http(requestOptions).then(function (response) {
         debugger
         return response
       }).catch((error) => {
         debugger
         console.log(error)
+        return null
       })
-      console.log(result)
     }
-    return false
   }
 }

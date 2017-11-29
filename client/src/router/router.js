@@ -125,30 +125,33 @@ const vueRouterInstance = new VueRouter({
   linkActiveClass: 'active'
 })
 
-vueRouterInstance.beforeEach(async function (to, from, next) {
-  debugger
-  if (to.meta && to.meta.auth !== undefined) {
-    if (to.meta.auth) {
-      debugger
-      const resacr = await AccountService.checkAccountStatus(vueAuthInstance)
-      if (resacr) {
-        debugger
-      }
-      debugger
+function redirectLogin () {
+  // vueRouterInstance.push({ name: 'login' })
+  // return next('/login')
+  location.href = '/login'
+}
 
+vueRouterInstance.beforeEach(async function (to, from, next) {
+  try {
+    if (to.meta && to.meta.auth) {
       if (vueAuthInstance.isAuthenticated()) {
-        return next()
-      } else {
-        // vueRouterInstance.push({ name: 'login' })
-        // return next('/login')
-        location.href = '/login'
+        const resacr = await AccountService.checkAccountStatus(vueAuthInstance)
+        debugger
+        if (resacr) {
+          debugger
+          if (resacr.data.accountStatus.as === 10000 && resacr.data.accountStatus.ns === 11000) {
+            redirectLogin() // redirect to code validator
+            return false
+          }
+        }
       }
-    } else {
-      return next()
+      redirectLogin()
+      return false
     }
-  } else {
     return next()
+  } catch (error) {
+    redirectLogin()
+    return false
   }
 })
-
 export default vueRouterInstance

@@ -12,6 +12,9 @@ module.exports = (app) => {
   app.post('/logout', AccountController.execute)
   app.post('/passwordRecovery', AccountController.execute)
 
+  app.post('/services', AccountController.execute)
+  app.get('/services', AccountController.execute)
+
   app.get('/emailer', isAuthenticated, MailerController.fetchProfiles)
   app.get('/emailer/:profileid', isAuthenticated, MailerController.retrieveProfileById)
   app.post('/emailer', isAuthenticated, MailerController.new)

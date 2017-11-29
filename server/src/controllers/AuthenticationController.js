@@ -18,7 +18,9 @@ const options = {
   onAccountValidation: 10100,
   onAccountValidationCode: 10200,
   onPasswordRecovery: 20100,
-  onPasswordRecoveryCode: 20200
+  onPasswordRecoveryCode: 20200,
+  CHECKACCOUNTSTATUS: 5000,
+  onCheckAccountStatus: 5010
 }
 
 function _resolveResponse (res, result) {
@@ -119,29 +121,14 @@ async function _signin (payload) {
               message: 'signin ok'
             }
           } else {
-            console.log('TODO')
-            if (checkAccountStatus.status === 400) {
-              const {as, ns} = checkAccountStatus.accountStatus
-              switch (as) {
-                case AccountManager.onAccountValidation:
-                  if (ns === AccountManager.onAccountValidationCode) {
-                    /**
-                     * aqui deve ser enviado um email com o codigo segurança
-                     * depois de validar o codigo com sucesso deve ser feita a seguinte operacao:
-                     *  const usrJson = result.toJSON()
-                        const theToken = jwtSignUser(usrJson)
-                     */
-                    const usrJson = result.toJSON()
-                    const theToken = jwtSignUser(usrJson)
-                    checkAccountStatus.output = {
-                      profile: usrJson,
-                      access_token: theToken,
-                      message: 'signin ok'
-                    }
-                  }
-                  break
-                default:
-                  break
+            const usrJson = result.toJSON()
+            const theToken = jwtSignUser(usrJson)
+            return {
+              status: 200,
+              output: {
+                profile: usrJson,
+                access_token: theToken,
+                message: 'signin ok'
               }
             }
           }
@@ -277,6 +264,20 @@ async function _passwordRecovery (payload) {
   }
 }
 
+async function _accountStatus (payload) {
+  try {
+    const {email} = payload.REQ_INPUTS
+    const accountUser = await AccountManager.fetchAccountStatus(email)
+    return accountUser
+  } catch (error) {
+    console.log('Error: ' + error)
+    return {
+      status: 500,
+      output: {error: error.message || 'An error has occured trying to check account status'}
+    }
+  }
+}
+
 module.exports = {
   options: options,
   async signup (payload) {
@@ -293,6 +294,10 @@ module.exports = {
   },
   async passwordRecovery (main) {
     const result = await _passwordRecovery(main)
+    return result
+  },
+  async accountStatus (main) {
+    const result = await _accountStatus(main)
     return result
   },
   async logout (req, res) {
