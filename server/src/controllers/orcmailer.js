@@ -83,7 +83,11 @@ module.exports = {
 
       transporter.sendMail(message, (error, info) => {
         if (error) {
-          return console.log(error)
+          let maillogerror = '*** email error logger ***\n'
+          maillogerror += error
+          maillogerror += '\n'
+          maillogerror += 'message= ' + JSON.stringify(message)
+          return console.log(maillogerror)
         }
         console.log('Message sent: %s', info.messageId)
         console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info))

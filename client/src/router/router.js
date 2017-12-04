@@ -8,6 +8,7 @@ import ViewSong from '@/components/ViewSong/Index'
 import EditSong from '@/components/EditSong'
 
 import PasswordRecovery from '@/components/PasswordRecovery'
+import AccountCodeVerification from '@/components/AccountCodeVerification'
 
 import Logout from '@/components/globals/Logout'
 
@@ -48,6 +49,12 @@ const routes = [
     name: 'passwordRecovery',
     component: PasswordRecovery,
     meta: { auth: false, title: 'Password Recovery to existing account' }
+  },
+  {
+    path: '/AccountCodeVerification',
+    name: 'AccountCodeVerification',
+    component: AccountCodeVerification,
+    meta: { auth: true, title: 'Account Code Verification' }
   },
   {
     path: '/songs',
@@ -130,17 +137,27 @@ function redirectLogin () {
   // return next('/login')
   location.href = '/login'
 }
+function redirectAccountCodeVerification () {
+  // vueRouterInstance.push({ name: 'login' })
+  // return next('/login')
+  location.href = '/AccountCodeVerification'
+}
 
 vueRouterInstance.beforeEach(async function (to, from, next) {
+  let result = null
   try {
     if (to.meta && to.meta.auth) {
       if (vueAuthInstance.isAuthenticated()) {
-        const resacr = await AccountService.checkAccountStatus(vueAuthInstance)
         debugger
-        if (resacr) {
+        result = await AccountService.checkAccountStatus(vueAuthInstance)
+        debugger
+        if (result) {
           debugger
-          if (resacr.data.accountStatus.as === 10000 && resacr.data.accountStatus.ns === 11000) {
-            redirectLogin() // redirect to code validator
+          if (result.data.accountStatus.as === 10000 && result.data.accountStatus.ns === 11000) {
+            result = await AccountService.generateAccountCodeVerification(vueAuthInstance)
+            if (result) {
+              redirectAccountCodeVerification() // redirect to code validator
+            }
             return false
           }
         }

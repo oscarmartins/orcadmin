@@ -25,14 +25,31 @@ const Modes = {
   Signup: 'Signup',
   PasswordRecovery: 'PasswordRecovery'
 }
-
-module.exports = {
+const OPTIONS = {
+  SIGNUP: 1000,
+  SIGNIN: 2000,
+  ACCOUNT_VERIFY: 3000,
+  ACCOUNT_RECOVERY: 4000,
+  ACCOUNT_RECOVERY_EMAIL: 4010,
+  ACCOUNT_RECOVERY_CODE: 4020,
+  ACCOUNT_RECOVERY_RESET: 4030,
+  ACCOUNT_RECOVERY_RESUME: 40102030,
+  NEW_SIGNUP: 1010,
+  ON_SIGNIN: 2010,
+  ON_SIGNOUT: 2020,
   accountValid: 101010,
   onAccountValidation: 10000,
   onAccountValidationCode: 11000,
   onPasswordRecovery: 20000,
   onPasswordRecoveryCode: 21000,
   onPasswordRecoveryChange: 22000,
+  CHECKACCOUNTSTATUS: 5000,
+  onCheckAccountStatus: 5010,
+  onGenerateAccountCode: 5020
+}
+
+module.exports = {
+  options: OPTIONS,
   mode: Modes,
   backoffice: {
     initAccounts: function () {
@@ -154,8 +171,8 @@ module.exports = {
       const account = await this.getAccountModel()
       account.user_id = user._id
       account.code = null
-      account.accountStatus = this.onAccountValidation
-      account.nextStage = this.onAccountValidationCode
+      account.accountStatus = this.options.onAccountValidation
+      account.nextStage = this.options.onAccountValidationCode
       account.dateCreated = new Date()
       account.dateUpdated = new Date()
       /** */
@@ -198,33 +215,33 @@ module.exports = {
       result.accountStatus.as = accountStatus
       result.accountStatus.ns = nextStage
 
-      if (accountStatus === this.accountValid && nextStage === this.accountValid) {
+      if (accountStatus === this.options.accountValid && nextStage === this.options.accountValid) {
         result.status = 200
         if (mode === Modes.PasswordRecovery) {
           result.accountStatus.message = 'A sua password foi recupera com sucesso. '
           result.accountStatus.params.selectionMode = 'resume'
         }
-      } else if (accountStatus === this.onAccountValidationCode && nextStage === this.onAccountValidationCode) {
+      } else if (accountStatus === this.options.onAccountValidationCode && nextStage === this.options.onAccountValidationCode) {
         result.status = 400
-      } else if (accountStatus === this.onAccountValidation && nextStage === this.onAccountValidationCode) {
+      } else if (accountStatus === this.options.onAccountValidation && nextStage === this.options.onAccountValidationCode) {
         result.status = 400
         result.accountStatus.message = 'Validar Código de Segurança'
         result.accountStatus.params.selectionMode = 'codevalidation'
-      } else if (accountStatus === this.onPasswordRecovery && mode === Modes.PasswordRecovery) {
+      } else if (accountStatus === this.options.onPasswordRecovery && mode === Modes.PasswordRecovery) {
         result.status = 200
-        if (nextStage === this.onPasswordRecovery) {
+        if (nextStage === this.options.onPasswordRecovery) {
           result.accountStatus.params.selectionMode = 'email'
         }
-        if (nextStage === this.onPasswordRecoveryCode) {
+        if (nextStage === this.options.onPasswordRecoveryCode) {
           result.accountStatus.message = 'Enviamos um email com o código de segurança. Obrigado.'
           result.accountStatus.params.selectionMode = 'code'
         }
-        if (nextStage === this.onPasswordRecoveryChange) {
+        if (nextStage === this.options.onPasswordRecoveryChange) {
           result.accountStatus.message = 'Código de segurança foi aceite.'
           result.accountStatus.params.selectionMode = 'passwords'
         }
       } else {
-        if (accountStatus === this.onPasswordRecovery && mode === Modes.Signin) {
+        if (accountStatus === this.options.onPasswordRecovery && mode === Modes.Signin) {
           const {code} = account[0]
           const forceUPD = await this.activateAccountAction(user, code)
           if (forceUPD.iook) {
@@ -257,7 +274,7 @@ module.exports = {
         const res = await this.querySelect({user_id: user._id, accountStatus: accountStatus, nextStage: nextStage})
         if (res && res.length === 1) {
           const account = res[0]
-          if (accountStatus === this.onPasswordRecovery && nextStage === this.onPasswordRecoveryCode) {
+          if (accountStatus === this.options.onPasswordRecovery && nextStage === this.options.onPasswordRecoveryCode) {
             if (account.code !== null) {
               await this.notificator.sendSecurityCodeByEmail(user.email, 200, account.code)
               return resultOutputSuccess('email enviado com sucesso!! ')
@@ -276,7 +293,7 @@ module.exports = {
     }
   },
   async _changeAccountNextStage (id, ns) {
-    if (ns === this.onPasswordRecoveryCode) {
+    if (ns === this.options.onPasswordRecoveryCode) {
       // 1 - check : accountStatus equals onPasswordRecovery
       // 2 - generate : code
       // 3 - update - account update [code and nextStage]
@@ -286,8 +303,8 @@ module.exports = {
         const criteria = {user_id: account.user_id}
         const code = uuid()
         const query = {
-          accountStatus: this.onPasswordRecovery,
-          nextStage: this.onPasswordRecoveryCode,
+          accountStatus: this.options.onPasswordRecovery,
+          nextStage: this.options.onPasswordRecoveryCode,
           code: code,
           dateUpdated: new Date()
         }
@@ -301,8 +318,8 @@ module.exports = {
       } else {
         return resultOutputError('ERROR ACCOUNT [ ** não foi encontrada nenhuma conta com o user_id **  ]')
       }
-    }// ns === this.onPasswordRecoveryCode
-    if (ns === this.onPasswordRecoveryChange) {
+    }// ns === this.options.onPasswordRecoveryCode
+    if (ns === this.options.onPasswordRecoveryChange) {
       // 1 - check : accountStatus equals onPasswordRecovery
       // 2 - generate : code
       // 3 - update - account update [code and nextStage]
@@ -311,8 +328,8 @@ module.exports = {
         const account = accounts[0]
         const criteria = {user_id: account.user_id}
         const query = {
-          accountStatus: this.onPasswordRecovery,
-          nextStage: this.onPasswordRecoveryChange,
+          accountStatus: this.options.onPasswordRecovery,
+          nextStage: this.options.onPasswordRecoveryChange,
           dateUpdated: new Date()
         }
         const resultUPD = await Account.update(criteria, query)
@@ -325,7 +342,7 @@ module.exports = {
       } else {
         return resultOutputError('ERROR ACCOUNT [ ** não foi encontrada nenhuma conta com o user_id **  ]')
       }
-    }// ns === this.onPasswordRecoveryChange
+    }// ns === this.options.onPasswordRecoveryChange
     return resultOutputError('ERROR VALIDATION [ ** o NextStage que pretende mudar não é reconhecido **  ]')
   },
   async activateAccountAction (user, code) {
@@ -337,8 +354,8 @@ module.exports = {
       }
       const query = {
         code: null,
-        accountStatus: this.accountValid,
-        nextStage: this.accountValid,
+        accountStatus: this.options.accountValid,
+        nextStage: this.options.accountValid,
         dateUpdated: new Date()
       }
       const accountCode = await this.querySelect(criteria)
@@ -384,11 +401,18 @@ module.exports = {
   async codeValidator (user, code) {
     if (user) {
       const {_id} = user
-      const accountCode = await this.querySelect({user_id: _id, code: code})
+      let accountCode = await this.querySelect({user_id: _id, code: code})
       if (accountCode && accountCode.length === 1) {
         return resultOutputDataOk(accountCode[0])
       } else {
-        return resultOutputError('ERROR ACCOUNT [ ** não foi encontrada nenhuma conta com o user_id **  ]')
+        let err = ''
+        accountCode = await this.querySelect({user_id: _id})
+        if (accountCode && accountCode.length === 1) {
+          err = 'O código de segurança que indicou não está correcto. Por favor verifique se esta a usar o código válido. Obrigado.'
+        } else {
+          err = 'ERROR ACCOUNT [ ** não foi encontrada nenhuma conta com o user_id **  ]'
+        }
+        return resultOutputError(err)
       }
     }
     return resultOutputError('ERROR ACCOUNT [ ** utilizador inválido **  ]')

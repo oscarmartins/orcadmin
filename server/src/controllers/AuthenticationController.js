@@ -3,26 +3,6 @@ const AccountManager = require('../utils/AccountManager')
 const jwt = require('jsonwebtoken')
 const config = require('../config/config')
 
-const options = {
-  SIGNUP: 1000,
-  SIGNIN: 2000,
-  ACCOUNT_VERIFY: 3000,
-  ACCOUNT_RECOVERY: 4000,
-  ACCOUNT_RECOVERY_EMAIL: 4010,
-  ACCOUNT_RECOVERY_CODE: 4020,
-  ACCOUNT_RECOVERY_RESET: 4030,
-  ACCOUNT_RECOVERY_RESUME: 40102030,
-  NEW_SIGNUP: 1010,
-  ON_SIGNIN: 2010,
-  ON_SIGNOUT: 2020,
-  onAccountValidation: 10100,
-  onAccountValidationCode: 10200,
-  onPasswordRecovery: 20100,
-  onPasswordRecoveryCode: 20200,
-  CHECKACCOUNTSTATUS: 5000,
-  onCheckAccountStatus: 5010
-}
-
 function _resolveResponse (res, result) {
   if (result.status === 200) {
     res.send(result.output)
@@ -184,10 +164,10 @@ async function _passwordRecovery (payload) {
     accountUser = await AccountManager.checkAccountEmail(email)
     if (accountUser) {
       console.log('DEBUG _passwordRecovery.checkAccountEmail [email checked]')
-      if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_EMAIL) {
-        accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.onPasswordRecoveryCode)
+      if (payload.REQ_ACTION === AccountManager.options.ACCOUNT_RECOVERY_EMAIL) {
+        accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.options.onPasswordRecoveryCode)
         if (accountResult.iook) {
-          console.log('DEBUG changeAccountNextStageByUser [account Stage changed to onPasswordRecoveryCode = ' + AccountManager.onPasswordRecoveryCode + ']')
+          console.log('DEBUG changeAccountNextStageByUser [account Stage changed to onPasswordRecoveryCode = ' + AccountManager.options.onPasswordRecoveryCode + ']')
           const optionmail = {
             email: accountUser.email,
             accountStatus: accountResult.data.accountStatus,
@@ -205,7 +185,7 @@ async function _passwordRecovery (payload) {
           throw new Error(accountResult.error)
         }
       }
-      if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_CODE || payload.REQ_ACTION === options.ACCOUNT_RECOVERY_RESET) {
+      if (payload.REQ_ACTION === AccountManager.options.ACCOUNT_RECOVERY_CODE || payload.REQ_ACTION === AccountManager.options.ACCOUNT_RECOVERY_RESET) {
         if (code) {
           const codeValidator = await AccountManager.codeValidator(accountUser, code)
           if (codeValidator.iook) {
@@ -218,8 +198,8 @@ async function _passwordRecovery (payload) {
           throw new Error('O codigo de segurança que indicou não está correcto.')
         }
       }
-      if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_CODE) {
-        accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.onPasswordRecoveryChange)
+      if (payload.REQ_ACTION === AccountManager.options.ACCOUNT_RECOVERY_CODE) {
+        accountResult = await AccountManager.changeAccountNextStageByUser(accountUser, AccountManager.options.onPasswordRecoveryChange)
         if (accountResult.iook) {
           console.log('DEBUG changeAccountNextStageByUser [' + accountResult.success + ']')
         } else {
@@ -227,7 +207,7 @@ async function _passwordRecovery (payload) {
           throw new Error(accountResult.error)
         }
       }
-      if (payload.REQ_ACTION === options.ACCOUNT_RECOVERY_RESET) {
+      if (payload.REQ_ACTION === AccountManager.options.ACCOUNT_RECOVERY_RESET) {
         if ((password && confirmPassword) || password === confirmPassword) {
           const resetPassword = await AccountManager.resetPassword(accountUser, code, password)
           if (resetPassword.iook) {
@@ -278,8 +258,22 @@ async function _accountStatus (payload) {
   }
 }
 
+async function _generateAccountcode (payload) {
+  try {
+    const {email} = payload.REQ_INPUTS
+    const accountUser = await AccountManager.fetchAccountStatus(email)
+    return accountUser
+  } catch (error) {
+    console.log('Error: ' + error)
+    return {
+      status: 500,
+      output: {error: error.message || 'An error has occured trying to check account status'}
+    }
+  }
+}
+
 module.exports = {
-  options: options,
+  options: AccountManager.options,
   async signup (payload) {
     const result = await _signup(payload)
     return result
@@ -298,6 +292,10 @@ module.exports = {
   },
   async accountStatus (main) {
     const result = await _accountStatus(main)
+    return result
+  },
+  async generateAccountcode (main) {
+    const result = await _generateAccountcode(main)
     return result
   },
   async logout (req, res) {

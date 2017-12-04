@@ -62,6 +62,8 @@ module.exports = {
       if (main.REQ_CONTEX === AuthenticationController.options.CHECKACCOUNTSTATUS) {
         if (main.REQ_ACTION === AuthenticationController.options.onCheckAccountStatus) {
           accountStatus()
+        } else if (main.REQ_ACTION === AuthenticationController.options.onGenerateAccountCode) {
+          generateAccountcode()
         } else {
           responseSender({status: 400, output: {error: 'REQ_ACTION not found.', isok: false}})
         }
@@ -145,6 +147,11 @@ async function passwordRecovery () {
 
 async function accountStatus () {
   const result = await AuthenticationController.accountStatus(main)
+  responseSender(result)
+}
+
+async function generateAccountcode () {
+  const result = await AuthenticationController.generateAccountcode(main)
   responseSender(result)
 }
 
