@@ -258,7 +258,7 @@ async function _accountStatus (payload) {
   }
 }
 
-async function _generateAccountcode (payload) {
+async function _generateAccountCode (payload) {
   try {
     const {email} = payload.REQ_INPUTS
     const accountUser = await AccountManager.fetchAccountStatus(email)
@@ -294,8 +294,8 @@ module.exports = {
     const result = await _accountStatus(main)
     return result
   },
-  async generateAccountcode (main) {
-    const result = await _generateAccountcode(main)
+  async generateAccountCode (main) {
+    const result = await _generateAccountCode(main)
     return result
   },
   async logout (req, res) {
