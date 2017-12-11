@@ -261,10 +261,41 @@ async function _accountStatus (payload) {
 async function _generateAccountCode (payload) {
   try {
     const {email} = payload.REQ_INPUTS
-    const accountUser = await AccountManager.fetchAccountStatus(email)
-    return accountUser
+    if (!email) {
+      throw new Error('The email is not valid!! Check the email.')
+    }
+    const accountNext = await AccountManager.changeAccountNextStageByEmail(email, AccountManager.options.onGenerateAccountCode)
+    if (accountNext.iook) {
+      line 296 AccountManager
+    } else {
+      throw new Error(accountNext.error)
+    }
+    return accountNext
   } catch (error) {
     console.log('Error: ' + error)
+    return {
+      status: 500,
+      output: {error: error.message || 'An error has occured trying to check account status'}
+    }
+  }
+}
+
+async function _validateAccountCode (payload) {
+  try {
+    let varTmp = null
+    const {email, code} = payload.REQ_INPUTS
+    if (email && code) {
+      varTmp = await AccountManager.checkAccountEmail(email)
+      if (varTmp) {
+        varTmp = await AccountManager.codeValidator(varTmp, code)
+        if (varTmp && varTmp.iook) {
+          return varTmp
+        } else {
+          throw new Error(varTmp.error)
+        }
+      }
+    }
+  } catch (error) {
     return {
       status: 500,
       output: {error: error.message || 'An error has occured trying to check account status'}
@@ -296,6 +327,10 @@ module.exports = {
   },
   async generateAccountCode (main) {
     const result = await _generateAccountCode(main)
+    return result
+  },
+  async validateAccountCode (main) {
+    const result = await _validateAccountCode(main)
     return result
   },
   async logout (req, res) {

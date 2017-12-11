@@ -1,5 +1,4 @@
 const AccountController = require('./controllers/AccountController')
-// const AuthenticationController = require('./controllers/AuthenticationController')
 const SongsController = require('./controllers/SongsController')
 const BookmarksController = require('./controllers/BookmarksController')
 const HistoriesController = require('./controllers/HistoriesController')

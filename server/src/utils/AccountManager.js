@@ -45,7 +45,8 @@ const OPTIONS = {
   onPasswordRecoveryChange: 22000,
   CHECKACCOUNTSTATUS: 5000,
   onCheckAccountStatus: 5010,
-  onGenerateAccountCode: 5020
+  onGenerateAccountCode: 5020,
+  onValidateAccountCode: 5030
 }
 
 module.exports = {
@@ -292,7 +293,8 @@ module.exports = {
       return resultOutputError('ERROR _sendPredefinedMail [ ** ocorreu um erro, o campo ' + (email ? (accountStatus ? (nextStage ? ' _###_ ' : 'nextStage') : 'accountStatus') : 'email') + ' é requerido!!! **  ]')
     }
   },
-  async _changeAccountNextStage (id, ns) {
+  async _changeAccountNextStage (id, nextState) {
+    const ns = nextState
     if (ns === this.options.onPasswordRecoveryCode) {
       // 1 - check : accountStatus equals onPasswordRecovery
       // 2 - generate : code
@@ -318,8 +320,7 @@ module.exports = {
       } else {
         return resultOutputError('ERROR ACCOUNT [ ** não foi encontrada nenhuma conta com o user_id **  ]')
       }
-    }// ns === this.options.onPasswordRecoveryCode
-    if (ns === this.options.onPasswordRecoveryChange) {
+    } else if (ns === this.options.onPasswordRecoveryChange) {
       // 1 - check : accountStatus equals onPasswordRecovery
       // 2 - generate : code
       // 3 - update - account update [code and nextStage]

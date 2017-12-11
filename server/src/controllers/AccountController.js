@@ -64,6 +64,8 @@ module.exports = {
           accountStatus()
         } else if (main.REQ_ACTION === AuthenticationController.options.onGenerateAccountCode) {
           generateAccountCode()
+        } else if (main.REQ_ACTION === AuthenticationController.options.onGenerateAccountCode) {
+          validateAccountCode()
         } else {
           responseSender({status: 400, output: {error: 'REQ_ACTION not found.', isok: false}})
         }
@@ -152,6 +154,11 @@ async function accountStatus () {
 
 async function generateAccountCode () {
   const result = await AuthenticationController.generateAccountCode(main)
+  responseSender(result)
+}
+
+async function validateAccountCode () {
+  const result = await AuthenticationController.validateAccountCode(main)
   responseSender(result)
 }
 

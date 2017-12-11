@@ -146,15 +146,14 @@ function redirectAccountCodeVerification () {
 vueRouterInstance.beforeEach(async function (to, from, next) {
   let result = null
   try {
-    if (to.meta && to.meta.auth) {
+    if (to.meta && to.meta.auth && to.path !== '/AccountCodeVerification') {
       if (vueAuthInstance.isAuthenticated()) {
-        debugger
         result = await AccountService.checkAccountStatus(vueAuthInstance)
-        debugger
         if (result) {
-          debugger
           if (result.data.accountStatus.as === 10000 && result.data.accountStatus.ns === 11000) {
+            // change account status (generateAccountCodeVerification)
             result = await AccountService.generateAccountCodeVerification(vueAuthInstance)
+            debugger
             if (result) {
               redirectAccountCodeVerification() // redirect to code validator
             }
@@ -165,6 +164,7 @@ vueRouterInstance.beforeEach(async function (to, from, next) {
       redirectLogin()
       return false
     }
+    debugger
     return next()
   } catch (error) {
     redirectLogin()
