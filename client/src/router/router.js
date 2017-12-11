@@ -150,10 +150,13 @@ vueRouterInstance.beforeEach(async function (to, from, next) {
       if (vueAuthInstance.isAuthenticated()) {
         result = await AccountService.checkAccountStatus(vueAuthInstance)
         if (result) {
-          if (result.data.accountStatus.as === 10000 && result.data.accountStatus.ns === 11000) {
-            // change account status (generateAccountCodeVerification)
-            result = await AccountService.generateAccountCodeVerification(vueAuthInstance)
+          const {as, ns} = result.data.accountStatus
+          if ((as === 10000 && ns === 11000) || (as === 5000 && ns === 5020)) {
             debugger
+            result = true
+            if (as === 10000 && ns === 11000) {
+              result = await AccountService.generateAccountCodeVerification(vueAuthInstance)
+            }
             if (result) {
               redirectAccountCodeVerification() // redirect to code validator
             }

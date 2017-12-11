@@ -261,16 +261,23 @@ async function _accountStatus (payload) {
 async function _generateAccountCode (payload) {
   try {
     const {email} = payload.REQ_INPUTS
-    if (!email) {
+    if (email) {
+      const accountNext = await AccountManager.changeAccountNextStageByEmail(email, AccountManager.options.onGenerateAccountCode)
+      if (accountNext.iook) {
+        await AccountManager.notificator.sendSecurityCodeByEmail(email, 200, accountNext.data.code)
+        return {
+          status: 200,
+          output: {
+            data: accountNext,
+            success: 'Foi enviado para o teu email o código de segurança.'
+          }
+        }
+      } else {
+        throw new Error(accountNext.error)
+      }
+    } else {
       throw new Error('The email is not valid!! Check the email.')
     }
-    const accountNext = await AccountManager.changeAccountNextStageByEmail(email, AccountManager.options.onGenerateAccountCode)
-    if (accountNext.iook) {
-      line 296 AccountManager
-    } else {
-      throw new Error(accountNext.error)
-    }
-    return accountNext
   } catch (error) {
     console.log('Error: ' + error)
     return {

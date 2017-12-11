@@ -26,6 +26,9 @@ const Modes = {
   PasswordRecovery: 'PasswordRecovery'
 }
 const OPTIONS = {
+  NEW_CODE_VALIDATION: 100,
+  INVALIDATE_CODE_VALIDATION: -100,
+  KEEP_CODE_VALIDATION: 200,
   SIGNUP: 1000,
   SIGNIN: 2000,
   ACCOUNT_VERIFY: 3000,
@@ -123,9 +126,45 @@ module.exports = {
     return new Account()
   },
   async querySelect (query, filter) {
-    filter = filter | {}
+    filter = filter || {}
     const result = await Account.find(query)
     return result
+  },
+  async changeAccountStatus (id, _as, _ns, codeAction) {
+    try {
+      if (id) {
+        const accounts = await this.querySelect({user_id: id})
+        if (accounts && accounts.length === 1) {
+          const account = accounts[0]
+          const criteria = {user_id: account.user_id}
+          var code = null
+          if (codeAction === OPTIONS.NEW_CODE_VALIDATION) {
+            code = uuid()
+          } else if (codeAction === OPTIONS.KEEP_CODE_VALIDATION) {
+            code = account.code
+          }
+          const query = {
+            accountStatus: _as || account.accountStatus,
+            nextStage: _ns || account.nextStage,
+            code: code,
+            dateUpdated: new Date()
+          }
+          const resultUPD = await Account.update(criteria, query)
+          if (resultUPD && resultUPD.ok === 1) {
+            console.log('**DEBUG Account.update: ', resultUPD)
+            return resultOutput(true, 'alteração de estagio conluida com sucesso.', null, query)
+          } else {
+            throw new Error(' ** ocorreu um erro ao actualizar a conta **  ]')
+          }
+        } else {
+          throw new Error(' ** não foi encontrada nenhuma conta com o user_id **  ]')
+        }
+      } else {
+        throw new Error('[user id] format not valid ')
+      }
+    } catch (error) {
+      return resultOutputError('ERROR ACCOUNT [ ' + error + ' ]')
+    }
   },
   async fetchAccountStatus (userEmail) {
     const result = {
@@ -294,56 +333,43 @@ module.exports = {
     }
   },
   async _changeAccountNextStage (id, nextState) {
+    let _result = null
     const ns = nextState
-    if (ns === this.options.onPasswordRecoveryCode) {
-      // 1 - check : accountStatus equals onPasswordRecovery
-      // 2 - generate : code
-      // 3 - update - account update [code and nextStage]
-      const accounts = await this.querySelect({user_id: id})
-      if (accounts && accounts.length === 1) {
-        const account = accounts[0]
-        const criteria = {user_id: account.user_id}
-        const code = uuid()
-        const query = {
-          accountStatus: this.options.onPasswordRecovery,
-          nextStage: this.options.onPasswordRecoveryCode,
-          code: code,
-          dateUpdated: new Date()
-        }
-        const resultUPD = await Account.update(criteria, query)
-        if (resultUPD && resultUPD.ok === 1) {
-          console.log('**DEBUG Account.update: ', resultUPD)
-          return resultOutput(true, 'alteração de estagio conluida com sucesso.', null, query)
-        } else {
-          return resultOutputError('ERROR ACCOUNT UPDATE [ ** ocorreu um erro ao actualizar a conta **  ]')
-        }
-      } else {
-        return resultOutputError('ERROR ACCOUNT [ ** não foi encontrada nenhuma conta com o user_id **  ]')
-      }
-    } else if (ns === this.options.onPasswordRecoveryChange) {
-      // 1 - check : accountStatus equals onPasswordRecovery
-      // 2 - generate : code
-      // 3 - update - account update [code and nextStage]
-      const accounts = await this.querySelect({user_id: id})
-      if (accounts && accounts.length === 1) {
-        const account = accounts[0]
-        const criteria = {user_id: account.user_id}
-        const query = {
-          accountStatus: this.options.onPasswordRecovery,
-          nextStage: this.options.onPasswordRecoveryChange,
-          dateUpdated: new Date()
-        }
-        const resultUPD = await Account.update(criteria, query)
-        if (resultUPD && resultUPD.ok === 1) {
-          console.log('**DEBUG Account.update: ', resultUPD)
-          return resultOutputDataOk(query)
-        } else {
-          return resultOutputError('ERROR ACCOUNT UPDATE [ ** ocorreu um erro ao actualizar a conta **  ]')
-        }
-      } else {
-        return resultOutputError('ERROR ACCOUNT [ ** não foi encontrada nenhuma conta com o user_id **  ]')
-      }
-    }// ns === this.options.onPasswordRecoveryChange
+    if (ns === OPTIONS.onGenerateAccountCode) {
+    /**
+     * @param {*} id 
+     * @param {*} ns 
+     * @param {*} inst 
+     * - o status da conta tem de ser atualizado para confirmacao / validacao de registo de conta (5000/5020)
+     * - - gerar novo codigo de validacao de conta e finalizar update da conta
+     * - - - enviar email para o user com o codigo de validacao 
+     */
+      _result = await this.changeAccountStatus(id, OPTIONS.onCheckAccountStatus, ns, OPTIONS.NEW_CODE_VALIDATION)
+      return _result
+    } else if (ns === OPTIONS.onPasswordRecoveryCode) {
+    /** 
+     * @param {*} id 
+     * @param {*} ns 
+     * @param {*} inst 
+     * 1 - check : accountStatus equals onPasswordRecovery
+     * 2 - generate : code
+     * 3 - update - account update [code and nextStage]
+     */
+      _result = await this.changeAccountStatus(id, OPTIONS.onPasswordRecovery, ns, OPTIONS.NEW_CODE_VALIDATION)
+      return _result
+    } else if (ns === OPTIONS.onPasswordRecoveryChange) {
+    /** 
+     * 
+     * @param {*} id 
+     * @param {*} ns 
+     * @param {*} inst 
+     * 1 - check : accountStatus equals onPasswordRecovery
+     * 2 - generate : code
+     * 3 - update - account update [code and nextStage]
+    **/
+      _result = await this.changeAccountStatus(id, OPTIONS.onPasswordRecovery, ns, OPTIONS.KEEP_CODE_VALIDATION)
+      return _result
+    }
     return resultOutputError('ERROR VALIDATION [ ** o NextStage que pretende mudar não é reconhecido **  ]')
   },
   async activateAccountAction (user, code) {
@@ -359,8 +385,8 @@ module.exports = {
         nextStage: this.options.accountValid,
         dateUpdated: new Date()
       }
-      const accountCode = await this.querySelect(criteria)
-      if (accountCode && accountCode.length === 1) {
+      const _accountCode = await this.querySelect(criteria)
+      if (_accountCode && _accountCode.length === 1) {
         const accountUpd = await Account.update(criteria, query)
         if (accountUpd && accountUpd.ok === 1) {
           return resultOutputSuccess('a conta foi ativada com sucesso.')
@@ -376,8 +402,8 @@ module.exports = {
   async resetPassword (user, code, password) {
     if (user) {
       const {_id, email} = user
-      const accountCode = await this.querySelect({user_id: _id, code: code})
-      if (accountCode && accountCode.length === 1) {
+      const _accountCode = await this.querySelect({user_id: _id, code: code})
+      if (_accountCode && _accountCode.length === 1) {
         const tmpusr = new User()
         const pwdencript = tmpusr.encryptPassword(password)
         const criteria = {
