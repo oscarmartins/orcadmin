@@ -8,7 +8,15 @@ export default {
       global.showSnackbar({text: response.data.message, context: 'success'})
     })
     .catch((error) => {
-      debugger
+      if (!error.response) {
+        error = {
+          response: {
+            data: {
+              error: 'Servidor em manutenção. tente mais tarde. Obrigado.'
+            }
+          }
+        }
+      }
       global.error = error.response.data.error
       global.showSnackbar({text: global.error, context: 'error'})
       console.log(error)
@@ -21,6 +29,15 @@ export default {
       setTimeout(function (ctx) { ctx.push({name: 'login'}) }, 3800, global.$router)
     })
     .catch((error) => {
+      if (!error.response) {
+        error = {
+          response: {
+            data: {
+              error: 'Servidor em manutenção. tente mais tarde. Obrigado.'
+            }
+          }
+        }
+      }
       global.error = error.response.data.error
       global.showSnackbar({text: global.error, context: 'error'})
       console.log(error)
@@ -36,6 +53,15 @@ export default {
       })
       .catch((error) => {
         debugger
+        if (!error.response) {
+          error = {
+            response: {
+              data: {
+                error: 'Servidor em manutenção. tente mais tarde. Obrigado.'
+              }
+            }
+          }
+        }
         const responses = error.response
         const respStatus = responses.status
         switch (respStatus) {
@@ -60,6 +86,15 @@ export default {
       global.$router.go({ name: 'start' })
     })
     .catch((error) => {
+      if (!error.response) {
+        error = {
+          response: {
+            data: {
+              error: 'Servidor em manutenção. tente mais tarde. Obrigado.'
+            }
+          }
+        }
+      }
       global.error = error.response.data.error
       console.log(error)
     })
