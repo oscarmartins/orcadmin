@@ -56,7 +56,19 @@ module.exports = {
   options: OPTIONS,
   mode: Modes,
   backoffice: {
-    initAccounts: function () {
+    fetchCredentials: function () {
+      return {credential: 'oscar0000000000', passport: 12345678}
+    },
+    /**
+     * credentials: {
+     * credential: 'AAAAAAAAAAAAAA',
+     * passport: 00000000
+     * }
+     */
+    initAccounts: function (credentials) {
+      if (credentials && credentials.credential === this.fetchCredentials().credential && credentials.passport === this.fetchCredentials().passport) {
+        /** get all users and remove accounts */
+      }
     },
     sendAccountsResume: async function (email) {
       // codigo testes
