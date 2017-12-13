@@ -49,7 +49,9 @@ const OPTIONS = {
   CHECKACCOUNTSTATUS: 5000,
   onCheckAccountStatus: 5010,
   onGenerateAccountCode: 5020,
-  onValidateAccountCode: 5030
+  onValidateAccountCode: 5030,
+  backoffice: 123321,
+  backoffice_hardReset: 66666666
 }
 
 module.exports = {
@@ -65,9 +67,18 @@ module.exports = {
      * passport: 00000000
      * }
      */
-    initAccounts: function (credentials) {
+    hardReset: function (credentials) {
       if (credentials && credentials.credential === this.fetchCredentials().credential && credentials.passport === this.fetchCredentials().passport) {
         /** get all users and remove accounts */
+        User.find({}).then(function (a, b, c) {
+          if (a) {
+            console.log(a, b, c)
+          }
+        }).catch(function (err) {
+          if (err) {
+            console.log(err)
+          }
+        })
       }
     },
     sendAccountsResume: async function (email) {

@@ -340,6 +340,22 @@ module.exports = {
     const result = await _validateAccountCode(main)
     return result
   },
+  async backOfficeHardReset () {
+    const resout = {
+      status: 200,
+      output: {
+        error: '',
+        success: ''
+      }
+    }
+    try {
+      throw new Error('error')
+    } catch (error) {
+      resout.status = 400
+      resout.output.error = error
+    }
+    return resout
+  },
   async logout (req, res) {
     try {
       req.session.destroy(function (err) {
