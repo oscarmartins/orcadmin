@@ -115,7 +115,7 @@ module.exports = {
       }
       if (main.REQ_CONTEX === AuthenticationController.options.backoffice) {
         if (main.REQ_ACTION === AuthenticationController.options.backoffice_hardReset) {
-          const _res = await backOfficeHardReset()
+          const _res = await backOfficeHardReset(main.REQ_INPUTS)
           if (_res) {
             console.log(_res)
           }
@@ -131,7 +131,7 @@ module.exports = {
 async function signup () {
   try {
     const result = await AuthenticationController.signup(main.REQ_INPUTS)
-    responseSender(result)
+    return responseSender(result)
   } catch (error) {
     console.log(error)
   }
@@ -140,7 +140,7 @@ async function signup () {
 async function signin () {
   try {
     const result = await AuthenticationController.signin(main.REQ_INPUTS)
-    responseSender(result)
+    return responseSender(result)
   } catch (error) {
     console.log(error)
   }
@@ -148,34 +148,35 @@ async function signin () {
 
 async function signout () {
   const result = await AuthenticationController.signout(main)
-  responseSender(result)
+  return responseSender(result)
 }
 
 async function passwordRecovery () {
   const result = await AuthenticationController.passwordRecovery(main)
-  responseSender(result)
+  return responseSender(result)
 }
 
 async function accountStatus () {
   const result = await AuthenticationController.accountStatus(main)
-  responseSender(result)
+  return responseSender(result)
 }
 
 async function generateAccountCode () {
   const result = await AuthenticationController.generateAccountCode(main)
-  responseSender(result)
+  return responseSender(result)
 }
 
 async function validateAccountCode () {
   const result = await AuthenticationController.validateAccountCode(main)
-  responseSender(result)
+  return responseSender(result)
 }
 
-async function backOfficeHardReset () {
-  const result = await AuthenticationController.backOfficeHardReset()
-  responseSender(result)
+async function backOfficeHardReset (credentials) {
+  const result = await AuthenticationController.backOfficeHardReset(credentials)
+  return responseSender(result)
 }
 
 function responseSender (result) {
   main.httpResponse.status(result.status).send(result.output)
+  return result
 }

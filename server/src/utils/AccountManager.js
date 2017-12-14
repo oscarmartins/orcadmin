@@ -59,7 +59,8 @@ module.exports = {
   mode: Modes,
   backoffice: {
     fetchCredentials: function () {
-      return {credential: 'oscar0000000000', passport: 12345678}
+      /** static mode */
+      return {credential: '111110000000000', passport: 12345678}
     },
     /**
      * credentials: {
@@ -67,18 +68,53 @@ module.exports = {
      * passport: 00000000
      * }
      */
-    hardReset: function (credentials) {
-      if (credentials && credentials.credential === this.fetchCredentials().credential && credentials.passport === this.fetchCredentials().passport) {
-        /** get all users and remove accounts */
-        User.find({}).then(function (a, b, c) {
-          if (a) {
-            console.log(a, b, c)
+    hardReset: async function (credentials) {
+      try {
+        if (credentials && credentials.credential === this.fetchCredentials().credential && credentials.passport === this.fetchCredentials().passport) {
+          /** get all users and remove accounts */
+          const usrs = await User.find().then(function (a) {
+            if (a) {
+              console.log(a)
+            }
+            return a
+          }).catch(function (err) {
+            return resultOutputError(err)
+          })
+          if (usrs instanceof Array) {
+            usrs.forEach(async function (usr, position, allusrs) {
+              const accountsList = await Account.find({user_id: usr._id})
+              if (accountsList instanceof Array) {
+                accountsList.forEach(async function (act, position, allact) {
+                  console.log(act)
+                  const deleteUsr = await User.remove({id: act.user_id}, function (err, doc) {
+                    if (err) {
+                      console.log('AA', err)
+                      return false
+                    } else {
+                      return true
+                    }
+                  })
+                  if (deleteUsr) {
+                    console.log('OK')
+                  } else {
+                    console.log('AA')
+                  }
+                })
+              } else {
+                throw new Error(123)
+              }
+            })
+            const qres = resultOutputSuccess(' foi tudo com os porcos...')
+            qres.data = usrs
+            return qres
+          } else {
+            throw new Error(usrs.error)
           }
-        }).catch(function (err) {
-          if (err) {
-            console.log(err)
-          }
-        })
+        } else {
+          throw new Error(' a sua credencial não é válida.  ')
+        }
+      } catch (error) {
+        return resultOutputError(error)
       }
     },
     sendAccountsResume: async function (email) {

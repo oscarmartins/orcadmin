@@ -340,19 +340,18 @@ module.exports = {
     const result = await _validateAccountCode(main)
     return result
   },
-  async backOfficeHardReset () {
-    const resout = {
-      status: 200,
-      output: {
-        error: '',
-        success: ''
-      }
-    }
+  async backOfficeHardReset (credentials) {
+    const resout = {status: 200, output: {error: '', success: ''}}
     try {
-      throw new Error('error')
+      const accountBackoffice = await AccountManager.backoffice.hardReset(credentials)
+      if (accountBackoffice.iook) {
+        resout.output.success = accountBackoffice.success
+      } else {
+        throw new Error(accountBackoffice.error)
+      }
     } catch (error) {
       resout.status = 400
-      resout.output.error = error
+      resout.output.error = error.message
     }
     return resout
   },
