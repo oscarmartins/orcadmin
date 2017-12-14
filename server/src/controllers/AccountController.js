@@ -115,12 +115,13 @@ module.exports = {
       }
       if (main.REQ_CONTEX === AuthenticationController.options.backoffice) {
         if (main.REQ_ACTION === AuthenticationController.options.backoffice_hardReset) {
-          const _res = backOfficeHardReset()
+          const _res = await backOfficeHardReset()
           if (_res) {
             console.log(_res)
           }
         }
       }
+      return true
     }
     const error = (paramValidator.error && paramValidator.error.length !== 0) ? paramValidator.error : 'Não foi possivel concluir o pedido requerido. Por favor tente mais tarde. Obrigado.'
     responseSender({status: 500, output: {error: error}})
