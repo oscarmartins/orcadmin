@@ -180,3 +180,16 @@ function responseSender (result) {
   main.httpResponse.status(result.status).send(result.output)
   return result
 }
+
+function sendSMS () {
+  const BulkSMS = require('../utils/BulkSMS')
+  const sms = new BulkSMS('', '')
+  sms.send('+351913859014', 'teste', (err, result) => {
+    if (err) {
+      console.log(err)
+      return false
+    }
+    console.log(result)
+    return true
+  })
+}

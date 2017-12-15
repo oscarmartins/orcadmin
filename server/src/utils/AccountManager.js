@@ -71,44 +71,49 @@ module.exports = {
     hardReset: async function (credentials) {
       try {
         if (credentials && credentials.credential === this.fetchCredentials().credential && credentials.passport === this.fetchCredentials().passport) {
-          /** get all users and remove accounts */
-          const usrs = await User.find().then(function (a) {
-            if (a) {
-              console.log(a)
-            }
+
+          const allAccounts = await Account.find().then(function (a) {
             return a
           }).catch(function (err) {
             return resultOutputError(err)
           })
-          if (usrs instanceof Array) {
-            usrs.forEach(async function (usr, position, allusrs) {
-              const accountsList = await Account.find({user_id: usr._id})
-              if (accountsList instanceof Array) {
-                accountsList.forEach(async function (act, position, allact) {
-                  console.log(act)
-                  const deleteUsr = await User.remove({id: act.user_id}, function (err, doc) {
-                    if (err) {
-                      console.log('AA', err)
-                      return false
-                    } else {
-                      return true
-                    }
-                  })
-                  if (deleteUsr) {
-                    console.log('OK')
-                  } else {
-                    console.log('AA')
-                  }
-                })
+
+          if (allAccounts instanceof Array) {
+            const idsusr = []
+            allAccounts.forEach(async function (account, p1, A1) {
+              const tmpusrid = account.user_id
+
+              const deleteUsr = await User.remove({_id: tmpusrid}, function (err, resultoper) {
+                if (err) {
+                  return false
+                } else {
+                  return true
+                }
+              })
+              idsusr.push(tmpusrid)
+              if (deleteUsr) {
               } else {
-                throw new Error(123)
+                throw new Error(`'NAO FOI POSSIVEL REMOVER ESTE UTILIZADOR ID [' ${tmpusrid} ']'`)
               }
             })
+            idsusr.forEach(async function (theid, p, allids) {
+              const deleteAccount = await Account.remove({user_id: theid}, function (err, resultoper) {
+                if (err) {
+                  console.log(`'NAO FOI POSSIVEL REMOVER A CONTA COM ESTE UTILIZADOR ID [' ${theid} ']'`)
+                }
+                return resultoper
+              })
+              if (deleteAccount/** TODO rever mensagens */) {
+              } else {
+                throw new Error(`'NAO FOI POSSIVEL REMOVER A CONTA COM ESTE UTILIZADOR ID [' ${theid} ']'`)
+              }
+            })
+
             const qres = resultOutputSuccess(' foi tudo com os porcos...')
-            qres.data = usrs
+            qres.data = allAccounts
             return qres
           } else {
-            throw new Error(usrs.error)
+            throw new Error(allAccounts.error)
           }
         } else {
           throw new Error(' a sua credencial não é válida.  ')
