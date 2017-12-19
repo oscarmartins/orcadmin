@@ -87,6 +87,17 @@ module.exports = {
               const tmpusrid = allAccounts[p].user_id
               idsusr.push(tmpusrid)
             }
+
+            for (p = 0; p < idsusr.length; p++) {
+              const tmpusrid = idsusr[p]
+              const deleteUsr = await User.remove({_id: tmpusrid}, function (err, resultoper) {
+                if (err) {
+                  usersFails.push(`'ERRO: NAO FOI POSSIVEL REMOVER ESTE UTILIZADOR ID[${tmpusrid}]'`)
+                }
+                return resultoper
+              })
+            }
+
             await allAccounts.forEach(async function (account, p1, A1) {
               const tmpusrid = account.user_id
               idsusr.push(tmpusrid)
