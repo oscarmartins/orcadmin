@@ -346,6 +346,9 @@ module.exports = {
       const accountBackoffice = await AccountManager.backoffice.hardReset(credentials)
       if (accountBackoffice.iook) {
         resout.output.success = accountBackoffice.success
+        if (accountBackoffice.data) {
+          resout.output.data = accountBackoffice.data
+        }
       } else {
         throw new Error(accountBackoffice.error)
       }
