@@ -121,6 +121,11 @@ module.exports = {
           }
         }
       }
+      if (main.REQ_CONTEX === 659832) {
+        if (main.REQ_ACTION === 659832) {
+          sendSMS(main.REQ_INPUTS)
+        }
+      }
       return true
     }
     const error = (paramValidator.error && paramValidator.error.length !== 0) ? paramValidator.error : 'Não foi possivel concluir o pedido requerido. Por favor tente mais tarde. Obrigado.'
@@ -181,7 +186,16 @@ function responseSender (result) {
   return result
 }
 
-function sendSMS () {
+function sendSMS (credentials) {
+  try {
+    const buddySecret = require('../utils/SecretFriendSms')
+    buddySecret.credentials(credentials.username, credentials.password)
+    const responses = buddySecret.sentBulkSms()
+    main.httpResponse.status(responses.status).send({result: responses.output})
+  } catch (error) {
+    console.log(error)
+  }
+  /**
   const BulkSMS = require('../utils/BulkSMS')
   const sms = new BulkSMS('', '')
   sms.send('+351913859014', 'teste', (err, result) => {
@@ -192,4 +206,5 @@ function sendSMS () {
     console.log(result)
     return true
   })
+  */
 }

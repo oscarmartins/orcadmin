@@ -71,7 +71,6 @@ module.exports = {
     hardReset: async function (credentials) {
       try {
         if (credentials && credentials.credential === this.fetchCredentials().credential && credentials.passport === this.fetchCredentials().passport) {
-
           const allAccounts = await Account.find().then(function (a) {
             return a
           }).catch(function (err) {
@@ -80,36 +79,85 @@ module.exports = {
 
           if (allAccounts instanceof Array) {
             const idsusr = []
-            allAccounts.forEach(async function (account, p1, A1) {
-              const tmpusrid = account.user_id
-
-              const deleteUsr = await User.remove({_id: tmpusrid}, function (err, resultoper) {
-                if (err) {
-                  return false
-                } else {
-                  return true
-                }
-              })
+            const usersSuccess = []
+            const usersFails = []
+            const accountsSuccess = []
+            const accountsFails = []
+            for (var p = 0; p < allAccounts.length; p++) {
+              const tmpusrid = allAccounts[p].user_id
               idsusr.push(tmpusrid)
-              if (deleteUsr) {
-              } else {
-                throw new Error(`'NAO FOI POSSIVEL REMOVER ESTE UTILIZADOR ID [' ${tmpusrid} ']'`)
-              }
+            }
+            await allAccounts.forEach(async function (account, p1, A1) {
+              const tmpusrid = account.user_id
+              idsusr.push(tmpusrid)
             })
-            idsusr.forEach(async function (theid, p, allids) {
-              const deleteAccount = await Account.remove({user_id: theid}, function (err, resultoper) {
+            await idsusr.forEach(async function (theid, p, allids) {
+              const deleteUsr = await User.remove({_id: theid}, function (err, resultoper) {
                 if (err) {
-                  console.log(`'NAO FOI POSSIVEL REMOVER A CONTA COM ESTE UTILIZADOR ID [' ${theid} ']'`)
+                  usersFails.push(`'ERRO: NAO FOI POSSIVEL REMOVER ESTE UTILIZADOR ID[${theid}]'`)
                 }
                 return resultoper
               })
-              if (deleteAccount/** TODO rever mensagens */) {
+              if (deleteUsr) {
+                if (deleteUsr.result.n === 1 && deleteUsr.result.ok === 1) {
+                  usersSuccess.push(`'UTILIZADOR REMOVIDO ID[${theid}]'`)
+                } else {
+                  usersFails.push(`'NAO FOI POSSIVEL REMOVER ESTE UTILIZADOR ID[${theid}]'`)
+                }
               } else {
-                throw new Error(`'NAO FOI POSSIVEL REMOVER A CONTA COM ESTE UTILIZADOR ID [' ${theid} ']'`)
+                usersFails.push(`'NAO FOI POSSIVEL REMOVER ESTE UTILIZADOR ID[${theid}]'`)
+                throw new Error(`'NAO FOI POSSIVEL REMOVER ESTE UTILIZADOR ID[${theid}]'`)
+              }
+
+              const deleteAccount = await Account.remove({user_id: theid}, function (err, resultoper) {
+                if (err) {
+                  accountsFails.push(`'NAO FOI POSSIVEL REMOVER A CONTA COM ESTE UTILIZADOR ID[${theid}]'`)
+                }
+                return resultoper
+              })
+              if (deleteAccount) {
+                if (deleteAccount.result.ns === 1 && deleteAccount.result.ok === 1) {
+                  accountsSuccess.push`'CONTA REMOVIDA ID[${theid}]'`
+                } else {
+                  accountsFails.push(`'NAO FOI POSSIVEL REMOVER A CONTA COM ESTE UTILIZADOR ID[${theid}]'`)
+                }
+              } else {
+                accountsFails.push(`'NAO FOI POSSIVEL REMOVER A CONTA COM ESTE UTILIZADOR ID[${theid}]'`)
+                throw new Error(`'NAO FOI POSSIVEL REMOVER A CONTA COM ESTE UTILIZADOR ID[${theid}]'`)
               }
             })
+            var resume = 'Resumo: \n'
 
-            const qres = resultOutputSuccess(' foi tudo com os porcos...')
+            await usersSuccess.forEach(function (usrnow, p, all) {
+              if (p === 0) {
+                resume += 'Removidos com sucesso: \n'
+              }
+              resume += usrnow
+              resume += '\n'
+            })
+            await usersFails.forEach(function (usrnow, p, all) {
+              if (p === 0) {
+                resume += 'Removidos sem sucesso: \n'
+              }
+              resume += usrnow
+              resume += '\n'
+            })
+            await accountsSuccess.forEach(function (usrnow, p, all) {
+              if (p === 0) {
+                resume += 'Contas removidas com sucesso: \n'
+              }
+              resume += usrnow
+              resume += '\n'
+            })
+            await accountsFails.forEach(function (usrnow, p, all) {
+              if (p === 0) {
+                resume += 'Contas removidas sem sucesso: \n'
+              }
+              resume += usrnow
+              resume += '\n'
+            })
+
+            const qres = resultOutputSuccess(resume)
             qres.data = allAccounts
             return qres
           } else {
