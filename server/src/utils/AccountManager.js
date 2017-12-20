@@ -167,12 +167,12 @@ module.exports = {
           const resultUPD = await Account.update(criteria, query)
           if (resultUPD && resultUPD.ok === 1) {
             console.log('**DEBUG Account.update: ', resultUPD)
-            return resultOutput(true, 'alteração de estagio conluida com sucesso.', null, query)
+            return resultOutput(true, 'alteracao do estagio concluida com sucesso.', null, query)
           } else {
             throw new Error(' ** ocorreu um erro ao actualizar a conta **  ]')
           }
         } else {
-          throw new Error(' ** não foi encontrada nenhuma conta com o user_id **  ]')
+          throw new Error(' ** nao foi encontrada nenhuma conta com o user_id **  ]')
         }
       } else {
         throw new Error('[user id] format not valid ')

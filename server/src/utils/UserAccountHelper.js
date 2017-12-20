@@ -2,7 +2,7 @@ const User = require('../models/User')
 const Accounts = require('../models/Accounts')
 const EmailSender = require('../controllers/orcmailer')
 const uuid = require('uuid')
-const _session = {_userAdmin: null, _userSession: null}
+const _session = {_userAdmin: null, _userSession: null, _userSecret: null}
 EmailSender.accountProfile = 'accounts_notificator'
 
 let loggerinsta = null
@@ -88,16 +88,48 @@ async function removeAccountsAll () {
         })
       }
     } else {
-      loggerDebug('removeAccountsAll error type')
+      throw new Error(`accountSecureReset() => erro removeAccountsAll() ${'error type'}`)
     }
     loggerDebug('removeAccountsAll end')
     output.success = `Foram removidos [${accountEraseAll.length}] registos.`
     output.data = {account: accountEraseAll, logger: loggerResume()}
     loggerDebug(output.success)
   } catch (error) {
+    loggerDebug(error)
     return instance.resultOutputError(error)
   }
   return output
+}
+
+function fetchCredentials () {
+  /** static mode */
+  const jwtSecret = require('../../../orccontext')['jwtSecret']
+  return {credential: '111110000000000', passport: 12345678, secret: jwtSecret}
+}
+
+function authenticator (userAdmin) {
+  try {
+    instance.clearSession()
+    const {credential, passport, secret} = userAdmin
+    if (!credential || !passport || !secret) {
+      throw new Error('parametros de autenticacao invalidos!!!')
+    }
+    if (((fetchCredentials().credential === credential && fetchCredentials().passport === passport))) {
+      if (fetchCredentials().secret !== secret) {
+        throw new Error('chave secreta invalida!!')
+      }
+      instance._userAdmin = `${credential}`
+      _session._userAdmin = instance._userAdmin
+      _session._userSession = uuid()
+      instance._userSession = _session._userSession
+      return true
+    } else {
+      throw new Error('os dados de autenticacao nao estao invalidos!!')
+    }
+  } catch (error) {
+    loggerDebug(error)
+  }
+  return false
 }
 
 const instance = {
@@ -117,24 +149,9 @@ const instance = {
   resultOutputError: (error) => { return resultOutput(false, null, error, null) },
   resultOutputDataOk: (data) => { return resultOutput(true, null, null, data) },
   resultOutputDataError: (data) => { return resultOutput(false, null, null, data) },
-  fetchCredentials: function () {
-    /** static mode */
-    return {credential: '111110000000000', passport: 12345678}
-  },
   authenticator: (useradmin) => {
     try {
-      instance.clearSession()
-      const {credential, passport} = useradmin
-      if (!credential || !passport) {
-        throw new Error('parametros de autenticacao invalidos!!!')
-      }
-      if (((instance.fetchCredentials().credential === credential && instance.fetchCredentials().passport === passport))) {
-        instance._userAdmin = `${credential}`
-        _session._userAdmin = instance._userAdmin
-        _session._userSession = uuid()
-        instance._userSession = _session._userSession
-        return true
-      }
+      return authenticator(useradmin)
     } catch (error) {
       loggerDebug(error)
     }
@@ -152,7 +169,7 @@ const instance = {
             loggerDebugClear()
             validator = await removeAccountsAll()
             if (validator.iook) {
-              const outobj = instance.resultOutputSuccess('operacao concluida com sucesso!.')
+              const outobj = instance.resultOutputSuccess('operacao concluida com sucesso!')
               outobj.data = {
                 users: {
                   success: validatorTmp.success,
