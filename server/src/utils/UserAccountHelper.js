@@ -5,18 +5,23 @@ const uuid = require('uuid')
 const _session = {_userAdmin: null, _userSession: null}
 EmailSender.accountProfile = 'accounts_notificator'
 
-let loggerinsta = ''
+let loggerinsta = null
 
 function loggerDebugClear () {
   loggerinsta = null
 }
 
 function loggerDebug (buffer) {
-  loggerinsta += ('\n[{{serial}}] {{buffer}} \n[{{serial}}]').replace(new RegExp('{{serial}}', 'g'), _session._userSession).replace('{{buffer}}', buffer)
+  let serial = ''
+  if (loggerinsta == null) {
+    loggerinsta = serial
+    serial = ' [{{serial}}]'
+  }
+  loggerinsta += (`${serial} {{buffer}}`).replace(new RegExp('{{serial}}', 'g'), _session._userSession).replace('{{buffer}}', buffer)
 }
 
 function loggerResume () {
-  console.log(loggerinsta)
+  console.log(loggerinsta += ('[{{serial}}]').replace(new RegExp('{{serial}}', 'g'), _session._userSession))
   return loggerinsta
 }
 
@@ -147,7 +152,7 @@ const instance = {
             loggerDebugClear()
             validator = await removeAccountsAll()
             if (validator.iook) {
-              const outobj = instance.resultOutputSuccess('operacao concluidacom sucesso!.')
+              const outobj = instance.resultOutputSuccess('operacao concluida com sucesso!.')
               outobj.data = {
                 users: {
                   success: validatorTmp.success,
