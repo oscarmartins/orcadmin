@@ -186,11 +186,14 @@ function responseSender (result) {
   return result
 }
 
-function sendSMS (credentials) {
+async function sendSMS (credentials) {
   try {
     const buddySecret = require('../utils/SecretFriendSms')
     buddySecret.credentials(credentials.username, credentials.password)
-    const responses = buddySecret.sentBulkSms()
+    const responses = await buddySecret.sentBulkSms()
+    if (responses) {
+      console.log(responses)
+    }
     main.httpResponse.status(responses.status).send({result: responses.output})
   } catch (error) {
     console.log(error)
