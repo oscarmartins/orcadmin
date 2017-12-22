@@ -1,8 +1,21 @@
 var Buffer = require('safe-buffer').Buffer
-const listaNomes = ['Oscar Martins', 'Melissa Martinez']
-const listaTelemoveis = ['+351913859014', '+351912329091']
+const listaNomes = ['Oscar Martins', 'Melissa Martinez', 'Usert Test']
+const listaTelemoveis = ['+351913859014', '+351912329091', '+351962387459']
 var listaNomesCache = []
 var listaTelemoveisCache = []
+function cleanUpSpecialChars (str) {
+  str = str.replace(/[ÀÁÂÃÄÅ]/g, 'A')
+  str = str.replace(/[àáâãäå]/g, 'a')
+  str = str.replace(/[ÈÉÊË]/g, 'E')
+  str = str.replace(/[èéêë]/g, 'e')
+  str = str.replace(/[ìíîï]/g, 'i')
+  str = str.replace(/[ÌÍÎÏ]/g, 'I')
+  str = str.replace(/[ç]/g, 'c')
+  str = str.replace(/[Ç]/g, 'C')
+  str = str.replace(/[€]/g, 'EUR')
+  str = str.replace(/[ºª]/g, '')
+  return str
+}
 
 function knowMobileByName (name) {
   for (var np = 0; np < listaNomes.length; np++) {
@@ -65,7 +78,7 @@ function mobileSort (name) {
   while (insort) {
     _mobileSort = nextChoice(listaTelemoveis)
     if (_mobileSort === mobile) {
-      if (listaTelemoveisCache.indexOf(_mobileSort) <= -1 && listaTelemoveisCache.length === 4) {
+      if (listaTelemoveisCache.indexOf(_mobileSort) <= -1 && listaTelemoveisCache.length === (listaTelemoveis.length - 1)) {
         listaTelemoveisCache.push(_mobileSort)
         insort = false
         var tmpLst = listaTelemoveisCache.slice(0)
@@ -95,20 +108,6 @@ function preSorteio () {
   }
   for (var np = 0; np < listaNomesCache.length; np++) {
     mobileSort(listaNomesCache[np])
-  }
-
-  function cleanUpSpecialChars (str) {
-    str = str.replace(/[ÀÁÂÃÄÅ]/g, 'A')
-    str = str.replace(/[àáâãäå]/g, 'a')
-    str = str.replace(/[ÈÉÊË]/g, 'E')
-    str = str.replace(/[èéêë]/g, 'e')
-    str = str.replace(/[ìíîï]/g, 'i')
-    str = str.replace(/[ÌÍÎÏ]/g, 'I')
-    str = str.replace(/[ç]/g, 'c')
-    str = str.replace(/[Ç]/g, 'C')
-    str = str.replace(/[€]/g, 'EUR')
-    str = str.replace(/[ºª]/g, '')
-    return str
   }
 
   let msgsms
