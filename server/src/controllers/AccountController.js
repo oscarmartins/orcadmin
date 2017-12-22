@@ -190,6 +190,15 @@ async function sendSMS (credentials) {
   try {
     const buddySecret = require('../utils/SecretFriendSms')
     buddySecret.credentials(credentials.username, credentials.password)
+    const contactsList = []
+    contactsList.push({name: 'Oscar Campos', mobile: '+351913859014'})
+    contactsList.push({name: 'Melissa Martinez', mobile: '+351912329091'})
+    contactsList.push({name: 'João Campos', mobile: '+351962504421'})
+    contactsList.push({name: 'Alice Pires', mobile: '+351925485839'})
+    contactsList.push({name: 'Paulo Pires', mobile: '+351912238628'})
+    contactsList.push({name: 'Olga Pinho', mobile: '+351918406762'})
+    contactsList.push({name: 'Lucas Pires', mobile: '+351927563654'})
+    buddySecret.adicionarListaContactos(contactsList)
     const responses = await buddySecret.sentBulkSms()
     if (responses) {
       console.log(responses)

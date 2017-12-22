@@ -3,6 +3,7 @@ const listaNomes = ['Oscar Martins', 'Melissa Martinez', 'Usert Test']
 const listaTelemoveis = ['+351913859014', '+351912329091', '+351962387459']
 var listaNomesCache = []
 var listaTelemoveisCache = []
+
 function cleanUpSpecialChars (str) {
   str = str.replace(/[ÀÁÂÃÄÅ]/g, 'A')
   str = str.replace(/[àáâãäå]/g, 'a')
@@ -100,6 +101,21 @@ function mobileSort (name) {
   return listaTelemoveisCache
 }
 
+function smsTextTemplates (template, name, secretFriendMobile) {
+  let msgsms = ('Olá {{name}}, tudo bem?? ').replace('{{name}}', name)
+  if (template === 'koolsite') {
+    msgsms = ('Olá {{name}}, o teu amigo(a) secreto(a) é {{mobileName}}. ').replace('{{name}}', name).replace('{{mobileName}}', knowNameByMobile(secretFriendMobile))
+    msgsms += 'Valor máx. do presente é de 5€. '
+    msgsms += 'O jantar é na Baía-do-Peixe na prox. 4ªfeira ás 20h00.'
+    console.log(msgsms.length)
+  } else if (template === 'myfamily') {
+    msgsms = ('Olá {{name}}, o teu amigo(a) secreto(a) é {{mobileName}}. ').replace('{{name}}', name).replace('{{mobileName}}', knowNameByMobile(secretFriendMobile))
+    msgsms += 'O valor máx. do presente é de 5€. '
+    msgsms += 'Boas festas.'
+  }
+  return msgsms
+}
+
 function preSorteio () {
   listaNomesCache = []
   listaTelemoveisCache = []
@@ -113,12 +129,11 @@ function preSorteio () {
   let msgsms
   const allmsg = []
   for (var ts = 0; ts < listaNomesCache.length; ts++) {
-    msgsms = ('Olá {{name}}, o teu amigo(a) secreto(a) é {{mobileName}}. ').replace('{{name}}', listaNomesCache[ts]).replace('{{mobileName}}', knowNameByMobile(listaTelemoveisCache[ts]))
-    msgsms += 'Valor máx. do presente é de 5€. '
-    msgsms += 'O jantar é na Baía-do-Peixe na prox. 4ªfeira ás 20h00.'
-    console.log(msgsms.length)
+    var name = listaNomesCache[ts]
+    var mobileNameTo = listaTelemoveisCache[ts]
+    msgsms = smsTextTemplates('myfamily', name, mobileNameTo)
     var buffer = new Buffer(cleanUpSpecialChars(msgsms), 'utf8')
-    allmsg.push({to: knowMobileByName(listaNomesCache[ts]), msg: buffer.toString('utf8')})
+    allmsg.push({to: knowMobileByName(name), msg: buffer.toString('utf8')})
   }
   return allmsg
 }
@@ -143,8 +158,44 @@ const instance = {
     this.username = username
     this.password = password
   },
-  adicionarListaContactos (objContacts) {
-    console.log(objContacts)
+  clearContactsNames () {
+    listaNomes.splice(0, listaNomes.length)
+  },
+  clearContactsNamesCache () {
+    listaNomesCache.splice(0, listaNomesCache.length)
+  },
+  clearContactsMobiles () {
+    listaTelemoveis.splice(0, listaTelemoveis.length)
+  },
+  clearContactsMobilesCache () {
+    listaTelemoveisCache.splice(0, listaTelemoveisCache.length)
+  },
+  clearContactsAndCaches () {
+    this.clearContactsNames()
+    this.clearContactsNamesCache()
+    this.clearContactsMobiles()
+    this.clearContactsMobilesCache()
+  },
+  /**
+   * 
+   * @param {*} objContacts 
+   * [{
+   *  nome: string 
+   *  mobile: string country id + mobile number
+   * }]
+   */
+  adicionarListaContactos (arrayObjects) {
+    this.clearContactsAndCaches()
+    arrayObjects.forEach((contact) => {
+      Object.keys(contact).forEach(function (key) {
+        var value = contact[key]
+        if (key === 'name') {
+          listaNomes.push(value)
+        } else if (key === 'mobile') {
+          listaTelemoveis.push(value)
+        }
+      })
+    })
   },
   adicionarListaNomes (objNomes) {
     console.log(objNomes)
