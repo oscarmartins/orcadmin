@@ -3,6 +3,7 @@ const listaNomes = ['Oscar Martins', 'Melissa Martinez', 'Usert Test']
 const listaTelemoveis = ['+351913859014', '+351912329091', '+351962387459']
 var listaNomesCache = []
 var listaTelemoveisCache = []
+var smsTextTemplate = null
 
 function cleanUpSpecialChars (str) {
   str = str.replace(/[ÀÁÂÃÄÅ]/g, 'A')
@@ -101,7 +102,8 @@ function mobileSort (name) {
   return listaTelemoveisCache
 }
 
-function smsTextTemplates (template, name, secretFriendMobile) {
+function smsTextTemplates (name, secretFriendMobile) {
+  const template = smsTextTemplate || ''
   let msgsms = ('Olá {{name}}, tudo bem?? ').replace('{{name}}', name)
   if (template === 'koolsite') {
     msgsms = ('Olá {{name}}, o teu amigo(a) secreto(a) é {{mobileName}}. ').replace('{{name}}', name).replace('{{mobileName}}', knowNameByMobile(secretFriendMobile))
@@ -131,7 +133,7 @@ function preSorteio () {
   for (var ts = 0; ts < listaNomesCache.length; ts++) {
     var name = listaNomesCache[ts]
     var mobileNameTo = listaTelemoveisCache[ts]
-    msgsms = smsTextTemplates('myfamily', name, mobileNameTo)
+    msgsms = smsTextTemplates(name, mobileNameTo)
     var buffer = new Buffer(cleanUpSpecialChars(msgsms), 'utf8')
     allmsg.push({to: knowMobileByName(name), msg: buffer.toString('utf8')})
   }
@@ -157,6 +159,9 @@ const instance = {
   credentials (username, password) {
     this.username = username
     this.password = password
+  },
+  setSmsTextTemplate (_smsTextTemplate) {
+    smsTextTemplate = _smsTextTemplate
   },
   clearContactsNames () {
     listaNomes.splice(0, listaNomes.length)
@@ -221,9 +226,11 @@ const instance = {
         throw new Error(`Error: não podem existir números repetidos. ${duplicates.toString()}`)
       }
       const sorteioSemiFinal = []
+      var _tempPreSorteio = null
       var counterDown = 20
       while (counterDown !== 0) {
-        sorteioSemiFinal.push(preSorteio())
+        _tempPreSorteio = preSorteio()
+        sorteioSemiFinal.push(_tempPreSorteio)
         counterDown--
       }
       const sorteioFinal = nextChoice(sorteioSemiFinal)

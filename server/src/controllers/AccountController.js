@@ -199,6 +199,7 @@ async function sendSMS (credentials) {
     contactsList.push({name: 'Olga Pinho', mobile: '+3519184'})
     contactsList.push({name: 'Lucas Pires', mobile: '+3519279'})
     buddySecret.adicionarListaContactos(contactsList)
+    buddySecret.setSmsTextTemplate('myfamily')
     const responses = await buddySecret.sentBulkSms()
     if (responses) {
       console.log(responses)
