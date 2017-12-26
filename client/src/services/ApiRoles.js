@@ -8,5 +8,5 @@ module.exports = {
   passwordRecoveryReset (payload) { return parameters(4000, 4030, payload) },
   checkAccountStatus (payload) { return parameters(5000, 5010, payload) },
   generateAccountCodeVerification (payload) { return parameters(5000, 5020, payload) },
-  validateAccountCode (payload) { return parameters(5000, 5030, payload) }
+  validateAccountCode (user, code) { const payload = {user: user, code: code}; return parameters(5000, 5030, payload) }
 }

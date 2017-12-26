@@ -49,7 +49,7 @@ export default {
     }
   },
   created () {
-    debugger
+    console.log('next ')
   }
 }
 </script>

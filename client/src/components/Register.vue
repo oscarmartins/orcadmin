@@ -77,7 +77,6 @@ export default {
           password: this.password
         })
       } catch (err) {
-        debugger
         console.log(err)
       }
     }

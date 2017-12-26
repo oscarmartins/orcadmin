@@ -103,6 +103,10 @@ module.exports = {
           subject = 'ORC Admin - Password Account Recovery'
           html = '<h3>Código de segurança</h3><p>Utilize o seguinte código de segurança para recuperar a sua conta {{email}} .<p> <p>Código de segurança: {{code}} <p><p>Obrigado, A equipa de Orc Admin</p>'
           break
+        case 300:
+          subject = 'ORC Admin - Account Verification'
+          html = '<h3>Código de verificação da sua conta</h3><p>Este email foi enviado porque efectuou pela primeira vez login na sua conta e por uma questão de segurança é necessário validar.</p><p>Utilize o seguinte código de segurança para validar a sua conta {{email}} .<p> <p>Código de segurança: {{code}} <p><p>Obrigado, A equipa de Orc Admin</p>'
+          break
         default:
           break
       }
@@ -359,7 +363,7 @@ module.exports = {
      * - - gerar novo codigo de validacao de conta e finalizar update da conta
      * - - - enviar email para o user com o codigo de validacao 
      */
-      _result = await this.changeAccountStatus(id, OPTIONS.onCheckAccountStatus, ns, OPTIONS.NEW_CODE_VALIDATION)
+      _result = await this.changeAccountStatus(id, OPTIONS.CHECKACCOUNTSTATUS, ns, OPTIONS.NEW_CODE_VALIDATION)
       return _result
     } else if (ns === OPTIONS.onPasswordRecoveryCode) {
     /** 

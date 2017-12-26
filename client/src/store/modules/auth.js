@@ -4,14 +4,20 @@ import apiRoles from '../../services/ApiRoles'
 import utils from '../../utils/utils'
 const state = {
   isAuthenticated: vueAuthInstance.isAuthenticated(),
-  isLoggedIn: !!localStorage.getItem('token'),
-  profile: JSON.parse(localStorage.getItem('userProfile')) || {}
+  isLoggedIn: localStorage.getItem(vueAuthInstance.tokenName),
+  profile: {}
 }
 
 const getters = {
-  isLoggedIn: context => context.isLoggedIn,
-  isAuthenticated: context => context.isAuthenticated,
-  profile: context => context.profile
+  isLoggedIn: function () {
+    const tokenName = vueAuthInstance.tokenName
+    debugger
+    return !!localStorage.getItem(tokenName)
+  },
+  isAuthenticated: function () {
+    return vueAuthInstance.isAuthenticated()
+  },
+  profile: function () { return JSON.parse(localStorage.getItem('userProfile')) || {} }
 }
 
 const mutations = {
@@ -60,9 +66,7 @@ const actions = {
     requestOptions[vueAuthInstance.options.requestDataKey] = _payload || requestOptions[vueAuthInstance.options.requestDataKey]
     requestOptions.method = 'POST'
     requestOptions.withCredentials = vueAuthInstance.options.withCredentials
-    debugger
     return vueAuthInstance.$http(requestOptions).then(function (response) {
-      debugger
       return response
     })
   },
@@ -73,26 +77,55 @@ const actions = {
   },
   [types.LOGIN] (context, payload) {
     payload = payload || {}
-    debugger
     return vueAuthInstance.login(apiRoles.login(payload))
       .then((response) => {
-        context.commit(types.ISAUTHENTICATED, {isAuthenticated: vueAuthInstance.isAuthenticated()})
-        if (vueAuthInstance.isAuthenticated()) { context.commit(types.SETPROFILE, response.data) }
-      })
-  },
-  [types.LOGOUT] (context, payload) {
-    payload = payload || {}
-    debugger
-    return vueAuthInstance.logout({data: apiRoles.logout(payload)})
-      .then(() => {
-        debugger
         context.commit(types.ISAUTHENTICATED, {
           isAuthenticated: vueAuthInstance.isAuthenticated()
         })
-        context.commit(types.SETPROFILE, null)
+        if (vueAuthInstance.isAuthenticated()) {
+          context.commit(types.ISAUTHENTICATED, {
+            isAuthenticated: vueAuthInstance.isAuthenticated()
+          })
+          context.commit(types.SETPROFILE, response.data)
+        }
+        return response
       })
   },
+  async [types.LOGOUT] (context, payload) {
+    payload = payload || {}
+    const res = await vueAuthInstance.logout({data: apiRoles.logout(payload)})
+    .then((r) => {
+      debugger
+      context.commit(types.ISAUTHENTICATED, {
+        isAuthenticated: vueAuthInstance.isAuthenticated()
+      })
+      context.commit(types.SETPROFILE, null)
+      return 'success'
+    }).catch((error) => {
+      if (error) {
+      }
+      return 'error'
+    })
+    const result = {
+      response: {
+        data: {
+        }
+      }
+    }
+    result.response.data[res] = (res === 'success' ? 'Logout success!!' : 'Logout error!!')
+    return result
+  },
+  [types.LOCAL_LOGOUT] (context, payload) {
+    context.commit(types.ISAUTHENTICATED, {
+      isAuthenticated: false
+    })
+    context.commit(types.SETPROFILE, null)
+    context.commit(types.LOGOUT, false)
+    vueAuthInstance.storage.removeItem(vueAuthInstance.tokenName)
+    return true
+  },
   [types.AUTHENTICATE] (context, payload) {
+    debugger
     payload = payload || {}
     return vueAuthInstance.authenticate(payload.provider, payload.userData, payload.requestOptions)
       .then(function () {

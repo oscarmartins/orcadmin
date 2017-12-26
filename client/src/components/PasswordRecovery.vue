@@ -179,14 +179,12 @@ export default {
           selectionMode: this.selectionMode || null
         })
       } catch (err) {
-        debugger
         console.log(err)
       }
     }
   },
   async mounted () {
     try {
-      debugger
       this.formState({})
     } catch (error) {
       console.log('Error', error)

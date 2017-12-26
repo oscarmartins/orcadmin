@@ -6,7 +6,6 @@ export function isLoggedIn () {
   return !!idToken
 }
 export function requireAuth (to, from, next) {
-  debugger
   if (!isLoggedIn()) {
     next({ path: '/' })
   } else {
@@ -14,7 +13,6 @@ export function requireAuth (to, from, next) {
   }
 }
 export function verifyIsLoggedIn (to, from, next) {
-  debugger
   if (isLoggedIn() && to.name === 'login') {
     next({ name: 'dashboard' })
   } else {

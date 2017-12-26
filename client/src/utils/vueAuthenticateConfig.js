@@ -8,7 +8,6 @@ export default {
   registerUrl: '/register',
   logoutUrl: '/logout',
   bindRequestInterceptor: function () {
-    debugger
     this.$http.interceptors.request.use((config) => {
       if (this.isAuthenticated()) {
         config.headers['Authorization'] = [
@@ -21,7 +20,6 @@ export default {
     })
   },
   bindResponseInterceptor: function () {
-    debugger
     this.$http.interceptors.response.use((response) => {
       this.setToken(response)
       return response

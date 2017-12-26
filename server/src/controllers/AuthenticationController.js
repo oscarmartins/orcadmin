@@ -264,7 +264,7 @@ async function _generateAccountCode (payload) {
     if (email) {
       const accountNext = await AccountManager.changeAccountNextStageByEmail(email, AccountManager.options.onGenerateAccountCode)
       if (accountNext.iook) {
-        await AccountManager.notificator.sendSecurityCodeByEmail(email, 200, accountNext.data.code)
+        await AccountManager.notificator.sendSecurityCodeByEmail(email, 300, accountNext.data.code)
         return {
           status: 200,
           output: {
@@ -290,12 +290,13 @@ async function _generateAccountCode (payload) {
 async function _validateAccountCode (payload) {
   try {
     let varTmp = null
-    const {email, code} = payload.REQ_INPUTS
-    if (email && code) {
-      varTmp = await AccountManager.checkAccountEmail(email)
+    const {user, code} = payload.REQ_INPUTS
+    if (user.email && code) {
+      varTmp = await AccountManager.checkAccountEmail(user.email)
       if (varTmp) {
         varTmp = await AccountManager.codeValidator(varTmp, code)
         if (varTmp && varTmp.iook) {
+          varTmp = await AccountManager.activateAccountAction(user, code)
           return varTmp
         } else {
           throw new Error(varTmp.error)

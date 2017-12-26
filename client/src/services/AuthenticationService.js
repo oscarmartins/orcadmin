@@ -3,7 +3,6 @@ import Api from '@/services/Api'
 export default {
   passwordRecovery (global, data) {
     global.$store.dispatch('passwordRecovery', data).then((response) => {
-      debugger
       global.formState({state: response.data.ns})
       global.showSnackbar({text: response.data.message, context: 'success'})
     })
@@ -24,7 +23,6 @@ export default {
   },
   register (global, data) {
     global.$store.dispatch('REGISTER', data).then((response) => {
-      debugger
       global.showSnackbar({text: response.data.message, context: 'success'})
       setTimeout(function (ctx) { ctx.push({name: 'login'}) }, 3800, global.$router)
     })
@@ -48,11 +46,11 @@ export default {
     if (!global) {
       return Api().post('login', credentials)
     } else {
-      global.$store.dispatch('LOGIN', credentials).then(() => {
-        global.$router.replace({ name: 'resume' })
+      global.$store.dispatch('LOGIN', credentials).then((response) => {
+        // global.$router.replace({ name: 'resume' })
+        global.$router.push({ name: 'resume' })
       })
       .catch((error) => {
-        debugger
         if (!error.response) {
           error = {
             response: {
@@ -80,12 +78,26 @@ export default {
     }
   },
   logout (global) {
-    debugger
-    global.$store.dispatch('LOGOUT', global.auth.profile).then(() => {
+    global.$store.dispatch('LOGOUT', global.auth.profile).then((res) => {
       debugger
-      global.$router.go({ name: 'start' })
+      if (res && res.response.data) {
+        if (res.response.data.error) {
+          global.$store.dispatch('LOCAL_LOGOUT', {}).then((res) => {
+            global.$router.go({ name: 'start' })
+            return true
+          }).catch((error) => {
+            if (error) {
+              global.error = '[00001] Servidor em manutenção. tente mais tarde. Obrigado.'
+            }
+            return false
+          })
+        } else {
+          global.$router.go({ name: 'start' })
+        }
+      }
     })
     .catch((error) => {
+      debugger
       if (!error.response) {
         error = {
           response: {

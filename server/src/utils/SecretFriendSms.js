@@ -1,6 +1,6 @@
 var Buffer = require('safe-buffer').Buffer
 const listaNomes = ['Oscar Martins', 'Melissa Martinez', 'Usert Test']
-const listaTelemoveis = ['+351913859014', '+351912329091', '+351962387459']
+const listaTelemoveis = ['+3519138', '+3519139', '+3519139']
 var listaNomesCache = []
 var listaTelemoveisCache = []
 var smsTextTemplate = null

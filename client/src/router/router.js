@@ -22,7 +22,7 @@ import EmailerRemove from '@/components/MailerManager/EmailerRemove'
 
 import vueAuthInstance from '../services/auth.js'
 import AccountService from '../services/AccountService.js'
-
+import store from '../store'
 Vue.use(VueRouter)
 
 const routes = [
@@ -135,6 +135,12 @@ const vueRouterInstance = new VueRouter({
 function redirectLogin () {
   // vueRouterInstance.push({ name: 'login' })
   // return next('/login')
+  if (store) {
+    debugger
+    store.dispatch('LOCAL_LOGOUT', {})
+  } else {
+    debugger
+  }
   location.href = '/login'
 }
 function redirectAccountCodeVerification () {
@@ -146,13 +152,13 @@ function redirectAccountCodeVerification () {
 vueRouterInstance.beforeEach(async function (to, from, next) {
   let result = null
   try {
+    debugger
     if (to.meta && to.meta.auth && to.path !== '/AccountCodeVerification') {
       if (vueAuthInstance.isAuthenticated()) {
         result = await AccountService.checkAccountStatus(vueAuthInstance)
         if (result) {
           const {as, ns} = result.data.accountStatus
           if ((as === 10000 && ns === 11000) || (as === 5000 && ns === 5020)) {
-            debugger
             result = true
             if (as === 10000 && ns === 11000) {
               result = await AccountService.generateAccountCodeVerification(vueAuthInstance)
@@ -161,13 +167,17 @@ vueRouterInstance.beforeEach(async function (to, from, next) {
               redirectAccountCodeVerification() // redirect to code validator
             }
             return false
+          } else if (as === 101010 && ns === 101010) {
+            return next()
           }
         }
       }
       redirectLogin()
       return false
     }
-    debugger
+    if (to.path === '/AccountCodeVerification' && !vueAuthInstance.isAuthenticated()) {
+      throw new Error('Account Code Verification need is authenticated..')
+    }
     return next()
   } catch (error) {
     redirectLogin()

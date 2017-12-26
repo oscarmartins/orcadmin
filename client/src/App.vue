@@ -92,7 +92,7 @@ export default {
     Dashboard
   },
   created () {
-    debugger
+    console.log('next ')
   },
   data: () => ({
     dark: false,

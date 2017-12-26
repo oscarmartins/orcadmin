@@ -7,17 +7,7 @@
           </v-alert>  
           <form 
             name="tab-orcadmin-form"
-            autocomplete="off">           
-            <v-text-field
-              label="Email"              
-              v-model="email" 
-              v-if="checkVisibility('email')"
-              :disabled="this.emailDisabled"
-              :class="checkClass('email')">
-            </v-text-field>
-             <v-alert success value="true" v-if="this.emailSuccess" >
-              {{this.emailSuccess}}
-            </v-alert>  
+            autocomplete="off">            
             <v-text-field
               label="Code Confirmation"              
               v-model="code"
@@ -28,30 +18,12 @@
              <v-alert success value="true" v-if="this.codeSuccess" >
               {{this.codeSuccess}}
             </v-alert>  
-            <v-text-field
-              type="password"
-              label="Password"              
-              v-model="password"
-              v-if="checkVisibility('passwords')"
-              :disabled="this.passwordsDisabled"
-              :class="checkClass('passwords')">
-            </v-text-field>
-            <v-text-field
-              type="password"
-              label="Password Confirmation"              
-              v-model="confirmPassword"
-              v-if="checkVisibility('passwords')"
-              :disabled="this.passwordsDisabled"
-              :class="checkClass('passwords')">
-            </v-text-field>
-             <v-alert success value="true" v-if="this.passwordSuccess" >
-              {{this.passwordSuccess}}
-            </v-alert>  
+ 
           </form>            
           <v-btn
             class="cyan" 
             dark
-            @click="PasswordRecovery"
+            @click="AccountVerify"
             v-if="this.selectionMode !== 'success'" >
             {{this.btnLabel}}
           </v-btn>
@@ -83,17 +55,13 @@
 </template>
 
 <script>
-import AuthenticationService from '@/services/AuthenticationService'
-const ACCOUNT_RECOVERY_EMAIL = 20000
+import AccountService from '@/services/AccountService'
 const ACCOUNT_RECOVERY_CODE = 21000
-const ACCOUNT_RECOVERY_RESET = 22000
-const ACCOUNT_RECOVERY_RESUME = 101010
 export default {
   data () {
     return {
-      selectionMode: 'email',
+      selectionMode: 'code',
       panelTitle: 'Account verification',
-      email: '',
       code: '',
       password: '',
       confirmPassword: '',
@@ -103,16 +71,10 @@ export default {
       context: '',
       timeout: 0,
       text: '',
-      btnLabel: 'check email',
-      displayInputs: ['email'],
-      emailDisabled: false,
+      btnLabel: 'send code',
+      displayInputs: ['code'],
       codeDisabled: false,
-      passwordsDisabled: false,
-      confirmPasswordDisabled: false,
-      btnsignin: false,
-      emailSuccess: '',
-      codeSuccess: '',
-      passwordSuccess: ''
+      codeSuccess: ''
     }
   },
   methods: {
@@ -128,65 +90,37 @@ export default {
     },
     checkClass (who) {
       let factor = false
-      if (who === 'email') { factor = this.emailDisabled }
       if (who === 'code') { factor = this.codeDisabled }
-      if (who === 'passwords') { factor = this.passwordsDisabled }
       return factor ? 'light-green accent-1' : ''
     },
     formState (opts) {
-      opts = opts || {state: ACCOUNT_RECOVERY_EMAIL}
-      if (opts.state === ACCOUNT_RECOVERY_EMAIL) {
-        this.displayInputs = ['email']
-        this.panelTitle = 'Password Recovery - Email verification'
-        this.btnLabel = 'check email'
-        this.selectionMode = 'email'
-      }
+      opts = opts || {state: ACCOUNT_RECOVERY_CODE}
       if (opts.state === ACCOUNT_RECOVERY_CODE) {
         this.displayInputs = ['email', 'code']
         this.emailDisabled = true
-        this.panelTitle = 'Password Recovery - Code Security verification'
+        this.panelTitle = 'Account Verification - Security Code'
         this.btnLabel = 'check code security'
         this.selectionMode = 'code'
-        this.emailSuccess = 'email válido'
-      }
-      if (opts.state === ACCOUNT_RECOVERY_RESET) {
-        this.displayInputs = ['email', 'code', 'passwords']
-        this.emailDisabled = true
-        this.codeDisabled = true
-        this.panelTitle = 'Password Recovery - Reset Password'
-        this.btnLabel = 'reset password'
-        this.selectionMode = 'reset'
-        this.codeSuccess = 'código de segurança válido'
-      } if (opts.state === ACCOUNT_RECOVERY_RESUME) {
-        this.displayInputs = ['email', 'code', 'password']
-        this.emailDisabled = true
-        this.codeDisabled = true
-        this.passwordsDisabled = true
-        this.panelTitle = 'Password Recovery - Success '
-        this.btnLabel = 'Fazer Login'
-        this.selectionMode = 'success'
-        this.passwordSuccess = 'nova password válida'
       }
     },
-    async PasswordRecovery () {
+    async AccountVerify () {
       try {
-        this.error = ''
-        await AuthenticationService.passwordRecovery(this, {
-          email: this.email || null,
-          code: this.code || null,
-          password: this.password || null,
-          confirmPassword: this.confirmPassword || null,
-          selectionMode: this.selectionMode || null
-        })
-      } catch (err) {
         debugger
+        this.error = ''
+        const cb = await AccountService.validateAccountCode(this.code)
+        if (cb) {
+          debugger
+        } else {
+          throw new Error('unc')
+        }
+      } catch (err) {
         console.log(err)
+        this.error = err.message
       }
     }
   },
   async mounted () {
     try {
-      debugger
       this.formState({})
     } catch (error) {
       console.log('Error', error)

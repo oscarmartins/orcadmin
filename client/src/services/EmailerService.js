@@ -3,7 +3,6 @@ const path = 'emailer'
 export default {
   async fetchProfiles () {
     const result = await Api().get(path).then((result) => result)
-    debugger
     result.data.fetchProfiles[0].pass = ''
     return result
   },

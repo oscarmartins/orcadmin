@@ -64,7 +64,7 @@ module.exports = {
           accountStatus()
         } else if (main.REQ_ACTION === AuthenticationController.options.onGenerateAccountCode) {
           generateAccountCode()
-        } else if (main.REQ_ACTION === AuthenticationController.options.onGenerateAccountCode) {
+        } else if (main.REQ_ACTION === AuthenticationController.options.onValidateAccountCode) {
           validateAccountCode()
         } else {
           responseSender({status: 400, output: {error: 'REQ_ACTION not found.', isok: false}})

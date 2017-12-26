@@ -76,14 +76,14 @@ export default {
           selectionMode: this.selectionMode
         })
       } catch (err) {
-        debugger
+        
         console.log(err)
       }
     }
   },
   async mounted () {
     try {
-      debugger
+      
       const params = this.$route.params
       if (params) {
         if (params.selectionMode === 'email') {
