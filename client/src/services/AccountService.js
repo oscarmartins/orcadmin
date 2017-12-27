@@ -9,12 +9,12 @@ const INSTANCE = {
   get (vueAuthInstance, url, params) {
     return vueAuthInstance.$http({url: utils.joinUrl(vueAuthInstance.options.baseUrl, url), method: 'GET', data: params})
   },
-  async getUserProfile () {
-    const _d = await localStorage.getItem('userProfile')
+  getUserProfile () {
+    const _d = localStorage.getItem('userProfile')
     return _d
   },
   async checkAccountStatus (vueAuthInstance) {
-    const user = await INSTANCE.getUserProfile()
+    const user = INSTANCE.getUserProfile()
     if (user) {
       const params = methods.checkAccountStatus(JSON.parse(user))
       const _resp = await INSTANCE.post(vueAuthInstance, '/services', params).then(function (response) {
@@ -27,6 +27,7 @@ const INSTANCE = {
     }
   },
   async generateAccountCodeVerification (vueAuthInstance) {
+    debugger
     const user = INSTANCE.getUserProfile()
     if (user) {
       const params = methods.generateAccountCodeVerification(JSON.parse(user))
@@ -34,7 +35,7 @@ const INSTANCE = {
         return response
       }).catch((error) => {
         console.log(error)
-        return null
+        return error
       })
     }
   },
@@ -43,7 +44,7 @@ const INSTANCE = {
     if (user) {
       debugger
       const params = methods.validateAccountCode(JSON.parse(user), code)
-      await INSTANCE.post(_vueAuthInstance, '/services', params).then(function (response) {
+      return await INSTANCE.post(_vueAuthInstance, '/services', params).then(function (response) {
         return response
       }).catch((error) => {
         console.log(error)

@@ -6,8 +6,9 @@
           {{this.error}}
         </v-alert>  
         <v-text-field
-          label="Email"              
-          v-model="email">
+          label="Email"  
+          v-model="email"
+          :disabled="this.onProcess">
         </v-text-field>
         <br>   
         <v-text-field
@@ -41,24 +42,24 @@ export default {
     return {
       email: '',
       password: '',
-      error: null
+      error: null,
+      onProcess: false
     }
   },
   methods: {
     async login () {
       try {
+        debugger
         this.error = ''
-        // const response =
+        this.onProcess = true
         await AuthenticationService.login(this, {
           email: this.email,
           password: this.password
         })
-        /** this.$store.dispatch('setToken', response.data.token)
-        this.$store.dispatch('setUser', response.data.user)
-        this.$router.replace({name: 'resume'})
-        **/
+        this.onProcess = false
       } catch (err) {
         this.error = err.response.data.error
+        this.onProcess = false
       }
     }
   }

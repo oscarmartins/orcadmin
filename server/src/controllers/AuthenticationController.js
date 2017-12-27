@@ -297,7 +297,14 @@ async function _validateAccountCode (payload) {
         varTmp = await AccountManager.codeValidator(varTmp, code)
         if (varTmp && varTmp.iook) {
           varTmp = await AccountManager.activateAccountAction(user, code)
-          return varTmp
+          if (varTmp && varTmp.iook) {
+            return {
+              status: 200,
+              success: varTmp.success
+            }
+          } else {
+            throw new Error(varTmp.error)
+          }
         } else {
           throw new Error(varTmp.error)
         }

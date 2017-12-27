@@ -27,7 +27,7 @@ const store = new Vuex.Store({
   actions,
   mutations,
   modules: {
-    auth
+    auth: auth
   },
   strict: debug
 })

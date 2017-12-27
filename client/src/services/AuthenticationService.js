@@ -2,7 +2,8 @@ import Api from '@/services/Api'
 
 export default {
   passwordRecovery (global, data) {
-    global.$store.dispatch('passwordRecovery', data).then((response) => {
+    debugger
+    global.$store.dispatch('auth/passwordRecovery', data).then((response) => {
       global.formState({state: response.data.ns})
       global.showSnackbar({text: response.data.message, context: 'success'})
     })
@@ -22,7 +23,7 @@ export default {
     })
   },
   register (global, data) {
-    global.$store.dispatch('REGISTER', data).then((response) => {
+    global.$store.dispatch('auth/REGISTER', data).then((response) => {
       global.showSnackbar({text: response.data.message, context: 'success'})
       setTimeout(function (ctx) { ctx.push({name: 'login'}) }, 3800, global.$router)
     })
@@ -42,13 +43,14 @@ export default {
     })
     // return Api().post('register', credentials)
   },
-  login (global, credentials) {
+  async login (global, credentials) {
     if (!global) {
       return Api().post('login', credentials)
     } else {
-      global.$store.dispatch('LOGIN', credentials).then((response) => {
+      return await global.$store.dispatch('auth/LOGIN', credentials).then((response) => {
         // global.$router.replace({ name: 'resume' })
         global.$router.push({ name: 'resume' })
+        return response
       })
       .catch((error) => {
         if (!error.response) {
@@ -78,11 +80,11 @@ export default {
     }
   },
   logout (global) {
-    global.$store.dispatch('LOGOUT', global.auth.profile).then((res) => {
+    global.$store.dispatch('auth/LOGOUT', global.auth.profile).then((res) => {
       debugger
       if (res && res.response.data) {
         if (res.response.data.error) {
-          global.$store.dispatch('LOCAL_LOGOUT', {}).then((res) => {
+          global.$store.dispatch('auth/LOCAL_LOGOUT', {}).then((res) => {
             global.$router.go({ name: 'start' })
             return true
           }).catch((error) => {

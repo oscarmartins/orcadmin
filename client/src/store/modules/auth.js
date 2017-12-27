@@ -2,20 +2,21 @@ import * as types from '../mutation-types'
 import vueAuthInstance from '../../services/auth'
 import apiRoles from '../../services/ApiRoles'
 import utils from '../../utils/utils'
+
 const state = {
   isAuthenticated: vueAuthInstance.isAuthenticated(),
-  isLoggedIn: localStorage.getItem(vueAuthInstance.tokenName),
+  isLoggedIn: !!vueAuthInstance.getToken(),
   profile: {}
 }
 
 const getters = {
   isLoggedIn: function () {
-    const tokenName = vueAuthInstance.tokenName
-    debugger
-    return !!localStorage.getItem(tokenName)
+    const thetoken = vueAuthInstance.getToken()
+    return !!thetoken
   },
   isAuthenticated: function () {
-    return vueAuthInstance.isAuthenticated()
+    const auth = vueAuthInstance.isAuthenticated()
+    return auth
   },
   profile: function () { return JSON.parse(localStorage.getItem('userProfile')) || {} }
 }
@@ -37,6 +38,7 @@ const mutations = {
     state.pending = true
   },
   [types.LOGIN_SUCCESS] (state) {
+    debugger
     state.isLoggedIn = true
     state.pending = false
   },
@@ -77,23 +79,25 @@ const actions = {
   },
   [types.LOGIN] (context, payload) {
     payload = payload || {}
-    return vueAuthInstance.login(apiRoles.login(payload))
-      .then((response) => {
+    context.commit(types.LOGIN)
+    const loginResult = vueAuthInstance.login(apiRoles.login(payload))
+    .then((response) => {
+      const _isAuthenticated = vueAuthInstance.isAuthenticated()
+      if (_isAuthenticated) {
         context.commit(types.ISAUTHENTICATED, {
-          isAuthenticated: vueAuthInstance.isAuthenticated()
+          isAuthenticated: _isAuthenticated
         })
-        if (vueAuthInstance.isAuthenticated()) {
-          context.commit(types.ISAUTHENTICATED, {
-            isAuthenticated: vueAuthInstance.isAuthenticated()
-          })
-          context.commit(types.SETPROFILE, response.data)
-        }
-        return response
-      })
+        context.commit(types.LOGIN_SUCCESS)
+        context.commit(types.SETPROFILE, response.data)
+      }
+      return response
+    })
+    return loginResult
   },
-  async [types.LOGOUT] (context, payload) {
+  [types.LOGOUT] (context, payload) {
     payload = payload || {}
-    const res = await vueAuthInstance.logout({data: apiRoles.logout(payload)})
+    context.commit(types.LOGOUT)
+    const res = vueAuthInstance.logout({data: apiRoles.logout(payload)})
     .then((r) => {
       debugger
       context.commit(types.ISAUTHENTICATED, {
@@ -135,8 +139,9 @@ const actions = {
       })
   }
 }
-
+const namespaced = true
 export default {
+  namespaced,
   state,
   getters,
   mutations,

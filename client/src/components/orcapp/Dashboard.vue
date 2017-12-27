@@ -36,12 +36,12 @@
     <v-list dense>
       <v-list-tile avatar tag="div">
           <v-list-tile-avatar>
-            <img src="https://randomuser.me/api/portraits/men/85.jpg" v-if="isUserLoggedIn"/>
+            <img src="https://randomuser.me/api/portraits/men/85.jpg" v-if="this.isAuthenticated"/>
             <img src="http://www.ceskymac.cz/wp-content/uploads/2012/07/GuestUserIcon.png" v-else/>
           </v-list-tile-avatar>
           <v-list-tile-content>
             <v-list-tile-title>
-              <span v-if="this.user" >{{this.user.email}}</span>
+              <span v-if="this.profile" >{{this.profile.email}}</span>
               <span v-else>Guest</span>
             </v-list-tile-title>
           </v-list-tile-content>
@@ -66,12 +66,12 @@
     <v-toolbar fixed dark flat>
       <v-toolbar-side-icon @click.stop="primaryDrawer.model = !primaryDrawer.model" v-if="primaryDrawer.type !== 'permanent'"></v-toolbar-side-icon>
       <v-toolbar-title class="mr-4">
-        <router-link tag="span" style="cursor: pointer" :to="{name: this.isUserLoggedIn ? 'dashboard' : '/'}">
+        <router-link tag="span" style="cursor: pointer" :to="{name: this.isAuthenticated ? 'dashboard' : '/'}">
           ORC Admin
         </router-link>
       </v-toolbar-title>
       <v-toolbar-items>
-        <v-btn dark v-if="this.isUserLoggedIn" to="dashboard">
+        <v-btn dark v-if="this.isAuthenticated" to="dashboard">
           Dashboard
         </v-btn>
       </v-toolbar-items>
@@ -95,7 +95,7 @@
   </v-app>
 </template>
 <script>
-import {mapState} from 'vuex'
+import {mapState, mapGetters} from 'vuex'
 import profile from './Profile'
 import resume from './Resume'
 import siteadmin from './Siteadmin'
@@ -106,9 +106,11 @@ export default {
     siteadmin
   },
   computed: {
+    ...mapGetters({
+      'isAuthenticated': 'isAuthenticated',
+      'profile': 'profile'
+    }),
     ...mapState([
-      'isUserLoggedIn',
-      'user',
       'route'
     ])
   },
@@ -129,6 +131,7 @@ export default {
     }
   },
   created () {
+    debugger
     this.updateToolbarAbs(true)
   },
   destroyed () {

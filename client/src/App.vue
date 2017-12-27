@@ -2,7 +2,7 @@
   <v-app id="sandbox" :dark="dark" :light="!dark" standalone toolbar footer>
         
     <v-navigation-drawer v-if="this.isAuthenticated" v-model="primaryDrawer.model" :permanent="primaryDrawer.type === 'permanent'" :persistent="primaryDrawer.type === 'persistent'" :temporary="primaryDrawer.type === 'temporary'" :clipped="primaryDrawer.clipped" :floating="primaryDrawer.floating"
-    :mini-variant="primaryDrawer.mini" overflow enable-resize-watcher>    
+    :mini-variant="primaryDrawer.mini" overflow enable-resize-watcher >    
     <v-list dense>
       <v-list-tile avatar tag="div">
           <v-list-tile-avatar>
@@ -76,23 +76,31 @@
   </v-app>
 </template>
 <script>
-import {mapGetters} from 'vuex'
-import Home from '@/components/orcapp/Index'
-import Dashboard from '@/components/orcapp/Dashboard'
+import { mapState } from 'vuex'
+import commonModule from './store/modules/auth'
+const name = 'auth'
 export default {
   name: 'app',
   computed: {
-    ...mapGetters({
+    ...mapState(name, {
       'isAuthenticated': 'isAuthenticated',
       'profile': 'profile'
     })
   },
-  components: {
-    Home,
-    Dashboard
-  },
   created () {
-    console.log('next ')
+    debugger
+    console.log('App ')
+    const store = this.$store
+     // register a new module only if doesn't exist
+    if (!(store && store.state && store.state[name])) {
+      store.registerModule(name, commonModule)
+    } else {
+        // re-use the already existing module
+      console.log(`reusing module: ${name}`)
+    }
+  },
+  mounted: function () {
+    this.isAuthenticated
   },
   data: () => ({
     dark: false,

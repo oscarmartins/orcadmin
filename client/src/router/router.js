@@ -137,7 +137,7 @@ function redirectLogin () {
   // return next('/login')
   if (store) {
     debugger
-    store.dispatch('LOCAL_LOGOUT', {})
+    store.dispatch('auth/LOCAL_LOGOUT', {})
   } else {
     debugger
   }
@@ -152,11 +152,14 @@ function redirectAccountCodeVerification () {
 vueRouterInstance.beforeEach(async function (to, from, next) {
   let result = null
   try {
-    debugger
     if (to.meta && to.meta.auth && to.path !== '/AccountCodeVerification') {
+      debugger
       if (vueAuthInstance.isAuthenticated()) {
+        debugger
         result = await AccountService.checkAccountStatus(vueAuthInstance)
+        debugger
         if (result) {
+          debugger
           const {as, ns} = result.data.accountStatus
           if ((as === 10000 && ns === 11000) || (as === 5000 && ns === 5020)) {
             result = true
@@ -172,16 +175,17 @@ vueRouterInstance.beforeEach(async function (to, from, next) {
           }
         }
       }
-      redirectLogin()
-      return false
+      debugger
+      throw new Error('Account Code Verification need is authenticated..')
     }
     if (to.path === '/AccountCodeVerification' && !vueAuthInstance.isAuthenticated()) {
       throw new Error('Account Code Verification need is authenticated..')
     }
     return next()
   } catch (error) {
+    debugger
     redirectLogin()
-    return false
+    return next(false)
   }
 })
 export default vueRouterInstance

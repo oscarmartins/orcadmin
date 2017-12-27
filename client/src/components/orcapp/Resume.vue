@@ -30,13 +30,15 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import { mapState } from 'vuex'
+import commonModule from '../../store/modules/auth'
+const name = 'auth'
 export default {
   data () {
     return {}
   },
   computed: {
-    ...mapGetters({
+    ...mapState(name, {
       'isAuthenticated': 'isAuthenticated',
       'profile': 'profile'
     }),
@@ -49,7 +51,16 @@ export default {
     }
   },
   created () {
+    debugger
     console.log('next ')
+    const store = this.$store
+     // register a new module only if doesn't exist
+    if (!(store && store.state && store.state[name])) {
+      store.registerModule(name, commonModule)
+    } else {
+        // re-use the already existing module
+      console.log(`reusing module: ${name}`)
+    }
   }
 }
 </script>

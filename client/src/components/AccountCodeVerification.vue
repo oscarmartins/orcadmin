@@ -108,10 +108,10 @@ export default {
         debugger
         this.error = ''
         const cb = await AccountService.validateAccountCode(this.code)
-        if (cb) {
-          debugger
+        if (cb instanceof Error) {
+          throw cb
         } else {
-          throw new Error('unc')
+          this.$router.push('/resume')
         }
       } catch (err) {
         console.log(err)
