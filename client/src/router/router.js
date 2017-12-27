@@ -48,7 +48,8 @@ const routes = [
     path: '/passwordRecovery',
     name: 'passwordRecovery',
     component: PasswordRecovery,
-    meta: { auth: false, title: 'Password Recovery to existing account' }
+    meta: { auth: false, title: 'Password Recovery to existing account' },
+    props: true
   },
   {
     path: '/AccountCodeVerification',
@@ -172,6 +173,14 @@ vueRouterInstance.beforeEach(async function (to, from, next) {
             return false
           } else if (as === 101010 && ns === 101010) {
             return next()
+          } else if (as === 20000 && ns === 21000) {
+            var user = localStorage.getItem('userProfile')
+            if (user) {
+              user = JSON.parse(user)
+              store.dispatch('auth/LOCAL_LOGOUT', {})
+              vueRouterInstance.push({name: 'passwordRecovery', params: {state: 21000, email: user.email}})
+              return next()
+            }
           }
         }
       }

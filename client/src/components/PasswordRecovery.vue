@@ -185,7 +185,11 @@ export default {
   },
   async mounted () {
     try {
-      this.formState({})
+      const params = this.$route.params || {}
+      if (params && params.email) {
+        this.email = params.email
+      }
+      this.formState(params)
     } catch (error) {
       console.log('Error', error)
     }
