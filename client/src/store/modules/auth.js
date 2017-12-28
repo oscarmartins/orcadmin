@@ -23,7 +23,6 @@ const getters = {
 
 const mutations = {
   [types.ISAUTHENTICATED] (state, payload) {
-    debugger
     state.isAuthenticated = payload.isAuthenticated
   },
   [types.SETPROFILE] (state, payload) {
@@ -38,7 +37,6 @@ const mutations = {
     state.pending = true
   },
   [types.LOGIN_SUCCESS] (state) {
-    debugger
     state.isLoggedIn = true
     state.pending = false
   },
@@ -99,7 +97,6 @@ const actions = {
     context.commit(types.LOGOUT)
     const res = vueAuthInstance.logout({data: apiRoles.logout(payload)})
     .then((r) => {
-      debugger
       context.commit(types.ISAUTHENTICATED, {
         isAuthenticated: vueAuthInstance.isAuthenticated()
       })
@@ -129,7 +126,6 @@ const actions = {
     return true
   },
   [types.AUTHENTICATE] (context, payload) {
-    debugger
     payload = payload || {}
     return vueAuthInstance.authenticate(payload.provider, payload.userData, payload.requestOptions)
       .then(function () {

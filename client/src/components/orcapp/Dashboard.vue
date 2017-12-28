@@ -131,7 +131,6 @@ export default {
     }
   },
   created () {
-    debugger
     this.updateToolbarAbs(true)
   },
   destroyed () {

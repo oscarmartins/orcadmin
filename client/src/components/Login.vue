@@ -49,7 +49,6 @@ export default {
   methods: {
     async login () {
       try {
-        debugger
         this.error = ''
         this.onProcess = true
         await AuthenticationService.login(this, {

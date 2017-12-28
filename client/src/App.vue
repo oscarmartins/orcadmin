@@ -88,7 +88,6 @@ export default {
     })
   },
   created () {
-    debugger
     console.log('App ')
     const store = this.$store
      // register a new module only if doesn't exist

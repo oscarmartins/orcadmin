@@ -27,7 +27,6 @@ const INSTANCE = {
     }
   },
   async generateAccountCodeVerification (vueAuthInstance) {
-    debugger
     const user = INSTANCE.getUserProfile()
     if (user) {
       const params = methods.generateAccountCodeVerification(JSON.parse(user))
@@ -42,7 +41,6 @@ const INSTANCE = {
   async validateAccountCode (code) {
     const user = INSTANCE.getUserProfile()
     if (user) {
-      debugger
       const params = methods.validateAccountCode(JSON.parse(user), code)
       return await INSTANCE.post(_vueAuthInstance, '/services', params).then(function (response) {
         return response

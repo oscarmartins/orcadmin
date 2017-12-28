@@ -105,7 +105,6 @@ export default {
     },
     async AccountVerify () {
       try {
-        debugger
         this.error = ''
         const cb = await AccountService.validateAccountCode(this.code)
         if (cb instanceof Error) {

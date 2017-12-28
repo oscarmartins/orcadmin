@@ -2,7 +2,6 @@ import Api from '@/services/Api'
 
 export default {
   passwordRecovery (global, data) {
-    debugger
     global.$store.dispatch('auth/passwordRecovery', data).then((response) => {
       global.formState({state: response.data.ns})
       global.showSnackbar({text: response.data.message, context: 'success'})
@@ -81,7 +80,6 @@ export default {
   },
   logout (global) {
     global.$store.dispatch('auth/LOGOUT', global.auth.profile).then((res) => {
-      debugger
       if (res && res.response.data) {
         if (res.response.data.error) {
           global.$store.dispatch('auth/LOCAL_LOGOUT', {}).then((res) => {
@@ -99,7 +97,6 @@ export default {
       }
     })
     .catch((error) => {
-      debugger
       if (!error.response) {
         error = {
           response: {
