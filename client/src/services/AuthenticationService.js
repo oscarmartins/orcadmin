@@ -18,7 +18,6 @@ export default {
       }
       global.error = error.response.data.error
       global.showSnackbar({text: global.error, context: 'error'})
-      console.log(error)
     })
   },
   register (global, data) {
@@ -38,7 +37,6 @@ export default {
       }
       global.error = error.response.data.error
       global.showSnackbar({text: global.error, context: 'error'})
-      console.log(error)
     })
     // return Api().post('register', credentials)
   },
@@ -65,14 +63,9 @@ export default {
         const respStatus = responses.status
         switch (respStatus) {
           case 400:
-            console.log(this)
+          default:
             // global.orcgoto({name: 'account-activation', params: responses.data})
             global.error = responses.data.error
-            console.log(error)
-            break
-          default:
-            global.error = responses.data.error
-            console.log(error)
             break
         }
       })

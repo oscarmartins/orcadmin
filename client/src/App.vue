@@ -1,13 +1,19 @@
 <template>
-  <v-app id="sandbox" :dark="dark" :light="!dark" standalone toolbar footer>
-        
-    <v-navigation-drawer v-if="this.isAuthenticated" v-model="primaryDrawer.model" :permanent="primaryDrawer.type === 'permanent'" :persistent="primaryDrawer.type === 'persistent'" :temporary="primaryDrawer.type === 'temporary'" :clipped="primaryDrawer.clipped" :floating="primaryDrawer.floating"
+  <v-app id="sandbox" :dark="dark" :light="!dark" standalone toolbar footer>  
+    <v-navigation-drawer 
+    v-if="this.isAuthenticated" 
+    v-model="primaryDrawer.model" 
+    :permanent="primaryDrawer.type === 'permanent'" 
+    :persistent="primaryDrawer.type === 'persistent'" 
+    :temporary="primaryDrawer.type === 'temporary'" 
+    :clipped="primaryDrawer.clipped" 
+    :floating="primaryDrawer.floating"
     :mini-variant="primaryDrawer.mini" overflow enable-resize-watcher >    
     <v-list dense>
-      <v-list-tile avatar tag="div">
+      <v-list-tile avatar tag="div" @click="orcgoto({name: 'CustomerProfile'})">
           <v-list-tile-avatar>
-            <img src="https://randomuser.me/api/portraits/men/85.jpg" v-if="this.isAuthenticated"/>
-            <img src="http://www.ceskymac.cz/wp-content/uploads/2012/07/GuestUserIcon.png" v-else/>
+            <img src="../static/doc-images/GuestUserIcon.png" v-if="this.isAuthenticated"/>
+            <img src="../static/doc-images/GuestUserIcon.png" v-else/>
           </v-list-tile-avatar>
           <v-list-tile-content>
             <v-list-tile-title>
@@ -45,8 +51,7 @@
           <span v-else>start</span>
         </v-btn>
       </v-toolbar-items>
-      <v-spacer></v-spacer>
-  
+      <v-spacer></v-spacer>  
       <v-toolbar-items>
         <v-btn flat dark v-if="!this.isAuthenticated" to="/login">
           Sign In
@@ -77,8 +82,8 @@
 </template>
 <script>
 import { mapState } from 'vuex'
-import commonModule from './store/modules/auth'
 const name = 'auth'
+
 export default {
   name: 'app',
   computed: {
@@ -88,18 +93,9 @@ export default {
     })
   },
   created () {
-    console.log('App ')
-    const store = this.$store
-     // register a new module only if doesn't exist
-    if (!(store && store.state && store.state[name])) {
-      store.registerModule(name, commonModule)
-    } else {
-        // re-use the already existing module
-      console.log(`reusing module: ${name}`)
-    }
   },
   mounted: function () {
-    this.isAuthenticated
+    console.log('monted: App')
   },
   data: () => ({
     dark: false,

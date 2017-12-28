@@ -19,6 +19,7 @@ import Emailer from '@/components/MailerManager/Emailer'
 import EmailerCreate from '@/components/MailerManager/EmailerCreate'
 import EmailerEdit from '@/components/MailerManager/EmailerEdit'
 import EmailerRemove from '@/components/MailerManager/EmailerRemove'
+import CustomerProfile from '@/components/appcomponents/CustomerProfile'
 
 import vueAuthInstance from '../services/auth.js'
 import AccountService from '../services/AccountService.js'
@@ -56,6 +57,12 @@ const routes = [
     name: 'AccountCodeVerification',
     component: AccountCodeVerification,
     meta: { auth: true, title: 'Account Code Verification' }
+  },
+  {
+    path: '/CustomerProfile',
+    name: 'CustomerProfile',
+    component: CustomerProfile,
+    meta: { auth: true, title: 'Customer Profile Manager' }
   },
   {
     path: '/songs',

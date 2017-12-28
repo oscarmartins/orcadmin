@@ -55,7 +55,6 @@
         table.text('description')
         table.datetime('date').notNullable()
     -->
-            </v-layout>
           </v-container>
           <small>*indicates required field</small>
         </v-card-text>

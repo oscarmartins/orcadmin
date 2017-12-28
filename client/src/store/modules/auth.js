@@ -6,7 +6,7 @@ import utils from '../../utils/utils'
 const state = {
   isAuthenticated: vueAuthInstance.isAuthenticated(),
   isLoggedIn: !!vueAuthInstance.getToken(),
-  profile: {}
+  profile: JSON.parse(localStorage.getItem('userProfile')) || {}
 }
 
 const getters = {

@@ -31,7 +31,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import commonModule from '../../store/modules/auth'
 const name = 'auth'
 export default {
   data () {
@@ -51,15 +50,6 @@ export default {
     }
   },
   created () {
-    console.log('next ')
-    const store = this.$store
-     // register a new module only if doesn't exist
-    if (!(store && store.state && store.state[name])) {
-      store.registerModule(name, commonModule)
-    } else {
-        // re-use the already existing module
-      console.log(`reusing module: ${name}`)
-    }
   }
 }
 </script>
