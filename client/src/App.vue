@@ -65,14 +65,14 @@
 
     <main>
      
-      <v-container fluid>
-        <v-layout align-center justify-center>
+      <v-container fluid fill-width>
+        <v-layout justify-center align-center>
           <v-flex xs12>
             <router-view></router-view>
           </v-flex>
         </v-layout>
       </v-container>
-      
+     
     </main>
 
     <v-footer :fixed="footer.fixed" class="footer secondary" light dark>
