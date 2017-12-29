@@ -26,7 +26,7 @@ nodemailer.createTestAccount((err, account) => {
   // setup email data with unicode symbols
   let mailOptions = {
     from: account.user, // sender address
-    to: 'oscar.martins@koolsite.pt', // list of receivers
+    to: 'oscar.martins@.pt', // list of receivers
     subject: 'Hello ✔✔', // Subject line
     text: 'Hello world? ✔', // plain text body
     html: '<b>Hello world?</b>' // html body

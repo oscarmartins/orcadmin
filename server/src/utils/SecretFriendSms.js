@@ -105,7 +105,7 @@ function mobileSort (name) {
 function smsTextTemplates (name, secretFriendMobile) {
   const template = smsTextTemplate || ''
   let msgsms = ('Olá {{name}}, tudo bem?? ').replace('{{name}}', name)
-  if (template === 'koolsite') {
+  if (template === 'cool') {
     msgsms = ('Olá {{name}}, o teu amigo(a) secreto(a) é {{mobileName}}. ').replace('{{name}}', name).replace('{{mobileName}}', knowNameByMobile(secretFriendMobile))
     msgsms += 'Valor máx. do presente é de 5€. '
     msgsms += 'O jantar é na Baía-do-Peixe na prox. 4ªfeira ás 20h00.'
