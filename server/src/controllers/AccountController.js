@@ -111,6 +111,8 @@ module.exports = {
           }
         } else if (main.REQ_ACTION === AuthenticationController.options.ON_SIGNOUT) {
           signout()
+        } else {
+          responseSender({status: 400, output: {error: 'main.REQ_ACTION not found'}})
         }
         return true
       }
@@ -120,6 +122,8 @@ module.exports = {
           if (_res) {
             console.log(_res)
           }
+        } else {
+          responseSender({status: 400, output: {error: 'main.REQ_ACTION not found'}})
         }
         return true
       }
@@ -127,17 +131,21 @@ module.exports = {
         checkpoint = null
         if (main.REQ_ACTION === CustomerController.options.onFetchCustomerProfile) {
           checkpoint = await CustomerController.fechCustomerProfile(main.REQ_INPUTS)
-          if (checkpoint) {
-            responseSender(checkpoint)
+          if (checkpoint.iook) {
+            responseSender({status: 200, output: checkpoint})
           } else {
             responseSender({status: 400, output: checkpoint})
           }
+        } else {
+          responseSender({status: 400, output: {error: 'main.REQ_ACTION not found'}})
         }
         return true
       }
       if (main.REQ_CONTEX === 659832) {
         if (main.REQ_ACTION === 659832) {
           sendSMS(main.REQ_INPUTS)
+        } else {
+          responseSender({status: 400, output: {error: 'main.REQ_ACTION not found'}})
         }
         return true
       }

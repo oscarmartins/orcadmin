@@ -234,7 +234,9 @@ export default {
   async created () {
     this.actionMode = this.ACTION_EDIT_MODE
     try {
-      const response = await this.fetchCustomerProfile()
+      const response = await this.fetchCustomerProfile().then((res) => {
+        return res
+      }).catch((err) => { if (err) { } return err })
       if (response) {
         console.log(response)
       }
@@ -258,7 +260,10 @@ export default {
       this.actionMode = this.actionMode === this.ACTION_EDIT_MODE ? this.ACTION_UPDATE_MODE : this.ACTION_EDIT_MODE
     },
     async fetchCustomerProfile () {
-      return (await CustomerService.fetchCustomerProfile())
+      const resultFC = await CustomerService.fetchCustomerProfile().then((res) => {
+        return res
+      }).catch((err) => { if (err) { } return err })
+      return resultFC
     }
   }
 }
