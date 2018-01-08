@@ -155,6 +155,7 @@ function redirectAccountCodeVerification () {
 }
 
 vueRouterInstance.beforeEach(async function (to, from, next) {
+  debugger
   let result = null
   try {
     if (to.meta && to.meta.auth && to.path !== '/AccountCodeVerification') {

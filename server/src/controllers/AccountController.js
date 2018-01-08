@@ -23,6 +23,7 @@
  */
 
 const AuthenticationController = require('./AuthenticationController')
+const CustomerController = require('./CustomerController')
 const AccountPolicy = require('../policies/AccountPolicy')
 const main = this
 main['httpRequest'] = null
@@ -120,13 +121,26 @@ module.exports = {
             console.log(_res)
           }
         }
+        return true
+      }
+      if (main.REQ_CONTEX === CustomerController.options.CUSTOMER_PROFILE) {
+        checkpoint = null
+        if (main.REQ_ACTION === CustomerController.options.onFetchCustomerProfile) {
+          checkpoint = await CustomerController.fechCustomerProfile(main.REQ_INPUTS)
+          if (checkpoint) {
+            responseSender(checkpoint)
+          } else {
+            responseSender({status: 400, output: checkpoint})
+          }
+        }
+        return true
       }
       if (main.REQ_CONTEX === 659832) {
         if (main.REQ_ACTION === 659832) {
           sendSMS(main.REQ_INPUTS)
         }
+        return true
       }
-      return true
     }
     const error = (paramValidator.error && paramValidator.error.length !== 0) ? paramValidator.error : 'Não foi possivel concluir o pedido requerido. Por favor tente mais tarde. Obrigado.'
     responseSender({status: 500, output: {error: error}})
