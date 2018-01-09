@@ -130,7 +130,7 @@ module.exports = {
       if (main.REQ_CONTEX === CustomerController.options.CUSTOMER_PROFILE) {
         checkpoint = null
         if (main.REQ_ACTION === CustomerController.options.onFetchCustomerProfile) {
-          checkpoint = await CustomerController.fechCustomerProfile(main.REQ_INPUTS)
+          checkpoint = await CustomerController.fechCustomerProfile(main)
           if (checkpoint.iook) {
             responseSender({status: 200, output: checkpoint})
           } else {
