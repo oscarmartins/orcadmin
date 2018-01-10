@@ -13,36 +13,49 @@
     </v-toolbar>
     <div class="scroll-y" id="scrolling-techniques">
       <v-container fluid grid-list-xl>
-        <v-layout row wrap v-if="this.error">
-          <v-flex>
-            <v-alert error value="true">
-              {{this.error}}
-            </v-alert>
-          </v-flex>
-        </v-layout>
-
+        
         <v-layout row wrap>
-
           <v-flex>
             <v-card color="grey lighten-4" flat>
               <v-card-text>
                 <v-container fluid grid-list-xl>
-                  <v-layout row wrap>
-                    <v-flex md4 lg4>
-                      <v-text-field v-model="firstName" name="firstName" label="Nome" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
-                    </v-flex>
-                    <v-flex md4 lg4>
-                      <v-text-field name="lastName" label="Apelido" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
+                  <v-layout row wrap v-if="this.error">
+                    <v-flex>
+                      <v-alert error value="true">
+                        {{this.error}}
+                      </v-alert>
                     </v-flex>
                   </v-layout>
                   <v-layout row wrap>
                     <v-flex md4 lg4>
-                      <v-select v-bind:items="items" v-model="e1" label="Genero" single-line bottom :disabled="actionMode===ACTION_EDIT_MODE"></v-select>
+                      <v-text-field 
+                      v-model="customerdata.firstName" 
+                      name="firstName" 
+                      label="Nome" 
+                      :disabled="actionMode===ACTION_EDIT_MODE" 
+                      :rules="[() => customerdata.firstName.length > 0 || 'This field is required']"
+                      required></v-text-field>
                     </v-flex>
                     <v-flex md4 lg4>
-                      <v-dialog v-model="modalBirthDate" lazy full-width width="290px" :disabled="actionMode===ACTION_EDIT_MODE">
-                        <v-text-field slot="activator" label="Birth Date" v-model="birthDate" prepend-icon="event" readonly :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
-                        <v-date-picker v-model="birthDate" scrollable actions>
+                      <v-text-field
+                      v-model="customerdata.lastName" 
+                      name="lastName" 
+                      label="Apelido" 
+                      :disabled="actionMode===ACTION_EDIT_MODE"
+                      :rules="[() => customerdata.lastName.length > 0 || 'This field is required']"
+                      required
+                      ></v-text-field>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row wrap>
+                    <v-flex md4 lg4>
+                      <v-select v-bind:items="genderItems" v-model="customerdata.gender" label="Genero" single-line bottom :disabled="actionMode===ACTION_EDIT_MODE"></v-select>
+                    </v-flex>
+                    <v-flex md4 lg4>
+                      <v-dialog v-model="modalBirthDate" lazy full-width width="290px" :disabled="actionMode===ACTION_EDIT_MODE" >
+                        <v-text-field slot="activator" label="Birth Date" v-model="customerdata.birthDate" prepend-icon="event" readonly :disabled="actionMode===ACTION_EDIT_MODE" :rules="[() => customerdata.birthDate.length > 0 || 'This field is required']"
+                      required></v-text-field>
+                        <v-date-picker v-model="customerdata.birthDate" scrollable actions>
                           <template scope="{ save, cancel }">
                             <v-card-actions>
                               <v-spacer></v-spacer>
@@ -56,49 +69,51 @@
                   </v-layout>
                   <v-layout row wrap>
                     <v-flex md4 lg4>
-                      <v-text-field name="nid" label="Número Identidade" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
+                      <v-text-field v-model="customerdata.nid" name="nid" label="Número Identidade" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
                     </v-flex>
                     <v-flex md4 lg4>
-                      <v-text-field name="nif" label="Número Fiscal" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
+                      <v-text-field v-model="customerdata.nif" name="nif" label="Número Fiscal" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
                     </v-flex>
 
                   </v-layout>
                   <v-layout row wrap>
                     <v-flex md5 lg5>
-                      <v-text-field name="nib" label="Número Bancário" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
+                      <v-text-field v-model="customerdata.nib" name="nib" label="Número Bancário" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
                     </v-flex>
                   </v-layout>
 
                   <v-layout row wrap>
 
                     <v-flex md5 lg5>
-                      <v-text-field name="street" label="Morada" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
+                      <v-text-field v-model="customerdata.street" name="street" label="Morada" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
                     </v-flex>
                     <v-flex md3 lg3>
-                      <v-text-field name="zipcode" label="Código Postal" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
+                      <v-text-field v-model="customerdata.zipcode" name="zipcode" label="Código Postal" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
                     </v-flex>
 
                   </v-layout>
                   <v-layout row wrap>
                     <v-flex md3 lg3>
-                      <v-text-field name="city" label="Cidade" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
+                      <v-text-field v-model="customerdata.city" name="city" label="Cidade" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
 
                     </v-flex>
                     <v-flex md3 lg3>
-                      <v-text-field name="country" label="País" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
+                      <v-text-field v-model="customerdata.country" name="country" label="País" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
                     </v-flex>
                   </v-layout>
                   <v-layout row wrap>
                     <v-flex md3 lg3>
-                      <v-text-field name="email" label="Email" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
+                      <v-text-field v-model="customerdata.email" name="email" label="Email" :disabled="actionMode===ACTION_EDIT_MODE" :rules="[() => customerdata.email.length > 0 || 'This field is required']"
+                      required></v-text-field>
                     </v-flex>
                   </v-layout>
                   <v-layout row wrap>
                     <v-flex md3 lg3>
-                      <v-text-field name="phoneNumber" label="Telefone" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
+                      <v-text-field v-model="customerdata.phoneNumber" name="phoneNumber" label="Telefone" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
                     </v-flex>
                     <v-flex md3 lg3>
-                      <v-text-field name="mobileNumber" label="Telemovel" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
+                      <v-text-field v-model="customerdata.mobileNumber" name="mobileNumber" label="Telemovel" :disabled="actionMode===ACTION_EDIT_MODE" :rules="[() => customerdata.mobileNumber.length > 0 || 'This field is required']"
+                      required></v-text-field>
                     </v-flex>
                   </v-layout>
 
@@ -129,13 +144,26 @@ const name = 'auth'
 export default {
   data () {
     return {
-      e1: null,
-      birthDate: null,
       modalBirthDate: false,
-      items: [{ text: 'Male' }, { text: 'Female' }],
+      genderItems: [{ text: 'Male' }, { text: 'Female' }],
       actionMode: 0,
       error: '',
-      firstName: ''
+      customerdata: {
+        firstName: '',
+        lastName: '',
+        gender: '',
+        birthDate: '',
+        nid: '',
+        nif: '',
+        nib: '',
+        street: '',
+        zipcode: '',
+        city: '',
+        country: '',
+        email: '',
+        phoneNumber: '',
+        mobileNumber: ''
+      }
     }
   },
   computed: {
@@ -173,19 +201,63 @@ export default {
     save () {
       console.log('save')
     },
-    updateCustomer (event) {
+    async updateCustomer (event) {
       debugger
-      console.log(this.actionMode)
       this.actionMode = this.actionMode === this.ACTION_EDIT_MODE ? this.ACTION_UPDATE_MODE : this.ACTION_EDIT_MODE
+      const datacustomer = {}
+      datacustomer.firstName = this.customerdata.firstName
+      datacustomer.lastName = this.customerdata.lastName
+      datacustomer.gender = this.customerdata.gender
+      datacustomer.birthDate = this.customerdata.birthDate
+      datacustomer.nid = this.customerdata.nid
+      datacustomer.nif = this.customerdata.nif
+      datacustomer.nib = this.customerdata.nib
+      datacustomer.street = this.customerdata.street
+      datacustomer.zipcode = this.customerdata.zipcode
+      datacustomer.city = this.customerdata.city
+      datacustomer.country = this.customerdata.country
+      datacustomer.email = this.customerdata.email
+      datacustomer.phoneNumber = this.customerdata.phoneNumber
+      datacustomer.mobileNumber = this.customerdata.mobileNumber
+      await CustomerService.updateCustomerProfile(datacustomer).then((res) => {
+        debugger
+        const data = res.response.data
+        if (!data.iook) {
+          this.actionMode = this.ACTION_UPDATE_MODE
+          throw new Error(data.error)
+        }
+        return res
+      }).catch((err) => {
+        if (err) {
+          this.error = err.message
+          console.log(err)
+        }
+        return err
+      })
     },
     async fetchCustomerProfile () {
       await CustomerService.fetchCustomerProfile().then((res) => {
         debugger
         const data = res.response.data
         if (!data.iook) {
+          this.actionMode = this.ACTION_UPDATE_MODE
           throw new Error(data.error)
         }
-        this.firstName = 'Oscar'
+        const datacustomer = data.data
+        this.firstName = datacustomer.firstName
+        this.lastName = datacustomer.lastName
+        this.gender = datacustomer.gender
+        this.birthDate = datacustomer.birthDate
+        this.nid = datacustomer.nid
+        this.nif = datacustomer.nif
+        this.nib = datacustomer.nib
+        this.street = datacustomer.street
+        this.zipcode = datacustomer.zipcode
+        this.city = datacustomer.city
+        this.country = datacustomer.country
+        this.email = datacustomer.email
+        this.phoneNumber = datacustomer.phoneNumber
+        this.mobileNumber = datacustomer.mobileNumber
         return res
       }).catch((err) => {
         if (err) {

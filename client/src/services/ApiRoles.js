@@ -9,5 +9,6 @@ module.exports = {
   checkAccountStatus (payload) { return parameters(5000, 5010, payload) },
   generateAccountCodeVerification (payload) { return parameters(5000, 5020, payload) },
   validateAccountCode (user, code) { const payload = {user: user, code: code}; return parameters(5000, 5030, payload) },
-  fetchCustomerProfile (payload) { return parameters(6000, 6010, payload) }
+  fetchCustomerProfile (payload) { return parameters(6000, 6010, payload) },
+  updateCustomerProfile (user, fields) { const payload = {user: user, fields: fields}; return parameters(6000, 6020, payload) }
 }

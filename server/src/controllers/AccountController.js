@@ -131,11 +131,10 @@ module.exports = {
         checkpoint = null
         if (main.REQ_ACTION === CustomerController.options.onFetchCustomerProfile) {
           checkpoint = await CustomerController.fechCustomerProfile(main)
-          if (checkpoint.iook) {
-            responseSender({status: 200, output: checkpoint})
-          } else {
-            responseSender({status: 400, output: checkpoint})
-          }
+          responseSender({status: (checkpoint.iook ? 200 : 400), output: checkpoint})
+        } else if (main.REQ_ACTION === CustomerController.options.onUpdateCustomerProfile) {
+          checkpoint = await CustomerController.updateCustomerProfile(main)
+          responseSender({status: (checkpoint.iook ? 200 : 400), output: checkpoint})
         } else {
           responseSender({status: 400, output: {error: 'main.REQ_ACTION not found'}})
         }
