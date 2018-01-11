@@ -17,26 +17,14 @@ const INSTANCE = {
     const user = INSTANCE.getUserProfile()
     if (user) {
       const params = methods.fetchCustomerProfile(JSON.parse(user))
-      const responses = await INSTANCE.post(SERVICE_PATH, params).then(function (response) {
-        return response
-      }).catch((error) => {
-        console.log(error)
-        return error
-      })
-      return responses
+      return await INSTANCE.post(SERVICE_PATH, params)
     }
   },
   async updateCustomerProfile (fields) {
     const user = INSTANCE.getUserProfile()
     if (user) {
       const params = methods.updateCustomerProfile(JSON.parse(user), fields)
-      const responses = await INSTANCE.post(SERVICE_PATH, params).then(function (response) {
-        return response
-      }).catch((error) => {
-        console.log(error)
-        return error
-      })
-      return responses
+      return await INSTANCE.post(SERVICE_PATH, params)
     }
   }
 }

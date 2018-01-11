@@ -3,13 +3,33 @@ const ro = require('../utils/Utils').resultOutput
 const {User, Customer} = require('../models')
 const joipolicy = require('joi')
 
-const schemaPolicy = joipolicy.object().options({ abortEarly: true }).keys({
+const schemaPolicy = joipolicy.object().options({ allowUnknown: true }).keys({
   email: joipolicy.string().email().required(),
   firstName: joipolicy.string().required(),
   lastName: joipolicy.string().required(),
   birthDate: joipolicy.string().required(),
   mobileNumber: joipolicy.number().integer().required()
 })
+
+const CUSTOMER = {
+  user_id: null,
+  firstName: null,
+  lastName: null,
+  birthDate: null,
+  gender: null,
+  nid: null,
+  nif: null,
+  nib: null,
+  street: null,
+  zipcode: null,
+  city: null,
+  country: null,
+  email: null,
+  phoneNumber: null,
+  mobileNumber: null,
+  dateCreated: null,
+  dateUpdated: null
+}
 
 async function fetchUserByEmail (id, email) {
   var user = null
@@ -33,7 +53,7 @@ async function fetchCustomer (user) {
 }
 const instance = {
   customerPolicy: fields => {
-    const {error} = schemaPolicy.validate(fields, {presence: 'required'})
+    const {error} = schemaPolicy.validate(fields, {presence: 'required', allowUnknown: true})
     if (error) {
       throw new Error(error.details[0].message)
     }
@@ -97,52 +117,57 @@ const instance = {
           if (!fields) {
             throw new Error('Customer fields not found')
           }
-          const iores = await Customer.findById(user._id, (err, customer) => {
+          const iores = await Customer.find({user_id: user._id}, (err, customer) => {
             if (err) {
-              console.log(err)
-            }
-            if (customer) {
-              customer.firstName = fields.firstName
-              customer.lastName = fields.lastName
-              customer.gender = fields.gender
-              customer.birthDate = fields.birthDate
-              customer.nid = fields.nid
-              customer.nif = fields.nib
-              customer.nib = fields.nib
-              customer.street = fields.street
-              customer.zipcode = fields.zipcode
-              customer.city = fields.city
-              customer.country = fields.country
-              customer.email = fields.email
-              customer.phoneNumber = fields.phoneNumber
-              customer.mobileNumber = fields.mobileNumber
-              customer.dateUpdated = new Date()
-              customer.save((err, customer) => {
-                if (err) {
-                  console.log(err)
-                }
-              })
+              throw new Error(err.message)
             }
             return customer
           })
-          if (!iores) {
-            const _customer = new Customer(fields)
+          let _customer = null
+          if (!iores || iores.length === 0) {
+            _customer = new Customer(fields)
             _customer.user_id = user._id
             _customer.dateCreated = new Date()
             _customer.dateUpdated = new Date()
-            _customer.save((err, customer) => {
-              if (err) {
-                console.log(err)
-              }
-            })
+            await _customer.save()
+          } else {
+            if (iores.length === 1) {
+              _customer = iores[0]
+              _customer.firstName = fields.firstName
+              _customer.lastName = fields.lastName
+              _customer.gender = fields.gender
+              _customer.birthDate = fields.birthDate
+              _customer.nid = fields.nid || null
+              _customer.nif = fields.nib || null
+              _customer.nib = fields.nib || null
+              _customer.street = fields.street
+              _customer.zipcode = fields.zipcode
+              _customer.city = fields.city
+              _customer.country = fields.country
+              _customer.email = fields.email
+              _customer.phoneNumber = fields.phoneNumber || null
+              _customer.mobileNumber = fields.mobileNumber || null
+              _customer.dateUpdated = Date.now()
+              await Customer.update({user_id: user._id}, fields)
+            }
           }
-          outdata.success = 'Found Customer'
+
+          outdata.success = 'Customer updated'
           outdata.data = {}
         }
       }
-    } catch (error) {
+    } catch (err) {
+      if (err) {
+        if (err.name === 'MongoError' && err.code === 11000) {
+          const fieldName = err.errmsg.substring(err.errmsg.lastIndexOf('index:') + 7, err.errmsg.lastIndexOf('_1'))
+          outdata.error = `O Campo ${fieldName} está registado em outra conta. `
+        } else {
+          outdata.error = err.message
+        }
+      } else {
+        outdata.error = 'erro desconhecido'
+      }
       outdata.iook = false
-      outdata.error = error.message
       outdata.data = null
     }
     return outdata

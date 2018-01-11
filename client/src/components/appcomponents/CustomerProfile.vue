@@ -49,7 +49,7 @@
                   </v-layout>
                   <v-layout row wrap>
                     <v-flex md4 lg4>
-                      <v-select v-bind:items="genderItems" v-model="customerdata.gender" label="Genero" single-line bottom :disabled="actionMode===ACTION_EDIT_MODE"></v-select>
+                      <v-select v-bind:items="genderItems" v-model="customerdata.gender" item-value="text" label="Genero" single-line bottom :disabled="actionMode===ACTION_EDIT_MODE"></v-select>
                     </v-flex>
                     <v-flex md4 lg4>
                       <v-dialog v-model="modalBirthDate" lazy full-width width="290px" :disabled="actionMode===ACTION_EDIT_MODE" >
@@ -183,12 +183,45 @@ export default {
     LABEL_EDIT: () => 'EDIT',
     LABEL_UPDATE: () => 'UPDATE'
   },
-  created () {
+  async created () {
     this.actionMode = this.ACTION_EDIT_MODE
     try {
-      this.fetchCustomerProfile()
+      await CustomerService.fetchCustomerProfile().then(responses => {
+        debugger
+        if (responses) {
+          const theCustomer = responses.data
+          if (!theCustomer.iook) {
+            this.actionMode = this.ACTION_UPDATE_MODE
+            throw new Error(this.theCustomer.error)
+          }
+          this.customerdata.firstName = theCustomer.data.firstName
+          this.customerdata.lastName = theCustomer.data.lastName
+          this.customerdata.gender = theCustomer.data.gender
+          this.customerdata.birthDate = theCustomer.data.birthDate
+          this.customerdata.nid = theCustomer.data.nid
+          this.customerdata.nif = theCustomer.data.nif
+          this.customerdata.nib = theCustomer.data.nib
+          this.customerdata.street = theCustomer.data.street
+          this.customerdata.zipcode = theCustomer.data.zipcode
+          this.customerdata.city = theCustomer.data.city
+          this.customerdata.country = theCustomer.data.country
+          this.customerdata.email = theCustomer.data.email
+          this.customerdata.phoneNumber = theCustomer.data.phoneNumber
+          this.customerdata.mobileNumber = theCustomer.data.mobileNumber
+          return theCustomer
+        }
+        return null
+      }).catch(err => {
+        if (err) {
+          debugger
+          if (!err.response.data.iook) {
+            this.actionMode = this.ACTION_UPDATE_MODE
+            this.error = err.response.data.error
+          }
+        }
+        return err
+      })
     } catch (error) {
-      alert('precisa de ser revisto')
       this.error = error
     }
   },
@@ -196,76 +229,56 @@ export default {
   },
   methods: {
     cancel () {
+      this.error = ''
       console.log('cancel')
     },
     save () {
+      this.error = ''
       console.log('save')
     },
     async updateCustomer (event) {
-      debugger
-      this.actionMode = this.actionMode === this.ACTION_EDIT_MODE ? this.ACTION_UPDATE_MODE : this.ACTION_EDIT_MODE
-      const datacustomer = {}
-      datacustomer.firstName = this.customerdata.firstName
-      datacustomer.lastName = this.customerdata.lastName
-      datacustomer.gender = this.customerdata.gender
-      datacustomer.birthDate = this.customerdata.birthDate
-      datacustomer.nid = this.customerdata.nid
-      datacustomer.nif = this.customerdata.nif
-      datacustomer.nib = this.customerdata.nib
-      datacustomer.street = this.customerdata.street
-      datacustomer.zipcode = this.customerdata.zipcode
-      datacustomer.city = this.customerdata.city
-      datacustomer.country = this.customerdata.country
-      datacustomer.email = this.customerdata.email
-      datacustomer.phoneNumber = this.customerdata.phoneNumber
-      datacustomer.mobileNumber = this.customerdata.mobileNumber
-      await CustomerService.updateCustomerProfile(datacustomer).then((res) => {
+      this.error = ''
+      if (this.actionMode === this.ACTION_UPDATE_MODE) {
+        const datacustomer = {}
+        datacustomer.firstName = this.customerdata.firstName
+        datacustomer.lastName = this.customerdata.lastName
+        datacustomer.gender = this.customerdata.gender
+        datacustomer.birthDate = this.customerdata.birthDate
+        datacustomer.nid = this.customerdata.nid
+        datacustomer.nif = this.customerdata.nif
+        datacustomer.nib = this.customerdata.nib
+        datacustomer.street = this.customerdata.street
+        datacustomer.zipcode = this.customerdata.zipcode
+        datacustomer.city = this.customerdata.city
+        datacustomer.country = this.customerdata.country
+        datacustomer.email = this.customerdata.email
+        datacustomer.phoneNumber = this.customerdata.phoneNumber
+        datacustomer.mobileNumber = this.customerdata.mobileNumber
+        await CustomerService.updateCustomerProfile(datacustomer).then(res => {
+          debugger
+          const data = res.data
+          if (!data.iook) {
+            this.actionMode = this.ACTION_UPDATE_MODE
+            throw new Error(data.error)
+          }
+          this.actionMode = this.ACTION_EDIT_MODE
+          return res
+        }).catch((err) => {
+          debugger
+          if (!err.response.data.iook) {
+            this.actionMode = this.ACTION_UPDATE_MODE
+            this.error = err.response.data.error
+          }
+          return err
+        })
+      } else {
         debugger
-        const data = res.response.data
-        if (!data.iook) {
-          this.actionMode = this.ACTION_UPDATE_MODE
-          throw new Error(data.error)
-        }
-        return res
-      }).catch((err) => {
-        if (err) {
-          this.error = err.message
-          console.log(err)
-        }
-        return err
-      })
+        this.actionMode = this.ACTION_UPDATE_MODE
+      }
     },
     async fetchCustomerProfile () {
-      await CustomerService.fetchCustomerProfile().then((res) => {
-        debugger
-        const data = res.response.data
-        if (!data.iook) {
-          this.actionMode = this.ACTION_UPDATE_MODE
-          throw new Error(data.error)
-        }
-        const datacustomer = data.data
-        this.firstName = datacustomer.firstName
-        this.lastName = datacustomer.lastName
-        this.gender = datacustomer.gender
-        this.birthDate = datacustomer.birthDate
-        this.nid = datacustomer.nid
-        this.nif = datacustomer.nif
-        this.nib = datacustomer.nib
-        this.street = datacustomer.street
-        this.zipcode = datacustomer.zipcode
-        this.city = datacustomer.city
-        this.country = datacustomer.country
-        this.email = datacustomer.email
-        this.phoneNumber = datacustomer.phoneNumber
-        this.mobileNumber = datacustomer.mobileNumber
-        return res
-      }).catch((err) => {
-        if (err) {
-          this.error = err.message
-          console.log(err)
-        }
-        return err
-      })
+      this.error = ''
+      return (await CustomerService.fetchCustomerProfile())
     }
   }
 }
