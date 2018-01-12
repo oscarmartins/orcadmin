@@ -116,30 +116,28 @@ const instance = {
           if (!fields) {
             throw new Error('Customer fields not found')
           }
-
-          const _customer = CUSTOMER()
-          Object.keys(fields).forEach((key) => {
-            const value = fields[key] || null
-            _customer[key] = value
-          })
-          const criteria = {user_id: user._id}
-
-          const custmUpd = await Customer.update(criteria, _customer)
-
-          if (custmUpd.n === 1 && custmUpd.nModified === 1 && custmUpd.ok === 1) {
-            console.log(1)
+          var locCustomer = await fetchCustomer(user)
+          var updresult = null
+          if (locCustomer) {
+            locCustomer.dateUpdated = Date.now()
+            Object.keys(fields).forEach((key) => {
+              const value = fields[key] || null
+              locCustomer[key] = value
+            })
           } else {
-            const docsave = new Customer(_customer)
-            docsave.user_id = criteria.user_id
-            docsave.dateCreated = Date.now()
-            docsave.dateUpdated = Date.now()
-            await docsave.save()
+            const _customer = CUSTOMER()
+            Object.keys(fields).forEach((key) => {
+              const value = fields[key] || null
+              _customer[key] = value
+            })
+            locCustomer = new Customer(_customer)
+            locCustomer.user_id = user._id
+            locCustomer.dateCreated = Date.now()
+            locCustomer.dateUpdated = Date.now()
           }
-
-          console.log(_customer)
-
+          updresult = await locCustomer.save(true)
           outdata.success = 'Customer updated'
-          outdata.data = {}
+          outdata.data = updresult
         }
       }
     } catch (err) {

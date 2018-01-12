@@ -262,6 +262,7 @@ export default {
             throw new Error(data.error)
           }
           this.actionMode = this.ACTION_EDIT_MODE
+          this.customerdata = data.data
           return res
         }).catch((err) => {
           debugger
