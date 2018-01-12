@@ -21,4 +21,6 @@ const accountSchema = new Schema({
   dateUpdated: {type: Date}
 })
 
-module.exports = mongoose.model('Customer', accountSchema)
+const Costumer = mongoose.model('Customer', accountSchema)
+
+module.exports = Costumer

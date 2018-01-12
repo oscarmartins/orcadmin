@@ -11,24 +11,23 @@ const schemaPolicy = joipolicy.object().options({ allowUnknown: true }).keys({
   mobileNumber: joipolicy.number().integer().required()
 })
 
-const CUSTOMER = {
-  user_id: null,
-  firstName: null,
-  lastName: null,
-  birthDate: null,
-  gender: null,
-  nid: null,
-  nif: null,
-  nib: null,
-  street: null,
-  zipcode: null,
-  city: null,
-  country: null,
-  email: null,
-  phoneNumber: null,
-  mobileNumber: null,
-  dateCreated: null,
-  dateUpdated: null
+const CUSTOMER = () => {
+  return {
+    firstName: null,
+    lastName: null,
+    birthDate: null,
+    gender: null,
+    nid: null,
+    nif: null,
+    nib: null,
+    street: null,
+    zipcode: null,
+    city: null,
+    country: null,
+    email: null,
+    phoneNumber: null,
+    mobileNumber: null
+  }
 }
 
 async function fetchUserByEmail (id, email) {
@@ -117,40 +116,27 @@ const instance = {
           if (!fields) {
             throw new Error('Customer fields not found')
           }
-          const iores = await Customer.find({user_id: user._id}, (err, customer) => {
-            if (err) {
-              throw new Error(err.message)
-            }
-            return customer
+
+          const _customer = CUSTOMER()
+          Object.keys(fields).forEach((key) => {
+            const value = fields[key] || null
+            _customer[key] = value
           })
-          let _customer = null
-          if (!iores || iores.length === 0) {
-            _customer = new Customer(fields)
-            _customer.user_id = user._id
-            _customer.dateCreated = new Date()
-            _customer.dateUpdated = new Date()
-            await _customer.save()
+          const criteria = {user_id: user._id}
+
+          const custmUpd = await Customer.update(criteria, _customer)
+
+          if (custmUpd.n === 1 && custmUpd.nModified === 1 && custmUpd.ok === 1) {
+            console.log(1)
           } else {
-            if (iores.length === 1) {
-              _customer = iores[0]
-              _customer.firstName = fields.firstName
-              _customer.lastName = fields.lastName
-              _customer.gender = fields.gender
-              _customer.birthDate = fields.birthDate
-              _customer.nid = fields.nid || null
-              _customer.nif = fields.nib || null
-              _customer.nib = fields.nib || null
-              _customer.street = fields.street
-              _customer.zipcode = fields.zipcode
-              _customer.city = fields.city
-              _customer.country = fields.country
-              _customer.email = fields.email
-              _customer.phoneNumber = fields.phoneNumber || null
-              _customer.mobileNumber = fields.mobileNumber || null
-              _customer.dateUpdated = Date.now()
-              await Customer.update({user_id: user._id}, fields)
-            }
+            const docsave = new Customer(_customer)
+            docsave.user_id = criteria.user_id
+            docsave.dateCreated = Date.now()
+            docsave.dateUpdated = Date.now()
+            await docsave.save()
           }
+
+          console.log(_customer)
 
           outdata.success = 'Customer updated'
           outdata.data = {}
