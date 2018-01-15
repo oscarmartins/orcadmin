@@ -15,13 +15,11 @@ const customerSchema = new Schema({
   city: {type: String, default: ''},
   country: {type: String, default: ''},
   email: {type: String, default: '', required: true, index: {unique: true, sparse: true}},
-  phoneNumber: {type: String, default: '', index: {unique: true, sparse: true}},
-  mobileNumber: {type: String, default: '', required: true, index: {unique: true, sparse: true}},
+  phoneNumber: {type: String, default: ''},
+  mobileNumber: {type: String, default: '', required: true},
   dateCreated: {type: Date},
   dateUpdated: {type: Date}
 })
-
-// const INDEXED = ['nid', 'nif', 'nib', 'phoneNumber', 'mobileNumber']
 
 customerSchema.pre('save', async function (next) {
   const $self = this

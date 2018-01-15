@@ -10,6 +10,9 @@
         <span v-if="actionMode===ACTION_EDIT_MODE">{{LABEL_EDIT}}</span>
         <span v-if="actionMode===ACTION_UPDATE_MODE">{{LABEL_UPDATE}}</span>
       </v-btn>
+       <v-btn color="success" @click="rollbackCustomer" v-if="actionMode===ACTION_UPDATE_MODE">
+        <span >{{LABEL_CANCEL}}</span>
+      </v-btn>
     </v-toolbar>
     <div class="scroll-y" id="scrolling-techniques">
       <v-container fluid grid-list-xl>
@@ -124,6 +127,9 @@
                   <span v-if="actionMode===ACTION_EDIT_MODE">{{LABEL_EDIT}}</span>
                   <span v-if="actionMode===ACTION_UPDATE_MODE">{{LABEL_UPDATE}}</span>
                 </v-btn>
+                <v-btn color="success" @click="rollbackCustomer" v-if="actionMode===ACTION_UPDATE_MODE">
+                  <span >{{LABEL_CANCEL}}</span>
+                </v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
@@ -181,46 +187,13 @@ export default {
     ACTION_EDIT_MODE: () => 100,
     ACTION_UPDATE_MODE: () => 200,
     LABEL_EDIT: () => 'EDIT',
-    LABEL_UPDATE: () => 'UPDATE'
+    LABEL_UPDATE: () => 'UPDATE',
+    LABEL_CANCEL: () => 'CANCEL'
   },
   async created () {
     this.actionMode = this.ACTION_EDIT_MODE
     try {
-      await CustomerService.fetchCustomerProfile().then(responses => {
-        debugger
-        if (responses) {
-          const theCustomer = responses.data
-          if (!theCustomer.iook) {
-            this.actionMode = this.ACTION_UPDATE_MODE
-            throw new Error(this.theCustomer.error)
-          }
-          this.customerdata.firstName = theCustomer.data.firstName
-          this.customerdata.lastName = theCustomer.data.lastName
-          this.customerdata.gender = theCustomer.data.gender
-          this.customerdata.birthDate = theCustomer.data.birthDate
-          this.customerdata.nid = theCustomer.data.nid
-          this.customerdata.nif = theCustomer.data.nif
-          this.customerdata.nib = theCustomer.data.nib
-          this.customerdata.street = theCustomer.data.street
-          this.customerdata.zipcode = theCustomer.data.zipcode
-          this.customerdata.city = theCustomer.data.city
-          this.customerdata.country = theCustomer.data.country
-          this.customerdata.email = theCustomer.data.email
-          this.customerdata.phoneNumber = theCustomer.data.phoneNumber
-          this.customerdata.mobileNumber = theCustomer.data.mobileNumber
-          return theCustomer
-        }
-        return null
-      }).catch(err => {
-        if (err) {
-          debugger
-          if (!err.response.data.iook) {
-            this.actionMode = this.ACTION_UPDATE_MODE
-            this.error = err.response.data.error
-          }
-        }
-        return err
-      })
+      await this.fetchCustomerProfile()
     } catch (error) {
       this.error = error
     }
@@ -235,6 +208,11 @@ export default {
     save () {
       this.error = ''
       console.log('save')
+    },
+    async rollbackCustomer () {
+      await this.fetchCustomerProfile()
+      this.actionMode = this.ACTION_EDIT_MODE
+      return true
     },
     async updateCustomer (event) {
       this.error = ''
@@ -279,7 +257,41 @@ export default {
     },
     async fetchCustomerProfile () {
       this.error = ''
-      return (await CustomerService.fetchCustomerProfile())
+      await CustomerService.fetchCustomerProfile().then(responses => {
+        debugger
+        if (responses) {
+          const theCustomer = responses.data
+          if (!theCustomer.iook) {
+            this.actionMode = this.ACTION_UPDATE_MODE
+            throw new Error(this.theCustomer.error)
+          }
+          this.customerdata.firstName = theCustomer.data.firstName
+          this.customerdata.lastName = theCustomer.data.lastName
+          this.customerdata.gender = theCustomer.data.gender
+          this.customerdata.birthDate = theCustomer.data.birthDate
+          this.customerdata.nid = theCustomer.data.nid
+          this.customerdata.nif = theCustomer.data.nif
+          this.customerdata.nib = theCustomer.data.nib
+          this.customerdata.street = theCustomer.data.street
+          this.customerdata.zipcode = theCustomer.data.zipcode
+          this.customerdata.city = theCustomer.data.city
+          this.customerdata.country = theCustomer.data.country
+          this.customerdata.email = theCustomer.data.email
+          this.customerdata.phoneNumber = theCustomer.data.phoneNumber
+          this.customerdata.mobileNumber = theCustomer.data.mobileNumber
+          return theCustomer
+        }
+        return null
+      }).catch(err => {
+        if (err) {
+          debugger
+          if (!err.response.data.iook) {
+            this.actionMode = this.ACTION_UPDATE_MODE
+            this.error = err.response.data.error
+          }
+        }
+        return err
+      })
     }
   }
 }
