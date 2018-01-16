@@ -15,8 +15,7 @@
       </v-btn>
     </v-toolbar>
     <div class="scroll-y" id="scrolling-techniques">
-      <v-container fluid grid-list-xl>
-        
+      <v-container fluid grid-list-xl>        
         <v-layout row wrap>
           <v-flex>
             <v-card color="grey lighten-4" flat>
@@ -98,10 +97,10 @@
                   <v-layout row wrap>
                     <v-flex md3 lg3>
                       <v-text-field v-model="customerdata.city" name="city" label="Cidade" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
-
                     </v-flex>
                     <v-flex md3 lg3>
                       <v-text-field v-model="customerdata.country" name="country" label="País" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
+                      <vue-country-select></vue-country-select>
                     </v-flex>
                   </v-layout>
                   <v-layout row wrap>
@@ -145,9 +144,13 @@
 
 <script>
 import CustomerService from '@/services/CustomerService'
+import vueCountrySelect from '@/components/vue-country-select/vue-country-select'
 import { mapState } from 'vuex'
 const name = 'auth'
 export default {
+  components: {
+    vueCountrySelect
+  },
   data () {
     return {
       modalBirthDate: false,
