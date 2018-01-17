@@ -4,9 +4,10 @@
   autocomplete
   browser-autocomplete
   search-input
-              required
+              :required="required"
+              :disabled="disabled"
               :items="items"
-              :value.sync='preselected'
+              :value.sync='select'
               :name='name'
               @change="changedValue"
   ></v-select>
@@ -16,17 +17,26 @@
   export default {
     data () {
       return {
-        items: []
+        items: [],
+        selected: ''
       }
     },
     props: {
-      model: {
-        required: true,
-        twoWay: true
-      },
       preselected: {
+        type: Function,
+        required: true
+      },
+      select: {
         type: String,
         default: 'PT'
+      },
+      required: {
+        type: Boolean,
+        default: false
+      },
+      disabled: {
+        type: Boolean,
+        default: false
       },
       name: {
         type: String,
@@ -34,12 +44,14 @@
       }
     },
     mounted () {
-      this.items = require('./countries')
       debugger
+      this.items = require('./countries')
     },
     methods: {
       changedValue: function (val) {
-        this.preselected = val
+        debugger
+        this.selected = val
+        this.$props.preselected(val)
       }
     }
   }

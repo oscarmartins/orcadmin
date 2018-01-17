@@ -1,33 +1,33 @@
 <template>
-  <v-card color="grey lighten-5" flat scroll-off-screen scroll-target="#scrolling-techniques" card>    
-    <v-container fluid grid-list-xl>
-    <v-layout row wrap>
-      <v-flex xs12 md8 offset-md2 lg8 offset-lg2>
-        <v-card class="card--flex-toolbar">
-          <v-toolbar card color="white" prominent >
-            <v-toolbar-title class="body-2 grey--text">
-              <v-avatar slot="activator">
-              <v-icon>person</v-icon>
-              </v-avatar>A Minha Conta                            
-            </v-toolbar-title>
-            <v-spacer></v-spacer>
-              <v-chip v-if="this.dateCreated" class="hidden-sm-and-down">created {{new Date(this.dateCreated).toISOString().slice(0,22)}} </v-chip>
-              <v-chip v-if="this.dateUpdated" class="hidden-sm-and-down">updated {{new Date(this.dateUpdated).toISOString().slice(0,22)}} </v-chip> 
-            <v-btn dark @click="updateCustomer" :color="actionMode===ACTION_UPDATE_MODE ? 'success' : ''">
-              <span v-if="actionMode===ACTION_EDIT_MODE">{{LABEL_EDIT}}</span>
-              <span v-if="actionMode===ACTION_UPDATE_MODE">{{LABEL_UPDATE}}</span>
-            </v-btn>
-            <v-btn dark @click="rollbackCustomer" v-if="actionMode===ACTION_UPDATE_MODE">
-              <span >{{LABEL_CANCEL}}</span>
-            </v-btn>
-          </v-toolbar>
-          <v-divider></v-divider>
-          <v-alert error value="true" v-if="this.error">
-            {{this.error}}
-          </v-alert>
-          <v-card-text >            
-            <div class="scroll-y" id="scrolling-techniques" >
-            <v-container fluid grid-list-xl>                  
+  <div style="position: relative; overflow: hidden;" >
+    <v-toolbar color="blue lighten-1" dark scroll-off-screen scroll-target="#scrolling-techniques" card>
+      <v-toolbar-title>
+        <v-avatar slot="activator">
+          <v-icon>person</v-icon>
+        </v-avatar>A Minha Conta</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn dark @click="updateCustomer">
+        <span v-if="actionMode===ACTION_EDIT_MODE">{{LABEL_EDIT}}</span>
+        <span v-if="actionMode===ACTION_UPDATE_MODE">{{LABEL_UPDATE}}</span>
+      </v-btn>
+       <v-btn dark @click="rollbackCustomer" v-if="actionMode===ACTION_UPDATE_MODE">
+        <span >{{LABEL_CANCEL}}</span>
+      </v-btn>
+    </v-toolbar>
+    <div class="scroll-y" id="scrolling-techniques" >
+      <v-container fluid grid-list-xl>        
+        <v-layout row wrap>
+          <v-flex>
+            <v-card color="grey lighten-4" >
+              <v-card-text>
+                <v-container fluid grid-list-xl>
+                  <v-layout row wrap v-if="this.error">
+                    <v-flex>
+                      <v-alert error value="true">
+                        {{this.error}}
+                      </v-alert>
+                    </v-flex>
+                  </v-layout>
                   <v-layout row wrap>
                     <v-flex md4 lg4>
                       <v-text-field 
@@ -125,11 +125,9 @@
                   </v-layout>
 
                 </v-container>
-            </div>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-                <v-btn dark @click="updateCustomer" :color="actionMode===ACTION_UPDATE_MODE ? 'success' : ''">
+              </v-card-text>
+              <v-card-actions>
+                <v-btn dark @click="updateCustomer">
                   <span v-if="actionMode===ACTION_EDIT_MODE">{{LABEL_EDIT}}</span>
                   <span v-if="actionMode===ACTION_UPDATE_MODE">{{LABEL_UPDATE}}</span>
                 </v-btn>
@@ -137,25 +135,16 @@
                   <span >{{LABEL_CANCEL}}</span>
                 </v-btn>
               </v-card-actions>
-        </v-card>
-      </v-flex>
-    </v-layout>
-    </v-container>
-    <v-snackbar
-          top
-          :timeout="snackbarTimeout"
-          :success="snackbarContext === 'success'"
-          :info="snackbarContext === 'info'"
-          :warning="snackbarContext === 'warning'"
-          :error="snackbarContext === 'error'"
-          :primary="snackbarContext === 'primary'"
-          :secondary="snackbarContext === 'secondary'"
-          :color="snackbarContext"
-          v-model="snackbar"
-          >
-          {{snackbarText}}      
-          </v-snackbar>
-  </v-card>  
+            </v-card>
+          </v-flex>
+          <v-flex>
+            <div>
+            </div>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -173,10 +162,6 @@ export default {
       genderItems: [{ text: 'Male' }, { text: 'Female' }],
       actionMode: 0,
       error: '',
-      snackbar: false,
-      snackbarContext: 'success',
-      snackbarTimeout: 0,
-      snackbarText: '',
       customerdata: {
         firstName: '',
         lastName: '',
@@ -192,9 +177,7 @@ export default {
         email: '',
         phoneNumber: '',
         mobileNumber: ''
-      },
-      dateCreated: '',
-      dateUpdated: ''
+      }
     }
   },
   computed: {
@@ -223,13 +206,7 @@ export default {
       this.error = error
     }
   },
-  watch: {
-    error (val) {
-      this.snackbarText = val
-      this.snackbarContext = 'error'
-      this.snackbarTimeout = 3600
-      this.snackbar = true
-    }
+  mounted () {
   },
   methods: {
     _preselected (value) {
@@ -246,12 +223,6 @@ export default {
     async rollbackCustomer () {
       await this.fetchCustomerProfile()
       this.actionMode = this.ACTION_EDIT_MODE
-      setTimeout(() => {
-        this.snackbarContext = 'info'
-        this.snackbarTimeout = 1000
-        this.snackbarText = 'O meu perfil não foi modificado.'
-        this.snackbar = true
-      }, 100)
       return true
     },
     async updateCustomer (event) {
@@ -273,6 +244,7 @@ export default {
         datacustomer.phoneNumber = this.customerdata.phoneNumber
         datacustomer.mobileNumber = this.customerdata.mobileNumber
         await CustomerService.updateCustomerProfile(datacustomer).then(res => {
+          debugger
           const data = res.data
           if (!data.iook) {
             this.actionMode = this.ACTION_UPDATE_MODE
@@ -280,16 +252,9 @@ export default {
           }
           this.actionMode = this.ACTION_EDIT_MODE
           this.customerdata = data.data
-          this.dateCreated = this.customerdata.dateCreated
-          this.dateUpdated = this.customerdata.dateUpdated
-          this.snackbarContext = 'success'
-          this.snackbarTimeout = 3000
-          this.snackbarText = 'perfil actualizado com sucesso!'
-          setTimeout(() => {
-            this.snackbar = true
-          }, 100)
           return res
         }).catch((err) => {
+          debugger
           if (!err.response.data.iook) {
             this.actionMode = this.ACTION_UPDATE_MODE
             this.error = err.response.data.error
@@ -297,12 +262,14 @@ export default {
           return err
         })
       } else {
+        debugger
         this.actionMode = this.ACTION_UPDATE_MODE
       }
     },
     async fetchCustomerProfile () {
       this.error = ''
       await CustomerService.fetchCustomerProfile().then(responses => {
+        debugger
         if (responses) {
           const theCustomer = responses.data
           if (!theCustomer.iook) {
@@ -323,13 +290,12 @@ export default {
           this.customerdata.email = theCustomer.data.email
           this.customerdata.phoneNumber = theCustomer.data.phoneNumber
           this.customerdata.mobileNumber = theCustomer.data.mobileNumber
-          this.dateCreated = theCustomer.data.dateCreated
-          this.dateUpdated = theCustomer.data.dateUpdated
           return theCustomer
         }
         return null
       }).catch(err => {
         if (err) {
+          debugger
           if (!err.response.data.iook) {
             this.actionMode = this.ACTION_UPDATE_MODE
             this.error = err.response.data.error
@@ -343,4 +309,5 @@ export default {
 </script>
 
 <style scoped>
+
 </style>

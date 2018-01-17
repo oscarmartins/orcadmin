@@ -17,7 +17,9 @@
           </v-list-tile-avatar>
           <v-list-tile-content>
             <v-list-tile-title>
-              <span v-if="this.profile" >{{this.profile.email}}</span>
+              <span v-if="this.profile" >
+                A minha conta [{{this.profile.email}}]
+              </span>
               <span v-else>Guest</span>
             </v-list-tile-title>
           </v-list-tile-content>
@@ -46,17 +48,17 @@
         </router-link>
       </v-toolbar-title>
       <v-toolbar-items>
-        <v-btn dark :to="{name: this.isAuthenticated ? 'resume' : 'start'}">
+        <v-btn :to="{name: this.isAuthenticated ? 'resume' : 'start'}">
           <span v-if="this.isAuthenticated">dashboard</span>
           <span v-else>start</span>
         </v-btn>
       </v-toolbar-items>
       <v-spacer></v-spacer>  
       <v-toolbar-items>
-        <v-btn flat dark v-if="!this.isAuthenticated" to="/login">
+        <v-btn flat v-if="!this.isAuthenticated" to="/login">
           Sign In
         </v-btn>
-        <v-btn flat dark v-if="!this.isAuthenticated" to="/register">
+        <v-btn flat v-if="!this.isAuthenticated" to="/register">
           Sign Up
         </v-btn>
         <logout v-if="this.isAuthenticated" />
@@ -66,7 +68,7 @@
     <v-content>
        <v-container fluid>
         <v-layout align-center justify-center enable-resize-watcher>
-          <v-flex xs10>
+          <v-flex xs12>
             <router-view></router-view>
           </v-flex>
         </v-layout>
