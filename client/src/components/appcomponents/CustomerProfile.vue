@@ -98,9 +98,13 @@
                     <v-flex md3 lg3>
                       <v-text-field v-model="customerdata.city" name="city" label="Cidade" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
                     </v-flex>
-                    <v-flex md3 lg3>
-                      <v-text-field v-model="customerdata.country" name="country" label="País" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field>
-                      <vue-country-select></vue-country-select>
+                    <v-flex md5 lg5>
+                      <!--v-text-field v-model="customerdata.country" name="country" label="País" :disabled="actionMode===ACTION_EDIT_MODE"></v-text-field-->
+                      <vue-country-select  :preselected="customerdata.country" 
+                                           name="country" 
+                                          :model.sync="customerdata.country"
+                                           >
+                      </vue-country-select>
                     </v-flex>
                   </v-layout>
                   <v-layout row wrap>

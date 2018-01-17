@@ -1,5 +1,5 @@
 <template>
-  <v-app id="sandbox" :dark="dark" :light="!dark" standalone toolbar footer>  
+  <v-app id="sandbox" :dark="dark" :light="!dark" >  
     <v-navigation-drawer 
     v-if="this.isAuthenticated" 
     v-model="primaryDrawer.model" 
@@ -8,7 +8,7 @@
     :temporary="primaryDrawer.type === 'temporary'" 
     :clipped="primaryDrawer.clipped" 
     :floating="primaryDrawer.floating"
-    :mini-variant="primaryDrawer.mini" overflow enable-resize-watcher >    
+    :mini-variant="primaryDrawer.mini" overflow enable-resize-watcher absolute app>    
     <v-list dense>
       <v-list-tile avatar tag="div" @click="orcgoto({name: 'CustomerProfile'})">
           <v-list-tile-avatar>
@@ -38,7 +38,7 @@
       </v-list>    
     </v-navigation-drawer>
 
-    <v-toolbar fixed dark>
+    <v-toolbar app absolute :clipped-left="primaryDrawer.clipped">
       <v-toolbar-side-icon @click.stop="primaryDrawer.model = !primaryDrawer.model" v-if="primaryDrawer.type !== 'permanent' && this.isAuthenticated"></v-toolbar-side-icon>
       <v-toolbar-title class="mr-4">
         <router-link tag="span" style="cursor: pointer" :to="{name: this.isAuthenticated ? 'resume' : 'start'}">
@@ -63,17 +63,15 @@
       </v-toolbar-items>
     </v-toolbar>
 
-    <main>
-     
-      <v-container fluid fill-width>
-        <v-layout justify-center align-center>
-          <v-flex xs12>
+    <v-content>
+       <v-container fluid>
+        <v-layout align-center justify-center enable-resize-watcher>
+          <v-flex xs10>
             <router-view></router-view>
           </v-flex>
         </v-layout>
-      </v-container>
-     
-    </main>
+       </v-container>
+    </v-content>
 
     <v-footer :fixed="footer.fixed" class="footer secondary" light dark>
       <span class="white--text ml-3">© {{ new Date().getFullYear() }}</span>

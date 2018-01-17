@@ -1,16 +1,14 @@
 <template>
   <v-select
-  label="Async items"
-              autocomplete
-              :loading="loading"
-              multiple
-              cache-items
-              chips
+  label="País"
+  autocomplete
+  browser-autocomplete
+  search-input
               required
               :items="items"
-              :rules="[() => select.length > 0 || 'You must choose at least one']"
-              :search-input.sync="search"
-              v-model="select"
+              :value.sync='preselected'
+              :name='name'
+              @change="changedValue"
   ></v-select>
 </template>
 
@@ -18,29 +16,30 @@
   export default {
     data () {
       return {
-        loading: false,
-        items: [],
-        search: null,
-        select: [],
-        states: ['oscar', 'useres', 'dskhjbfajhkfb', 'asdkjdfn']
+        items: []
       }
     },
-    watch: {
-      search (val) {
-        val && this.querySelections(val)
+    props: {
+      model: {
+        required: true,
+        twoWay: true
+      },
+      preselected: {
+        type: String,
+        default: 'PT'
+      },
+      name: {
+        type: String,
+        default: 'country'
       }
+    },
+    mounted () {
+      this.items = require('./countries')
+      debugger
     },
     methods: {
-      querySelections (v) {
-        debugger
-        this.loading = true
-        // Simulated ajax query
-        setTimeout(() => {
-          this.items = this.states.filter(e => {
-            return (e || '').toLowerCase().indexOf((v || '').toLowerCase()) > -1
-          })
-          this.loading = false
-        }, 500)
+      changedValue: function (val) {
+        this.preselected = val
       }
     }
   }
