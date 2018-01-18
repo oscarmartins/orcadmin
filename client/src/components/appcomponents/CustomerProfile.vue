@@ -11,8 +11,8 @@
               </v-avatar>A Minha Conta                            
             </v-toolbar-title>
             <v-spacer></v-spacer>
-              <v-chip v-if="this.dateCreated" class="hidden-sm-and-down">created {{new Date(this.dateCreated).toISOString().slice(0,22)}} </v-chip>
-              <v-chip v-if="this.dateUpdated" class="hidden-sm-and-down">updated {{new Date(this.dateUpdated).toISOString().slice(0,22)}} </v-chip> 
+              <v-chip v-if="this.dateCreated" class="hidden-sm-and-down">created {{this.toDateTimeString(this.dateCreated)}} </v-chip>
+              <v-chip v-if="this.dateUpdated" class="hidden-sm-and-down">updated {{this.toDateTimeString(this.dateUpdated)}} </v-chip> 
             <v-btn dark @click="updateCustomer" :color="actionMode===ACTION_UPDATE_MODE ? 'success' : ''">
               <span v-if="actionMode===ACTION_EDIT_MODE">{{LABEL_EDIT}}</span>
               <span v-if="actionMode===ACTION_UPDATE_MODE">{{LABEL_UPDATE}}</span>
@@ -232,6 +232,15 @@ export default {
     }
   },
   methods: {
+    toDateTimeString (isodate) {
+      var trimDate = null
+      try {
+        trimDate = new Date(isodate).toISOString().slice(0, 22)
+      } catch (error) {
+        trimDate = ''
+      }
+      return trimDate
+    },
     _preselected (value) {
       this.customerdata.country = value
     },
