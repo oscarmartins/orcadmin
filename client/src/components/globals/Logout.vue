@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" persistent >
+    <v-dialog v-model="dialog" persistent max-width="290">
         <v-btn block large dark slot="activator" ><v-icon class="white--text" >exit_to_app</v-icon>Logout </v-btn>
         <v-card>
           <v-card-title class="headline">Logout</v-card-title>

@@ -1,6 +1,6 @@
 <template>
-  <v-layout row wrap>
-    <v-flex xs12 sm8 offset-sm2 md6 offset-md3 lg6 offset-lg3>
+  <v-layout row wrap align-center justify-center enable-resize-watcher>
+    <v-flex xs12 sm8 md4 lg3 >
       <panel title="Sign Up">
           <v-alert error value="true" v-if="this.error" >
             {{this.error}}

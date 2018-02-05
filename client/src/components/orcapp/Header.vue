@@ -65,24 +65,21 @@
     <v-toolbar-items>     
       <v-btn 
         class="cyan" 
-        flat 
-        dark 
+        flat  
         v-if="!this.isUserLoggedIn"
         to="/login" >
         Sign In
       </v-btn>      
       <v-btn
         class="cyan" 
-        flat 
-        dark 
+        flat  
         v-if="!this.isUserLoggedIn"
         to="/register">
         Sign Up
       </v-btn>
       <v-btn
         class="cyan" 
-        flat 
-        dark 
+        flat  
         v-if="this.isUserLoggedIn"
         @click="logout">
         Logout
