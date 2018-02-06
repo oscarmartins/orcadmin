@@ -366,6 +366,24 @@ module.exports = {
     }
     return resout
   },
+  async backOfficeRemoveAccount (data) {
+    const resout = {status: 200, output: {error: '', success: ''}}
+    try {
+      const accountBackoffice = await AccountManager.backoffice.removeAccount(data)
+      if (accountBackoffice.iook) {
+        resout.output.success = accountBackoffice.success
+        if (accountBackoffice.data) {
+          resout.output.data = accountBackoffice.data
+        }
+      } else {
+        throw new Error(accountBackoffice.error)
+      }
+    } catch (error) {
+      resout.status = 400
+      resout.output.error = error.message
+    }
+    return resout
+  },
   async logout (req, res) {
     try {
       req.session.destroy(function (err) {

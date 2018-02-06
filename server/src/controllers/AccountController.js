@@ -122,6 +122,16 @@ module.exports = {
           if (_res) {
             console.log(_res)
           }
+        } else if (main.REQ_ACTION === AuthenticationController.options.backoffice_removeAccount) {
+          const {credentials, criteria} = main.REQ_INPUTS
+          if (credentials && criteria) {
+            const _res = await backOfficeRemoveAccount({credentials: credentials, criteria: criteria})
+            if (_res) {
+              console.log(_res)
+            }
+          } else {
+            responseSender({status: 400, output: {error: 'main.REQ_ACTION credentials && criteria not found'}})
+          }
         } else {
           responseSender({status: 400, output: {error: 'main.REQ_ACTION not found'}})
         }
@@ -199,6 +209,11 @@ async function validateAccountCode () {
 
 async function backOfficeHardReset (credentials) {
   const result = await AuthenticationController.backOfficeHardReset(credentials)
+  return responseSender(result)
+}
+
+async function backOfficeRemoveAccount (data) {
+  const result = await AuthenticationController.backOfficeRemoveAccount(data)
   return responseSender(result)
 }
 

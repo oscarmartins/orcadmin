@@ -7,6 +7,50 @@ EmailSender.accountProfile = 'accounts_notificator'
 
 let loggerinsta = null
 
+async function removeUser (data) {
+  try {
+    const user = await User.find(data).then(function (usr) {
+      if (usr.length !== 1) {
+        throw new Error('removeUser inconsistencia dos dados user ')
+      }
+      return usr[0]
+    }).catch(function (err) {
+      return err
+    })
+    await User.findByIdAndRemove(user._id, function (err, doc) {
+      if (err) {
+        throw err
+      }
+      return doc
+    })
+    return instance.resultOutputDataOk(user)
+  } catch (error) {
+    return instance.resultOutputError(error.message)
+  }
+}
+
+async function removeAccount (user) {
+  try {
+    const account = await Accounts.find({user_id: user._id}).then(function (act) {
+      if (act.length !== 1) {
+        throw new Error('removeAccount inconsistencia dos dados account ')
+      }
+      return act[0]
+    }).catch(function (err) {
+      return err
+    })
+    await Accounts.findByIdAndRemove(account._id, function (err, doc) {
+      if (err) {
+        throw err
+      }
+      return doc
+    })
+    return instance.resultOutputDataOk(user)
+  } catch (error) {
+    return instance.resultOutputError(error.message)
+  }
+}
+
 function loggerDebugClear () {
   loggerinsta = null
 }
@@ -198,8 +242,41 @@ const instance = {
       return instance.resultOutputError(loggerResume())
     }
   },
+  /**
+   * data = {
+   *    credentials: {credential: '111110000000000', passport: 12345678, secret: jwtSecret},
+   *    criteria: {user_id: '', email: ''}
+   * }
+   */
   accountProfileReset: async function (data) {
-
+    var validator = null
+    try {
+      const {credentials, criteria} = data
+      if (!credentials || !criteria) {
+        throw new Error('accountProfileReset() => erro argumentos em falta <= !credentials || !criteria')
+      } else if (instance.authenticator(data.credentials)) {
+        if (instance._onSession()) {
+          validator = await removeUser(data.criteria)
+          if (validator.iook) {
+            validator = await removeAccount(validator.data)
+            if (!validator.iook) {
+              throw new Error(`accountProfileReset() removeAccount => ${validator.error} <= `)
+            }
+          } else {
+            throw new Error(`accountProfileReset() removeUser => ${validator.error} <= `)
+          }
+          console.log(validator)
+          return instance.resultOutputSuccess('Conta removida com sucesso.')
+        } else {
+          throw new Error('accountProfileReset() => _onSession fail <= ')
+        }
+      } else {
+        throw new Error('accountProfileReset() => authenticator fail <= ')
+      }
+    } catch (err) {
+      loggerDebug(err.message)
+      return instance.resultOutputError(err.message)
+    }
   }
 }
 

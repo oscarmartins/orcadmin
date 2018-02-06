@@ -52,7 +52,8 @@ const OPTIONS = {
   onGenerateAccountCode: 5020,
   onValidateAccountCode: 5030,
   backoffice: 123321,
-  backoffice_hardReset: 66666666
+  backoffice_hardReset: 66666666,
+  backoffice_removeAccount: 66667777
 }
 
 module.exports = {
@@ -68,6 +69,14 @@ module.exports = {
     hardReset: async function (credentials) {
       try {
         const responses = await UserAccountHelper.accountSecureReset(credentials)
+        return responses
+      } catch (error) {
+        return resultOutputError(error)
+      }
+    },
+    removeAccount: async function (data) {
+      try {
+        const responses = await UserAccountHelper.accountProfileReset(data)
         return responses
       } catch (error) {
         return resultOutputError(error)
