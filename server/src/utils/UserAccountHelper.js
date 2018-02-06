@@ -197,6 +197,9 @@ const instance = {
       loggerDebug(error)
       return instance.resultOutputError(loggerResume())
     }
+  },
+  accountProfileReset: async function (data) {
+
   }
 }
 
