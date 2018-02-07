@@ -250,6 +250,8 @@ const instance = {
    */
   accountProfileReset: async function (data) {
     var validator = null
+    var emailTo = null
+    var username = null
     try {
       const {credentials, criteria} = data
       if (!credentials || !criteria) {
@@ -258,6 +260,8 @@ const instance = {
         if (instance._onSession()) {
           validator = await removeUser(data.criteria)
           if (validator.iook) {
+            emailTo = validator.data.email
+            username = validator.data.name
             validator = await removeAccount(validator.data)
             if (!validator.iook) {
               throw new Error(`accountProfileReset() removeAccount => ${validator.error} <= `)
@@ -266,6 +270,12 @@ const instance = {
             throw new Error(`accountProfileReset() removeUser => ${validator.error} <= `)
           }
           console.log(validator)
+          const mailOptions = {
+            to: emailTo, // list of receivers
+            subject: 'Account Deleted    ✔✔', // Subject line
+            html: `Hello, <b>${username || emailTo}</b><p>Your account was permanently deleted.<br> Hope to see you back soon!</p>` // html body
+          }
+          await EmailSender.sendMail(mailOptions)
           return instance.resultOutputSuccess('Conta removida com sucesso.')
         } else {
           throw new Error('accountProfileReset() => _onSession fail <= ')

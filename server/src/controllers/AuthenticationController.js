@@ -19,7 +19,7 @@ function jwtSignUser (user) {
 
 async function _signup (payload) {
   try {
-    const {email, password} = payload
+    const {email, password, name} = payload
     const user = await User.findOne({'email': email}, {'email': 1, password: 1})
     if (user) {
       return {
@@ -28,6 +28,7 @@ async function _signup (payload) {
       }
     } else {
       var newUser = new User()
+      newUser.name = name || email.split('@')[0]
       newUser.email = email
       newUser.password = newUser.encryptPassword(password)
       const result = await newUser.save()
