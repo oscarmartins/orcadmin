@@ -93,25 +93,50 @@ async function _signin (payload) {
         // check account status
         const checkAccountStatus = await AccountManager.checkAccountStatus(AccountManager.mode.Signin, result)
         if (checkAccountStatus) {
-          if (checkAccountStatus.status === 200) {
+          const accountStatus = checkAccountStatus.accountStatus
+          const onRequiredHumanHand = (checkAccountStatus.status === 400 &&
+            accountStatus.as === AccountManager.options.onAccountValidation &&
+            accountStatus.ns === AccountManager.options.onAccountValidationCode &&
+            accountStatus.mode === AccountManager.mode.Signin)
+          if (checkAccountStatus.status === 200 || onRequiredHumanHand) {
             const usrJson = result.toJSON()
             const theToken = jwtSignUser(usrJson)
             checkAccountStatus.output = {
               profile: usrJson,
               access_token: theToken,
-              message: 'signin ok'
+              message: accountStatus.message || 'signin ok'
             }
-          } else {
-            const usrJson = result.toJSON()
-            const theToken = jwtSignUser(usrJson)
-            return {
-              status: 200,
-              output: {
-                profile: usrJson,
-                access_token: theToken,
-                message: 'signin ok'
+            if (onRequiredHumanHand) {
+              return {
+                status: 200,
+                output: checkAccountStatus.output
               }
             }
+          } else {
+            /**
+             * BUG::BACKDOOR ?
+             * -> if checkAccountStatus.status !== 200
+             * -> only return status:200
+             * --> accountStatus: {
+                    as:10000
+                    message:"Validar Código de Segurança"
+                    mode:"Signin"
+                    ns:11000
+             *    }
+             *[CODE]
+              const usrJson = result.toJSON()
+              const theToken = jwtSignUser(usrJson)
+              return {
+                status: 200,
+                output: {
+                  profile: usrJson,
+                  access_token: theToken,
+                  message: 'signin ok'
+                }
+              }
+             * 
+             */
+
           }
         } else {
           console.log('error')
