@@ -127,9 +127,9 @@ module.exports = {
       }
       return mailOptions
     },
-    sendEmailInfoNewUserCreated: async function (to) {
+    sendEmailInfoNewUserCreated: async function (to, username) {
       const msg = this.emailMessageTransport(100, to)
-      msg.html = msg.html.replace('{{username}}', to.split('@')[0])
+      msg.html = msg.html.replace('{{username}}', username || to.split('@')[0])
       const emailSent = await EmailSender.sendMail(msg)
       return emailSent
     },
@@ -247,7 +247,7 @@ module.exports = {
       const saveResult = await account.save()
       /** */
       if (saveResult) {
-        await this.notificator.sendEmailInfoNewUserCreated(user.email)
+        await this.notificator.sendEmailInfoNewUserCreated(user.email, user.name)
         return resultOutput(true, 'A conta foi criada com sucesso.', null, saveResult)
       } else {
         return resultOutput(false, null, 'ERROR CODE 510 [ ** Nao foi possivel criar conta.. **  ]', saveResult)
