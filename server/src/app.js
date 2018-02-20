@@ -11,7 +11,6 @@ const passport = require('./passport')
 const app = express()
 app.use(passport.initialize())
 mongoose.connect('localhost:27017/orcadmin')
-
 app.use(morgan('combined'))
 app.use(bodyParser.json())
 app.use(cors())
