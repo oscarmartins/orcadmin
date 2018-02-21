@@ -3,6 +3,7 @@ const User = require('../models/User')
 const EmailSender = require('../controllers/orcmailer')
 const uuid = require('uuid')
 const UserAccountHelper = require('../utils/UserAccountHelper')
+const OPTIONS = require('../policies/ApiPolicy')
 
 EmailSender.accountProfile = 'accounts_notificator'
 
@@ -19,41 +20,12 @@ function resultOutput (iook, success, error, data) {
 function resultOutputSuccess (success) { return resultOutput(true, success, null, null) }
 function resultOutputError (error) { return resultOutput(false, null, error, null) }
 function resultOutputDataOk (data) { return resultOutput(true, null, null, data) }
-function resultOutputDataError (data) { return resultOutput(false, null, null, data) }
+function resultOutputDataError (data) { return resultOutput(false, null, null, data) } // eslint-disable-line
 
 const Modes = {
   Signin: 'Signin',
   Signup: 'Signup',
   PasswordRecovery: 'PasswordRecovery'
-}
-const OPTIONS = {
-  NEW_CODE_VALIDATION: 100,
-  INVALIDATE_CODE_VALIDATION: -100,
-  KEEP_CODE_VALIDATION: 200,
-  SIGNUP: 1000,
-  SIGNIN: 2000,
-  ACCOUNT_VERIFY: 3000,
-  ACCOUNT_RECOVERY: 4000,
-  ACCOUNT_RECOVERY_EMAIL: 4010,
-  ACCOUNT_RECOVERY_CODE: 4020,
-  ACCOUNT_RECOVERY_RESET: 4030,
-  ACCOUNT_RECOVERY_RESUME: 40102030,
-  NEW_SIGNUP: 1010,
-  ON_SIGNIN: 2010,
-  ON_SIGNOUT: 2020,
-  accountValid: 101010,
-  onAccountValidation: 10000,
-  onAccountValidationCode: 11000,
-  onPasswordRecovery: 20000,
-  onPasswordRecoveryCode: 21000,
-  onPasswordRecoveryChange: 22000,
-  CHECKACCOUNTSTATUS: 5000,
-  onCheckAccountStatus: 5010,
-  onGenerateAccountCode: 5020,
-  onValidateAccountCode: 5030,
-  backoffice: 123321,
-  backoffice_hardReset: 66666666,
-  backoffice_removeAccount: 66667777
 }
 
 module.exports = {

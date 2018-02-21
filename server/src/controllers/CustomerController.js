@@ -2,6 +2,7 @@ const tn = require('../utils/Utils').jwtToken
 const ro = require('../utils/Utils').resultOutput
 const {User, Customer} = require('../models')
 const joipolicy = require('joi')
+const options = require('../policies/ApiPolicy')
 
 const schemaPolicy = joipolicy.object().options({ allowUnknown: true }).keys({
   email: joipolicy.string().email().required(),
@@ -40,6 +41,7 @@ async function fetchUserByEmail (id, email) {
   }
   return user
 }
+
 async function fetchCustomer (user) {
   var costumer = null
   try {
@@ -50,6 +52,7 @@ async function fetchCustomer (user) {
   }
   return costumer
 }
+
 const instance = {
   customerPolicy: fields => {
     const {error} = schemaPolicy.validate(fields, {presence: 'required', allowUnknown: true})
@@ -58,11 +61,7 @@ const instance = {
     }
     return true
   },
-  options: {
-    CUSTOMER_PROFILE: 6000,
-    onFetchCustomerProfile: 6010,
-    onUpdateCustomerProfile: 6020
-  },
+  options: options,
   tokenRequestVerify (payload) {
     if (!tn.tokenRequestVerify(payload.httpRequest)) {
       throw new Error('No permission to access this content.')
@@ -142,7 +141,7 @@ const instance = {
       }
     } catch (err) {
       if (err) {
-        if (err.name === 'MongoError' && err.code === 11000) {
+        if (err.name === 'MongoError' && err.code === instance.options.onAccountValidationCode) {
           const fieldName = err.errmsg.substring(err.errmsg.lastIndexOf('index:') + 7, err.errmsg.lastIndexOf('_1'))
           outdata.error = `O Campo ${fieldName} está registado em outra conta. `
         } else {
@@ -157,4 +156,5 @@ const instance = {
     return outdata
   }
 }
+
 module.exports = instance
