@@ -28,7 +28,9 @@ const OPTIONS = {
   backoffice_removeAccount: 66667777,
   CUSTOMER_PROFILE: 6000,
   onFetchCustomerProfile: 6010,
-  onUpdateCustomerProfile: 6020
+  onUpdateCustomerProfile: 6020,
+  ORC_API: 7007,
+  fetchApiPolicy: 7017
 }
 
 module.exports = OPTIONS

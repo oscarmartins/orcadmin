@@ -4,6 +4,7 @@ const BookmarksController = require('./controllers/BookmarksController')
 const HistoriesController = require('./controllers/HistoriesController')
 const isAuthenticated = require('./policies/isAuthenticated')
 const MailerController = require('./controllers/MailerController')
+const ApiController = require('./controllers/ApiController')
 
 module.exports = (app) => {
   app.post('/register', AccountController.execute)
@@ -13,6 +14,8 @@ module.exports = (app) => {
 
   app.post('/services', AccountController.execute)
   app.get('/services', AccountController.execute)
+
+  app.get('/api/fetchApiPolicy', ApiController.fetchApiPolicy)
 
   app.get('/emailer', isAuthenticated, MailerController.fetchProfiles)
   app.get('/emailer/:profileid', isAuthenticated, MailerController.retrieveProfileById)

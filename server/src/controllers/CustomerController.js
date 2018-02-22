@@ -1,5 +1,4 @@
-const tn = require('../utils/Utils').jwtToken
-const ro = require('../utils/Utils').resultOutput
+const utils = require('../utils/Utils')
 const {User, Customer} = require('../models')
 const joipolicy = require('joi')
 const options = require('../policies/ApiPolicy')
@@ -63,13 +62,13 @@ const instance = {
   },
   options: options,
   tokenRequestVerify (payload) {
-    if (!tn.tokenRequestVerify(payload.httpRequest)) {
+    if (!utils.jwtToken.tokenRequestVerify(payload.httpRequest)) {
       throw new Error('No permission to access this content.')
     }
     return true
   },
   async fechCustomerProfile (payload) {
-    var outdata = ro.resultOutputDataOk({})
+    var outdata = utils.resultOutput.resultOutputDataOk({})
     try {
       if (instance.tokenRequestVerify(payload)) {
         const {_id, email} = payload.REQ_INPUTS
@@ -98,7 +97,7 @@ const instance = {
     return outdata
   },
   async updateCustomerProfile (payload) {
-    var outdata = ro.resultOutputDataOk({})
+    var outdata = utils.resultOutput.resultOutputDataOk({})
     try {
       if (instance.tokenRequestVerify(payload)) {
         const {user, fields} = payload.REQ_INPUTS
